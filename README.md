@@ -1,5 +1,5 @@
 # admin-client
-
+##需要 npm install view-design --save  // vue-router
 ## Project setup
 ```
 npm install

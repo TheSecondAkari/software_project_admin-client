@@ -1,3 +1,4 @@
+
 <style>
 /* //初始默认的整体属性，我删除了一些，可以随便修改 */
 #app { 
@@ -7,7 +8,10 @@
   color: #2c3e50;
 }
 html,body,#app{
-    height:100%;
+}
+html{
+    overflow: scroll;
+    height:800px;
 }
 </style>
 <template>
@@ -16,6 +20,7 @@ html,body,#app{
     </div>
 </template>
 <script>
+
     export default {
         data () {
             return {}

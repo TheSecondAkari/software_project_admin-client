@@ -32,12 +32,12 @@ button{
     padding-bottom: 5px;
 }
 .item_block{
-    width: 1050px;
-    height: auto;
+    width: 99%;
     border-bottom: 1px solid grey;
     position: relative;
     padding:20px;
     overflow: hidden;
+    /* border: 1px solid gray; */
 }
 .item_img{
     height: 160px;
@@ -49,13 +49,20 @@ button{
 .item_info_block{
     position: relative;
     height:160px;
-    width:820px;
+    width:50%;
     /* border: 1px solid gray; */
     float: left;
     margin-left: 20px;
 }
 .item_info{
     margin-top: 10px;
+}
+.test{
+    position: relative;
+    width:100px;
+    height:100px;
+    background-color:yellow;
+    left:180px;
 }
 </style>
 <template>
@@ -120,24 +127,18 @@ button{
                         <BreadcrumbItem>Components</BreadcrumbItem>
                         <BreadcrumbItem>Layout</BreadcrumbItem>
                     </Breadcrumb>
-                    <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
-                        <Input v-model="value" placeholder="请输入商品名" style="width: 300px" />
+                    <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
+                        <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
                         <button style="margin-left:10px;">查找</button>
                         <button style="margin-left:10px;">新增</button>
                         <div style="height:20px;"></div>
-                        <div class="item_block" v-for=" (item,key) in itemList" :key="key">
-                            <div class="item_img"></div>
-                            <div class="item_info_block">
-                                <div class="item_info"><b>商品id：</b> {{item.item_id}}</div>
-                                <div class="item_info"><b>商品类别：</b> {{item.item_obj}}</div>
-                                <div class="item_info"><b>商品名称：</b> {{item.item_name}}</div>
-                                <div class="item_info"><b>商品价格：</b> {{item.item_price}}</div>
-                                <div class="item_info"><b>商品浏览数：</b> {{item.item_viewed_times}}</div>
-                                <div class="item_info" style="position:absolute;top:0px;left:150px;"><b>剩余总库存：</b> {{item.item_viewed_times}}</div>
-                                <button style="position:absolute;top:0px;left:750px;">修改</button>
-                                <button style="position:absolute;top:0px;top:120px;left:750px;">收起</button>
-                            </div>
-                        </div>
+                        <ItemBlock :itemList="itemList_father"></ItemBlock>
+                        <Page 
+                        :total="totalNumber"
+                        :page-size="pageSize"
+                        @on-change="changePage"
+                        show-total
+                         />
                     </Content>
                 </Layout>
             </Layout>
@@ -146,20 +147,107 @@ button{
     
 </template>
 <script>
+import ItemBlock from "./item_block"
     export default {
+        components:{
+            ItemBlock
+        },
         data () {
             return {
-                itemList:[{
+                currentPage:1,
+                totalNumber:10,
+                pageSize:5,
+                input_item_name:'',
+                itemList_father:[],
+                all_itemList:[{
                     item_name:"小米手机",
                     item_obj:"手机",
                     item_id:1,
                     item_price:2999,
                     item_viewed_times:4,
                     item_total_left:999,
+                    item_details:[{
+                        color:"黄色",
+                        storage:"128g"
+                    },{
+                        color:"绿色",
+                        storage:"256g"
+                    },],
+                    item_colums:[{
+                        title:"颜色",
+                        key:"color"
+                    },{
+                        title:"内存",
+                        key:"storage"
+                    }],
                 },{
                     item_name:"小米手机",
                     item_obj:"手机",
-                    item_id:1,
+                    item_id:2,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:3,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:4,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:5,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:6,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:7,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:8,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:9,
+                    item_price:2999,
+                    item_viewed_times:4,
+                    item_total_left:999,
+                },
+                {
+                    item_name:"小米手机",
+                    item_obj:"手机",
+                    item_id:10,
                     item_price:2999,
                     item_viewed_times:4,
                     item_total_left:999,
@@ -167,6 +255,25 @@ button{
                 ],
 
             }
+        },
+        mounted(){
+                var temp = this.all_itemList;
+                var size = this.pageSize;
+                this.currentPage = 1;
+                this.itemList_father = temp.slice(0,size);
+        },
+        methods:{
+            show_detail(e){
+                console.log(e)
+                // document.getElementsByClassName("test").setAttribute("display","block")
+            },
+            changePage(c){
+                var temp = this.all_itemList;
+                var size = this.pageSize;
+                this.currentPage = c;
+                this.itemList_father = temp.slice((c - 1) * size, c * size);
+            }
         }
-    }
+
+    };
 </script>

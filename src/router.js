@@ -2,6 +2,13 @@ const routers = [
     {
         path: '/',
         meta: {
+            title: '登录'
+        },
+        component: (resolve) => require(['./views/Login.vue'], resolve)
+    },
+    {
+        path: '/home',
+        meta: {
             title: '首页'
         },
         component: (resolve) => require(['./views/Home.vue'], resolve)

@@ -1,0 +1,16 @@
+module.exports = {
+    lintOnSave: true,
+
+    devServer: {
+        open: true,
+        proxy: {
+            '^/api': {
+                target: '', // 目标地址
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/api': ''
+                }
+            }
+        }
+    }
+}

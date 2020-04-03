@@ -57,7 +57,7 @@ button{
 .item_info{
     margin-top: 10px;
 }
-.test{
+.table{
     position: relative;
     max-width: 80%;
     left:180px;
@@ -65,25 +65,23 @@ button{
 </style>
 <template>
     <div>
-                        <div class="item_block" v-for=" (item,key) in itemList" :key="key">
-                            <div class="item_img"></div>
-                            <div class="item_info_block">
-                                <div class="item_info"><b>商品id：</b> {{item.item_id}}</div>
-                                <div class="item_info"><b>商品类别：</b> {{item.item_obj}}</div>
-                                <div class="item_info"><b>商品名称：</b> {{item.item_name}}</div>
-                                <div class="item_info"><b>商品价格：</b> {{item.item_price}}</div>
-                                <div class="item_info"><b>商品浏览数：</b> {{item.item_viewed_times}}</div>
-                                <div class="item_info" style="position:absolute;top:0px;left:150px;"><b>剩余总库存：</b> {{item.item_total_left}} </div>
-                                
-                            </div>
-                            <div style="clear:both"></div>
-                            <!-- <div class="test" v-show="show"></div> -->
-                            <Table border :columns="itemList[key].item_colums" :data="itemList[key].item_details" class="test" v-show="show"></Table>
-                            <button style="position:absolute;top:30px;right:10%;">修改</button>
-                            <button style="position:absolute;top:130px;right:10%;" @click="change_detail($event)">{{showORhide}}</button>
-                            
-                        </div>
-
+        <div class="item_block" v-for=" (item,key) in itemList" :key="key">
+            <div class="item_img"></div>
+            <div class="item_info_block">
+                <div class="item_info"><b>商品id：</b> {{item.item_id}}</div>
+                <div class="item_info"><b>商品类别：</b> {{item.item_obj}}</div>
+                <div class="item_info"><b>商品名称：</b> {{item.item_name}}</div>
+                <div class="item_info"><b>商品价格：</b> {{item.item_price}}</div>
+                <div class="item_info"><b>商品浏览数：</b> {{item.item_viewed_times}}</div>
+                <div class="item_info" style="position:absolute;top:0px;left:150px;"><b>剩余总库存：</b> {{item.item_total_left}} </div>
+            </div>
+            <div style="clear:both"></div>
+            <button style="position:absolute;top:30px;right:10%;">修改</button>
+            <button style="position:absolute;top:130px;right:10%;" @click="change_detail($event)">{{showORhide}}</button>
+            <div style="display:none;">
+                <Table  border :columns="itemList[key].item_colums" :data="itemList[key].item_details" class="table"></Table>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -94,24 +92,36 @@ button{
             return {
                 input_item_name:'',
                 show:0,
-                showORhide:"显示"
+                showORhide:"显示",
             }
         },
         methods:{
             change_detail(e){
-                var that = this
-                console.log(e);
-                if(!that.show){
-                    console.log("改成隐藏")
-                    that.showORhide= "隐藏";
-                    that.show=1;
+                console.log(e.currentTarget.nextElementSibling.style.display);
+                if(e.currentTarget.nextElementSibling.style.display=="none"){
+                    console.log("改成显示")
+                    e.currentTarget.innerHTML= "显示";
+                    e.currentTarget.nextElementSibling.style.display="block";
+                    console.log("现在是"+e.currentTarget.nextElementSibling.style.display)
                 }
                 else{
-                    console.log("改成显示")
-                    that.showORhide= "显示";
-                    that.show=0;
-                    console.log(that.show);
+                    console.log("改成隐藏")
+                    e.currentTarget.innerHTML= "隐藏";
+                    e.currentTarget.nextElementSibling.style.display="none";
                 }
+
+
+                // if(!that.show){
+                //     console.log("改成隐藏")
+                //     that.showORhide= "隐藏";
+                //     that.show=1;
+                // }
+                // else{
+                //     console.log("改成显示")
+                //     that.showORhide= "显示";
+                //     that.show=0;
+                //     console.log(that.show);
+                // }
                 
             },
         }

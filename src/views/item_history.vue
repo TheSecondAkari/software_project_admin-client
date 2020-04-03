@@ -128,7 +128,7 @@ button{
                         <BreadcrumbItem>Layout</BreadcrumbItem>
                     </Breadcrumb>
                     <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
-                            <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
+                            <Tabs active-key=3 @on-click="choosePage" ref="tabs">
                                 <Tab-pane label="查看商品" key="key1" ></Tab-pane>
                                 <Tab-pane label="新增商品" key="key2"></Tab-pane>
                                 <Tab-pane label="增加库存记录" key="key3"></Tab-pane>
@@ -136,15 +136,14 @@ button{
                             </Tabs>
                         <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
                         <button style="margin-left:10px;">查找</button>
-                        <button style="margin-left:10px;">新增</button>
-                        <div style="height:20px;"></div>
-                        <ItemBlock :itemList="itemList_father"></ItemBlock>
                         <Page 
+                        style="margin-top:20px;"
                         :total="totalNumber"
                         :page-size="pageSize"
                         @on-change="changePage"
                         show-total
                          />
+                        <Table  border :columns="item_colums" :data="itemList_father" style="margin-top:20px;"></Table>
                     </Content>
                 </Layout>
             </Layout>
@@ -153,129 +152,105 @@ button{
     
 </template>
 <script>
-import ItemBlock from "./item_block"
     export default {
-        components:{
-            ItemBlock
-        },
         data () {
             return {
                 currentPage:1,
                 totalNumber:10,
-                pageSize:5,
+                pageSize:10,
                 input_item_name:'',
                 itemList_father:[],
-                all_itemList:[{
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:1,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                    item_details:[{
-                        color:"黄色",
-                        storage:"128g"
-                    },{
-                        color:"绿色",
-                        storage:"256g"
-                    }],
-                    item_colums:[{
-                        title:"颜色",
-                        key:"color"
-                    },{
-                        title:"内存",
-                        key:"storage"
-                    }],
+                item_colums:[{
+                    title:"商品ID",
+                    key:"id"
                 },{
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:2,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
+                    title:"商品名",
+                    key:"name"
+                },{
+                    title:"增加数量",
+                    key:"addNumber"
+                },{
+                    title:"增加时间",
+                    key:"addTime"
+                }],
+                history_info:[{
+                    id:1,
+                    name:"小米9/黄色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:2,
+                    name:"小米9/绿色/256g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:3,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:4,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:5,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:6,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:7,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:8,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:9,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:10,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
+                },{
+                    id:11,
+                    name:"小米9/绿色/128g",
+                    addNumber:"100",
+                    addTime:"2020-4-3"
                 },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:3,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:4,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:5,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:6,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:7,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:8,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:9,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:10,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                ],
+                ]
 
             }
         },
         mounted(){
-                this.$refs.tabs.activeKey=0
-                var temp = this.all_itemList;
+                this.$refs.tabs.activeKey=2
+                var temp = this.history_info;
                 var size = this.pageSize;
+                this.totalNumber=this.history_info.length
                 this.currentPage = 1;
                 this.itemList_father = temp.slice(0,size);
         },
         methods:{
+            test(id){
+                console.log(id)
+            },
             show_detail(e){
                 console.log(e)
                 // document.getElementsByClassName("test").setAttribute("display","block")
             },
             changePage(c){
-                var temp = this.all_itemList;
+                var temp = this.history_info;
                 var size = this.pageSize;
                 this.currentPage = c;
                 this.itemList_father = temp.slice((c - 1) * size, c * size);
@@ -283,11 +258,11 @@ import ItemBlock from "./item_block"
             choosePage(id){
                 var that=this
                 console.log(id)
-                if(id==1){
-                     that.$router.push({ path:'/add_item'  })
+                if(id==0){
+                     that.$router.push({ path:'/item_manage'  })
                 }
-                else if(id==2){
-                     that.$router.push({ path:'/item_history'  })
+                else if(id==1){
+                     that.$router.push({ path:'/add_item'  })
                 }
                 else if(id==3){
                      that.$router.push({ path:'/img_manage'  })

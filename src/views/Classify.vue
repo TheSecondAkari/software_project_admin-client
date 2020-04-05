@@ -43,8 +43,10 @@
           </Menu>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
+
+          <!-- 一级分类 -->
           <Content
-            style="padding: 24px; minHeight: 280px; background-color: #fff; margin-top: 24px;"
+            style="padding: 24px; minHeight: 500px; background-color: #fff; margin-top: 24px;"
           >
             <Tabs active-key="1" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看分类" key="key1"></Tab-pane>
@@ -56,13 +58,14 @@
                   type="primary"
                   size="small"
                   style="margin-right: 5px"
-                  @click="show(index)"
                 >编辑</Button>
                 <Button type="error" size="small" @click="remove(index)">删除</Button>
               </template>
             </Table>
           </Content>
         </Layout>
+
+        <!-- 二级分类 -->
         <Drawer :closable="false" v-model="second" width="50">
           <template slot="header">
             <Icon type="ios-arrow-back" size="28" />
@@ -70,8 +73,8 @@
           </template>
           <Table :columns="second_columns" :data="second_data">
             <template slot-scope="{ row, index }" slot="action">
-              <Button type="primary" size="small" style="margin-right: 5px" @click="show(index)">编辑</Button>
-              <Button type="error" size="small" @click="remove(index)">删除</Button>
+              <Button type="primary" size="small" style="margin-right: 5px">编辑</Button>
+              <Button type="error" size="small">删除</Button>
             </template>
           </Table>
         </Drawer>

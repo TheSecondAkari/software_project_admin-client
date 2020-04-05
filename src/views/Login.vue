@@ -1,10 +1,10 @@
 <template>
   <div style="height: 100%; width: 100%; background-color: #AFADAD;">
     <div
-      style="height: 70%; width: 60%; background-color: white; position: relative; top: 15%; left: 20%;"
+      style="height: 550px; width: 1000px; background-color: white; position: relative; top: 15%; left: 20%;"
     >
       <div style="display: flex; flex-direction: row; height: 100%;">
-        <img :src="require('../assets/login.png')" style="height: 100%;" />
+        <img :src="require('../assets/login.png')" style="height: 100%; width: 500px;" />
         <div style="width: 50%;">
           <img
             :src="require('../assets/logo.png')"
@@ -66,21 +66,22 @@ export default {
   },
   methods: {
     handleSubmit() {
-      var that = this;
-      var name = this.formInline.user;
-      var password = this.formInline.password;
-      this.$axios
-        .post("api/admin/auth", {
-          name: name,
-          password: password
-        })
-        .then(function(res) {
-          console.log(res.data);
-        })
-        .catch(function(err) {
-          console.log(err);
-          that.show = true;
-        });
+      // var that = this;
+      // var name = this.formInline.user;
+      // var password = this.formInline.password;
+      this.$router.push({path: "/classify"});
+      // this.$axios
+      //   .post("api/admin/auth", {
+      //     name: name,
+      //     password: password
+      //   })
+      //   .then(function(res) {
+      //     console.log(res.data);
+      //   })
+      //   .catch(function(err) {
+      //     console.log(err);
+      //     that.show = true;
+      //   });
     }
   }
 };

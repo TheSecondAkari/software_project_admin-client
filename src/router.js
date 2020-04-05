@@ -7,11 +7,11 @@ const routers = [
         component: (resolve) => require(['./views/Login.vue'], resolve)
     },
     {
-        path: '/home',
+        path: '/classify',
         meta: {
             title: '首页'
         },
-        component: (resolve) => require(['./views/Home.vue'], resolve)
+        component: (resolve) => require(['./views/Classify.vue'], resolve)
     },
     {
         path: '/item_manage',

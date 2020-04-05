@@ -161,10 +161,16 @@ button{
                         <button style="margin-left:10px;">查找</button>
                         <div style="width:100%;position:relative;">
                             <div class="leftForm">
-                                <Table  border :columns="item_colums" :data="selectedList" style="width:450px;"></Table>
+                                <Table  border :columns="item_colums" :data="selectedList" style="width:450px;" ref="table">
+                                    <template slot-scope="{ row, index }" slot="action">
+                                        <a @click="remove(index)">删除</a>
+                                        <a @click="moveUp(index)" style="margin-left:10px;">上移</a>
+                                        <a @click="moveDown(index)" style="margin-left:10px;">下移</a>
+                                    </template>
+                                </Table>
                             </div>
                             <div class="rightForm">
-                                <div class="item_block" v-for=" (item,key) in itemList" :key="key">
+                                <div class="item_block" v-for=" (item,key) in itemList" :key="key" :id="key">
                                     <div class="item_img"></div>
                                     <div class="item_info_block">
                                         <div class="item_info"><b>商品id：</b> {{item.item_id}}</div>
@@ -174,7 +180,7 @@ button{
                                         <div class="item_info"><b>商品浏览数：</b> {{item.item_viewed_times}}</div>
                                         <div class="item_info" style="position:absolute;top:0px;left:150px;"><b>剩余总库存：</b> {{item.item_total_left}} </div>
                                     </div>
-                                    <button style="position:absolute;right:20px;bottom:20px;">添加到轮播图</button>
+                                    <button style="position:absolute;right:20px;bottom:20px;" @click="addTo($event)">添加到轮播图</button>
                                     <div style="clear:both"></div>
                                 </div>
                                 <Page 
@@ -205,6 +211,7 @@ button{
                 pageSize:3,
                 input_item_name:'',
                 itemList:[],
+                img_number:0,
                 item_colums:[{
                     title:"商品ID",
                     key:"id"
@@ -212,18 +219,20 @@ button{
                     title:"商品名称",
                     key:"name"
                 },{
-                    title:"操作",
-                    key:"storage"
+                    title: 'Action',
+                    slot: 'action',
+                    width: 150,
+                    align: 'center'
                 }],
                 selectedList:[{
-                    id:1,
-                    name:"小米手机"
+                    id:12,
+                    name:"小米电视"
                 },{
-                    id:1,
-                    name:"小米手机"
+                    id:43,
+                    name:"台灯"
                 },{
-                    id:1,
-                    name:"小米手机"
+                    id:54,
+                    name:"水壶"
                 },],
                 all_itemList:[{
                     item_name:"小米手机",
@@ -267,6 +276,7 @@ button{
             var size = this.pageSize;
             this.currentPage = 1;
             this.itemList = temp.slice(0,size);
+            this.img_number = this.selectedList.length
         },
         methods:{
             test(id){
@@ -294,6 +304,44 @@ button{
                 // else if(id==3){
                 //      that.$router.push({ path:'/item_manage'  })
                 // }
+            },
+            addTo(e){
+                console.log(this.img_number)
+                var a=e.currentTarget.parentNode.id
+                var _id=this.itemList[a].item_id
+                var _name=this.itemList[a].item_name
+                var newObj={
+                    id:_id,
+                    name:_name
+                }
+                if(this.img_number>4)
+                {
+                    alert("最多选择五个商品展示")
+                }
+                else{
+                    this.selectedList.push(newObj)
+                    this.img_number=this.img_number+1
+                }
+                
+            },
+            remove (index) {
+                this.selectedList.splice(index, 1);
+            },
+            moveUp(index){
+                var that = this
+                if(index!=0){
+                    that.selectedList[index] = that.selectedList.splice(index-1, 1, that.selectedList[index])[0];
+                }else{
+                    alert("已经是第一个了")
+                }
+            },
+            moveDown(index){
+                var that = this
+                if(index!=that.selectedList.length-1){
+                    that.selectedList[index] = that.selectedList.splice(index+1, 1, that.selectedList[index])[0];
+                }else{
+                    alert("已经是最后一个了")
+                }
             }
         }
 

@@ -48,8 +48,8 @@ button{
     float: left;
 }
 .one_special{
-    min-height: 50px;
-    border: 1px solid grey;
+    margin-left: 20px;
+    /* border: 1px solid grey; */
 }
 textarea{
     min-height: 100px;
@@ -141,35 +141,56 @@ textarea{
                                 </div>
                                 <div class="special">
                                     <div style="width:5%;float:left;">
-                                        <a style="color:black;">规格</a>
+                                        <a style="color:black;">规格:</a>
                                     </div>
                                     <div class="special_block">
                                         <div class="one_special">
-                                            <div>颜色</div>
-                                            <div>
-                                                <Radio-group :model.sync="disabledGroup">
-                                                    <Radio value="金斑蝶"></Radio>
-                                                    <Radio value="爪哇犀牛"></Radio>
-                                                    <Radio value="印度黑羚"></Radio>
-                                                </Radio-group>
+                                            <div v-for="(item,key) in itemType" :key="key">
+                                                <div>{{item.typeName}}:</div>
+                                                <RadioGroup v-model="chosenType[key]">
+                                                    <Radio v-for="(item2,key2) in item.type" :key="key2" :label="item2"></Radio>
+                                                    <a style="margin-left:20px;" @click="addTypeItem(key)">增加</a>
+                                                    <a style="margin-left:20px;" @click="deleteItem(key)">删除</a>
+                                                    <Modal
+                                                        v-model="modal1"
+                                                        title="新增规格"
+                                                        @on-ok="okIn"
+                                                        @on-cancel="cancelIn">
+                                                        <input v-model="addItemValueIn">
+                                                    </Modal>
+                                                </RadioGroup>
                                             </div>
                                         </div>
-                                        <button>添加规格</button>
+                                        <button style="margin-top:10px;margin-left:20px;" @click="modal2=true">添加规格</button>
+                                        <Modal
+                                            v-model="modal2"
+                                            title="新增规格内部选项"
+                                            @on-ok="okOut"
+                                            @on-cancel="cancelOut">
+                                            <input v-model="addItemValueOut">
+                                        </Modal>
+                                        <Modal
+                                            v-model="modal3"
+                                            title="删除提示"
+                                            @on-ok="deleteAll"
+                                            @on-cancel="cancelOut">
+                                            <a>确定删除此规格的所有分类吗</a>
+                                        </Modal>
                                     </div>
                                     <div style="clear:both;"></div>
                                     <div style="margin-top:10px;">
                                         <a style="color:black;">进价:</a>
-                                        <input style="width:200px;margin-left:20px;" placeholder="请输入进货价">
+                                        <input style="width:200px;margin-left:20px;" placeholder="请输入进货价" v-model="inPrice">
                                     </div>
                                     <div style="margin-top:10px;">
                                         <a style="color:black;">价格:</a>
-                                        <input style="width:200px;margin-left:20px;" placeholder="请输入商品价格">
+                                        <input style="width:200px;margin-left:20px;" placeholder="请输入商品价格" v-model="outPrice">
                                     </div>
                                     <div style="margin-top:10px;">
                                         <a style="color:black;">数量:</a>
-                                        <input style="width:200px;margin-left:20px;" placeholder="请输入商品数量">
+                                        <input style="width:200px;margin-left:20px;" placeholder="请输入商品数量" v-model="totalNumber">
                                     </div>
-                                    <button style="margin-top:10px;margin-left:50px;">确认添加</button>    
+                                    <button style="margin-top:10px;margin-left:50px;" @click="toTable">确认添加</button>    
                                     <i-table style="margin-top:10px;margin-left:50px;" border :columns="item_column" :data="item_details"></i-table>
                                     <div style="margin-top:10px;">
                                         <a style="color:black;">详情:</a>
@@ -202,49 +223,82 @@ textarea{
     export default {
         data () {
             return {
+                inPrice:0,
+                outPrice:0,
+                totalNumber:0,
+                theChosenItem:0,//用来定位当前要增加或者修改的是哪一个规格
+                addItemValueIn:'',//增加某个规格内部分类其中一个选项的输入框的值
+                addItemValueOut:'',//增加某个规格其中一个选项的输入框的值
+                modal1: false,//用来决定增加规格内部分类的对话框是否显示的
+                modal2: false,//用来决定增加规格对话框是否显示
+                modal3: false,//用来决定删除提示框是否显示
                 target:'',
-                animal: '爪哇犀牛',
                 disabledGroup:true,
                 imgList:[
                     {imgUrl: require('../assets/add.png')},
                     {imgUrl: require('../assets/add.png')},
                     ],
+                itemType:[  //单选框的数组
+                            // {             
+                            // typeName:"颜色",    //单选框的标题
+                            // type:["黄色","绿色"]//单选框的内部选项名字
+                            // }
+                ],
+                chosenType:[], //装单选框所有被选中的值的数组
                 typeList: [
                     {
-                        value: 'beijing',
-                        label: '北京市'
+                        value: 'elect',
+                        label: '家电'
                     },
                     {
                         value: 'shanghai',
-                        label: '上海市'
+                        label: '电子设备'
                     }
                 ],
                 model1: '',
-                item_column:[
-                    {title:"颜色",key:"color"},
-                    {title:"内存",key:"storage"},
-                    {title:"价格",key:"price"},
-                    {title:"数量",key:"total_number"},
+                item_column:[//表格列的数组
+                    // {title:"颜色",key:"color"},
+                    // {title:"内存",key:"storage"},
+                    // {title:"价格",key:"price"},
+                    // {title:"数量",key:"total_number"},
                     ],
-                item_details:[{
-                    color:"黄色",
-                    storage:"128g",
-                    price:"1999",
-                    total_number:"200"
-                },{
-                    color:"绿色",
-                    storage:"256g",
-                    price:"2999",
-                    total_number:"200"
-                }],
+                item_details:[//表格内容数组
+                ],
+            }
+        },
+        watch:{
+            itemType(){
+                let a=this.itemType;
+                let tableColumn=[]
+                let b={}
+                for(let item in a)
+                {
+                    b={
+                        title:a[item].typeName,
+                        key:a[item].typeName
+                    }
+                    tableColumn.push(b)
+                    //console.log(a[item].typeName)
+                }
+                tableColumn.push({title:"进货价",key:"进货价"})
+                tableColumn.push({title:"价格",key:"价格"})
+                tableColumn.push({title:"数量",key:"数量"})
+                
+
+                this.item_column=tableColumn
             }
         },
         mounted(){
             this.$refs.tabs.activeKey=1
         },
         methods:{
-            test(id){
-                console.log(id)
+            test(){
+                let a=[]
+                let b=['aa','bb']
+                for(let item in b){
+                    a.push({[item]:item})
+                }
+                console.log(a)
             },
             handleFileChange (e) {
                 console.log(e.target.files[0])
@@ -272,6 +326,73 @@ textarea{
                 else if(id==3){
                      that.$router.push({ path:'/img_manage'  })
                 }
+            },
+            addTypeItem(e){
+                this.theChosenItem=e
+                this.modal1=true
+            },
+            deleteItem(e){
+                console.log(e)
+                var that=this
+                if(this.chosenType[e]==undefined)
+                {
+                    that.modal3=true
+                    that.theChosenItem=e
+                }
+                else{
+                    console.log(that.chosenType[e])
+                    console.log(that.itemType[e].type)
+                    let a=that.itemType[e].type
+                    let number=0;
+                    for(let key in a){
+                        if(a[key]==that.chosenType[e]){
+                            break;
+                        }
+                        number++;
+                    }
+                    console.log(number)
+                    that.itemType[e].type.splice(number,1)
+                }
+            },
+            deleteAll(){
+                this.itemType.splice(this.theChosenItem,1)
+                this.theChosenItem=0;
+            },
+            okIn () {
+                var a=this.addItemValueIn;
+                this.addItemValueIn=""
+                this.itemType[this.theChosenItem].type.push(a)
+                this.$Message.info('新增成功');
+            },
+            cancelIn () {
+                this.$Message.info('Clicked cancel');
+            },
+            okOut () {
+                var that=this
+                var a={
+                        typeName:that.addItemValueOut,
+                        type:[]
+                    }
+                this.addItemValueOut=""
+                this.itemType.push(a)
+                this.$Message.info('新增成功');
+            },
+            cancelOut () {
+                this.$Message.info('Clicked cancel');
+            },
+            toTable(){
+                let a={}
+                let count=0;
+                var that=this
+                for(let item of this.chosenType){
+                    a[that.item_column[count].key]=item
+                    count++;
+                }
+                a["进货价"]=this.inPrice
+                a["价格"]=this.outPrice
+                a["数量"]=this.totalNumber
+                console.log(a)
+                this.item_details.push(a)
             }
         },
         

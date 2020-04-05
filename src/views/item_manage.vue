@@ -187,12 +187,26 @@ import ItemBlock from "./item_block"
                         key:"storage"
                     }],
                 },{
-                    item_name:"小米手机",
-                    item_obj:"手机",
+                    item_name:"小米电视",
+                    item_obj:"家电",
                     item_id:2,
-                    item_price:2999,
+                    item_price:4999,
                     item_viewed_times:4,
                     item_total_left:999,
+                    item_details:[{
+                        color:"黄色",
+                        size:"50寸"
+                    },{
+                        color:"蓝色",
+                        size:"80寸"
+                    }],
+                    item_colums:[{
+                        title:"颜色",
+                        key:"color"
+                    },{
+                        title:"尺寸",
+                        key:"size"
+                    }],
                 },
                 {
                     item_name:"小米手机",
@@ -268,6 +282,17 @@ import ItemBlock from "./item_block"
                 var size = this.pageSize;
                 this.currentPage = 1;
                 this.itemList_father = temp.slice(0,size);
+                var a= {
+                        title: 'Action',
+                        slot: 'action',
+                        width: 150,
+                        align: 'center'
+                    }
+                for(let item in this.all_itemList){
+                    this.all_itemList[item].item_colums.push(a)
+
+                }
+                
         },
         methods:{
             show_detail(e){
@@ -292,7 +317,16 @@ import ItemBlock from "./item_block"
                 else if(id==3){
                      that.$router.push({ path:'/img_manage'  })
                 }
-            }
+            },
+            selectItem (index,e,p) {
+                console.log(index)
+                console.log(e.currentTarget.parentNode)
+                console.log(p)
+                // this.$Modal.info({
+                //     title: '用户信息',
+                //     content: `姓名：${this.data6[index].name}<br>年龄：${this.data6[index].age}<br>地址：${this.data6[index].address}`
+                // })
+            },
         }
 
     };

@@ -79,7 +79,11 @@ button{
             <button style="position:absolute;top:30px;right:10%;">修改</button>
             <button style="position:absolute;top:130px;right:10%;" @click="change_detail($event)">{{showORhide}}</button>
             <div style="display:none;">
-                <Table  border :columns="itemList[key].item_colums" :data="itemList[key].item_details" class="table"></Table>
+                <Table  border :columns="itemList[key].item_colums" :data="itemList[key].item_details" class="table">
+                            <template slot-scope="{ row, index }" slot="action">
+                                <Button size="small" style="margin-right: 5px" @click="selectItem(row,index)">修改</Button>
+                            </template>
+                </Table>
             </div>
         </div>
     </div>
@@ -88,6 +92,8 @@ button{
     export default {
         name:"ItemBlock",
         props:["itemList"],
+        mounted(){
+        },
         data () {
             return {
                 input_item_name:'',
@@ -109,21 +115,12 @@ button{
                     e.currentTarget.innerHTML= "隐藏";
                     e.currentTarget.nextElementSibling.style.display="none";
                 }
-
-
-                // if(!that.show){
-                //     console.log("改成隐藏")
-                //     that.showORhide= "隐藏";
-                //     that.show=1;
-                // }
-                // else{
-                //     console.log("改成显示")
-                //     that.showORhide= "显示";
-                //     that.show=0;
-                //     console.log(that.show);
-                // }
                 
             },
+            selectItem (row,index) {
+                console.log(row.color)
+                console.log(index)
+            }
         }
 
     };

@@ -169,38 +169,7 @@ button{
                     </Breadcrumb>
                     <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
 
-                        <div class="demo-upload-list" v-for="(item,key) in uploadList" :key="key">
-                            <template v-if="item.status === 'finished'">
-                                <img :src="item.url">
-                                <div class="demo-upload-list-cover">
-                                    <Icon type="ios-eye-outline" @click="handleView(item.name)"></Icon>
-                                    <Icon type="ios-trash-outline" @click="handleRemove(item)"></Icon>
-                                </div>
-                            </template>
-                            <template v-else>
-                                <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-                            </template>
-                        </div>
-                        <Upload
-                            v-ref:upload
-                            :on-success="handleSuccess"
-                            :format="['jpg','jpeg','png']"
-                            :max-size="2048"
-                            :on-format-error="handleFormatError"
-                            :on-exceeded-size="handleMaxSize"
-                            :before-upload="handleBeforeUpload"
-
-                            multiple
-                            type="drag"
-                            action="//jsonplaceholder.typicode.com/posts/"
-                            style="display: inline-block;width:58px;">
-                            <div style="width: 58px;height:58px;line-height: 58px;">
-                                <Icon type="camera" size="20"></Icon>
-                            </div>
-                        </Upload>
-                        <Modal title="查看图片" :visible.sync="visible">
-                            <img :src="'https://o5wwk8baw.qnssl.com/' + imgName + '/large'" v-if="visible" style="width: 100%">
-                        </Modal>
+                    <i-table border :content="self" :columns="columns7" :data="data6"></i-table>
 
                     </Content>
                 </Layout>
@@ -213,65 +182,86 @@ button{
     export default {
         data () {
             return {
-                defaultList: [
+                self: this,
+                columns7: [
                     {
-                        'name': 'a42bdcc1178e62b4694c830f028db5c0',
-                        'url': 'https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar'
+                        title: '姓名',
+                        key: 'name',
                     },
                     {
-                        'name': 'bc7521e033abdd1e92222d733590f104',
-                        'url': 'https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar'
+                        title: '年龄',
+                        key: 'age'
+                    },
+                    {
+                        title: '地址',
+                        key: 'address'
                     }
                 ],
-                imgName: '',
-                visible: false
+                data6: [
+                    {
+                        name: '王小明',
+                        age: 18,
+                        address: '北京市朝阳区芍药居'
+                    },
+                    {
+                        name: '张小刚',
+                        age: 25,
+                        address: '北京市海淀区西二旗'
+                    },
+                    {
+                        name: '李小红',
+                        age: 30,
+                        address: '上海市浦东新区世纪大道'
+                    },
+                    {
+                        name: '周小伟',
+                        age: 26,
+                        address: '深圳市南山区深南大道'
+                    }
+                ]
             }
         },
         mounted(){
-
+                var a={
+                        title: '操作',
+                        key: 'action',
+                        width: 150,
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        size: 'small'
+                                    },
+                                    style: {
+                                        marginRight: '5px'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.show(params.index)
+                                        }
+                                    }
+                                }, '修改')
+                            ]);
+                        }
+                    }
+                this.columns7.push(a)
         },
         computed: {
-            uploadList () {
-                return this.$refs.upload ? this.$refs.upload.fileList : [];
-            }
+
         },
         methods: {
-            handleView (name) {
-                this.imgName = name;
-                this.visible = true;
+            show (index) {
+                this.$Modal.info({
+                    title: '用户信息',
+                    content: `姓名：${this.data6[index].name}<br>年龄：${this.data6[index].age}<br>地址：${this.data6[index].address}`
+                })
             },
-            handleRemove (file) {
-                // 从 upload 实例删除数据
-                const fileList = this.$refs.upload.fileList;
-                this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+            remove (index) {
+                this.data6.splice(index, 1);
             },
-            handleSuccess (res, file) {
-                // 因为上传过程为实例，这里模拟添加 url
-                console.log(res)
-                console.log(file)
-                file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-                file.name = '7eb99afb9d5f317c912f08b5212fd69a';
-            },
-            handleFormatError (file) {
-                this.$Notice.warning({
-                    title: '文件格式不正确',
-                    desc: '文件 ' + file.name + ' 格式不正确，请上传 jpg 或 png 格式的图片。'
-                });
-            },
-            handleMaxSize (file) {
-                this.$Notice.warning({
-                    title: '超出文件大小限制',
-                    desc: '文件 ' + file.name + ' 太大，不能超过 2M。'
-                });
-            },
-            handleBeforeUpload () {
-                const check = this.uploadList.length < 5;
-                if (!check) {
-                    this.$Notice.warning({
-                        title: '最多只能上传 5 张图片。'
-                    });
-                }
-                return check;
+            test (){
+
             }
         }
 

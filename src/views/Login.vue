@@ -11,7 +11,7 @@
             style="height: 100px; width: 100px; margin: 10% 0 0 40%;"
           />
           <div style="margin: 5% 0 0 27%; font-size: 28px; font-family: STKaiti">天东易宝管理系统</div>
-          <i-Form ref="formInline" :model="formInline" :rules="ruleInline">
+          <i-Form :model="formInline" :rules="ruleInline">
             <FormItem prop="user" style="width: 65%; margin: 8% 0 0 17.5%;">
               <i-Input type="text" v-model="formInline.user" placeholder="用户名" size="large">
                 <Icon type="ios-contact" slot="prepend" size="24" />

@@ -6,6 +6,7 @@
     position: relative;
     border-radius: 4px;
     overflow: hidden;
+    overflow-y:scroll;
     height: 100%;
 }
 .layout-logo{
@@ -58,7 +59,6 @@ textarea{
 .img_block{
     display: flex;
     flex-wrap: wrap;
-    
 }
 </style>
 <template>

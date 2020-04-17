@@ -153,7 +153,7 @@ button{
     
 </template>
 <script>
-import ItemBlock from "./item_block"
+import ItemBlock from "./itemBlock"
     export default {
         components:{
             ItemBlock

@@ -132,12 +132,15 @@ textarea{
                             </Tabs>
                             <div class="main_block">
                                 <a style="color:black;">选择分类:</a>
-                                    <i-select :model.sync="model1" style="width:200px;margin-left:20px;">
+                                    <Select v-model="model1" size="small" style="width:200px;margin-left:20px;">
+                                        <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                                    </Select>
+                                    <!-- <i-select :model.sync="model1" style="width:200px;margin-left:20px;">
                                         <i-option v-for="(item,key) in typeList" :value="item.value" :key="key">{{ item.label }}</i-option>
-                                    </i-select>
+                                    </i-select> -->
                                 <div style="margin-top:10px;">
                                     <a style="color:black;">商品名称:</a>
-                                    <input style="width:200px;margin-left:20px;" placeholder="请输入商品名">
+                                    <input v-model="name" style="width:200px;margin-left:20px;" placeholder="请输入商品名">
                                 </div>
                                 <div class="special">
                                     <div style="width:5%;float:left;">
@@ -194,20 +197,36 @@ textarea{
                                     <i-table style="margin-top:10px;margin-left:50px;" border :columns="item_column" :data="item_details"></i-table>
                                     <div style="margin-top:10px;">
                                         <a style="color:black;">详情:</a>
-                                        <i-input type="textarea" :rows="4" placeholder="请输入..."></i-input>
+                                        <i-input v-model="des" type="textarea" :rows="4" placeholder="请输入..."></i-input>
                                     </div>
                                     <div style="margin-top:10px;">
                                         <div style="width:10%;float:left;">选择图片：</div>
                                         <div class="img_block" style="width:90%;float:left;">
-                                            <div v-for="(item,key) in imgList" :key="key">
-                                                <img :src="item.imgUrl" style="height:100px;width:100px;">
+                                            <div v-for="(item,key) in imgList" :key="key" >
+                                                <img :src="item" style="height：100px;width:100px;margin-right:10px;"></img>
                                             </div>
-                                            <input style="display: none" type="file" id="fileExport" ref="getF" accept=".jpg" @change="get_name">
-                                            <img @click="getFile()" src="../assets/add.png" style="height:100px;width:100px;">
+                                            <Upload
+                                                ref="upload"
+                                                :show-upload-list="false"
+                                                :on-success="handleSuccess"
+                                                :format="['jpg','jpeg','png']"
+                                                :max-size="2048"
+                                                :on-format-error="handleFormatError"
+                                                :on-exceeded-size="handleMaxSize"
+                                                :before-upload="handleBeforeUpload"
+                                                multiple
+                                                type="drag"
+                                                action="/api/pictures"
+                                                :headers="headers"
+                                                style="display: inline-block;width:58px;">
+                                                <div style="width: 58px;height:58px;line-height: 58px;">
+                                                    <Icon type="ios-camera" size="20"></Icon>
+                                                </div>
+                                            </Upload>
                                         </div>
                                         <div style="clear:both;"></div>
                                     </div>   
-                                    <input type="file" @change="handleFileChange" ref="inputer" />
+                                    <!-- <input type="file" @change="handleFileChange" ref="inputer" /> -->
                                     <button>完成</button>
                                     <button style="margin-left:20px;">取消</button>
                                 </div>
@@ -216,6 +235,7 @@ textarea{
                 </Layout>
             </Layout>
         </Layout>
+        <div @click="test()">test</div>
     </div>
     
 </template>
@@ -223,9 +243,15 @@ textarea{
     export default {
         data () {
             return {
+                api:"/api",
+                headers:{},
+                uploadList: [],
+                imgList:[],
+                name:'',
                 inPrice:0,
                 outPrice:0,
                 totalNumber:0,
+                des:'',
                 theChosenItem:0,//用来定位当前要增加或者修改的是哪一个规格
                 addItemValueIn:'',//增加某个规格内部分类其中一个选项的输入框的值
                 addItemValueOut:'',//增加某个规格其中一个选项的输入框的值
@@ -234,36 +260,38 @@ textarea{
                 modal3: false,//用来决定删除提示框是否显示
                 target:'',
                 disabledGroup:true,
-                imgList:[
-                    {imgUrl: require('../assets/add.png')},
-                    {imgUrl: require('../assets/add.png')},
-                    ],
-                itemType:[  //单选框的数组
+                itemType:[  //规格单选框的数组
                             // {             
                             // typeName:"颜色",    //单选框的标题
                             // type:["黄色","绿色"]//单选框的内部选项名字
                             // }
                 ],
                 chosenType:[], //装单选框所有被选中的值的数组
+                item_column:[//最终表格列的数组
+                // {title:"颜色",key:"color"},
+                // {title:"内存",key:"storage"},
+                {title:"进货价",key:"进货价"},
+                {title:"价格",key:"价格"},
+                {title:"数量",key:"数量"},
+                ],
+                item_details:[//表格内容数组
+
+                ],
+                numDes:[ //用数组下标表示规格选择情况的数组
+
+                ],
                 typeList: [
-                    {
-                        value: 'elect',
-                        label: '家电'
-                    },
-                    {
-                        value: 'shanghai',
-                        label: '电子设备'
-                    }
+                    // {
+                    //     value: 'elect',
+                    //     label: '家电'
+                    // },
+                    // {
+                    //     value: 'shanghai',
+                    //     label: '电子设备'
+                    // }
                 ],
                 model1: '',
-                item_column:[//表格列的数组
-                    // {title:"颜色",key:"color"},
-                    // {title:"内存",key:"storage"},
-                    // {title:"价格",key:"price"},
-                    // {title:"数量",key:"total_number"},
-                    ],
-                item_details:[//表格内容数组
-                ],
+
             }
         },
         watch:{
@@ -283,22 +311,87 @@ textarea{
                 tableColumn.push({title:"进货价",key:"进货价"})
                 tableColumn.push({title:"价格",key:"价格"})
                 tableColumn.push({title:"数量",key:"数量"})
-                
-
                 this.item_column=tableColumn
             }
         },
         mounted(){
+            var that=this
             this.$refs.tabs.activeKey=1
+            this.getClass();
         },
         methods:{
             test(){
-                let a=[]
-                let b=['aa','bb']
-                for(let item in b){
-                    a.push({[item]:item})
+                let name=this.name;         //商品名
+                let imgArray=this.imgList; //图片url
+                let des=this.des;       //商品描述
+                let cateId=this.model1;               //类别id
+                let ifType=false;           //是否有分类规格
+                let spec=[];                //商品规格名称
+                let options=[];             //每个规格的内部分类
+                let sku=[];                 //具体商品细节内容（如定价等）
+                let price=100000000000;     //商品价格
+                let total=0;                //总库存
+                var that=this;
+                if(this.itemType.length>0){
+                    let specNum=this.itemType.length;
+                    ifType=true;
+                    for(let item of this.itemType){
+                        spec.push(item.typeName)
+                        options.push(item.type)
+                    }
+                    let tempCount=0;
+                    for(let item of this.item_details){
+                        let temp={};
+                        temp.spec=this.numDes[tempCount]
+                        tempCount++;
+                        temp.stock_num=parseInt(item.数量);
+                        total+=parseInt(item.数量);
+                        temp.price=parseInt(item.价格);
+                        temp.purchase_price=parseInt(item.进货价);
+                        sku.push(temp);
+                        price=(price<parseInt(item.进货价))?price:parseInt(item.进货价);
+                    }
+                    // that.$axios.post(that.api+"/admin/goods",{
+                    //     headers:{
+                    //         "Content-Type":application/json,
+                    //         Authorization:''
+                    //     },
+                    //     name:name,
+                    //     pic:imgArray,
+                    //     description:des,
+                    //     category_id:cateId,
+                    //     has_spec:ifType,
+                    //     spec_num:specNum,
+                    //     spec:spec,
+                    //     options:options,
+                    //     sku:sku,
+                    //     price:price,
+                    //     stock_num:total
+                    // })
+                    console.log("有规格")
+                    console.log("商品名：",name)
+                    console.log("图片url：",imgArray)
+                    console.log("商品详情：",des)
+                    console.log("类别id：",cateId)
+                    console.log("是否有规格分类：",ifType)
+                    console.log("规格数目：",specNum)
+                    console.log("规格名：",spec)
+                    console.log("规格（options）：",options)
+                    console.log("库存单位：",sku)
+                    console.log("总库存：",total)
+                    console.log("价格：",price)
+                    
+                }else{
+                    console.log("无规格")
+                    console.log("商品名：",name)
+                    console.log("类别id：",cateId)
+                    console.log("图片url：",imgArray)
+                    console.log("商品详情：",des)
+                    console.log("是否有规格分类：",ifType)
+                    console.log("总库存：",this.totalNumber)
+                    console.log("价格：",this.outPrice)
+                    console.log("进货价：",this.inPrice)
                 }
-                console.log(a)
             },
             handleFileChange (e) {
                 console.log(e.target.files[0])
@@ -382,18 +475,99 @@ textarea{
             },
             toTable(){
                 let a={}
-                let count=0;
-                var that=this
-                for(let item of this.chosenType){
-                    a[that.item_column[count].key]=item
-                    count++;
+                if(this.itemType.length>0){
+                    var numArray=[]
+                    var itemType=this.itemType
+                    var chosenType=this.chosenType
+                    for(var item of chosenType){
+                        for(var middleItem of itemType){
+                            var tempCount=0;
+                            for(var inItem of middleItem.type){
+                                if(item==inItem){
+                                    numArray.push(tempCount);
+                                    break;
+                                }
+                                tempCount++;
+                            }
+                        }
+                    }
+                    this.numDes.push(numArray)
+                    console.log("this.numDes")
+                    let count=0;
+                    var that=this
+                    for(let item of this.chosenType){
+                        a[that.item_column[count].key]=item
+                        count++;
+                    }
                 }
                 a["进货价"]=this.inPrice
                 a["价格"]=this.outPrice
                 a["数量"]=this.totalNumber
                 console.log(a)
                 this.item_details.push(a)
+
+            },
+
+            handleSuccess (res, file) { //上传成功的时候调用的函数
+                console.log("成功")
+                console.log(res)
+                console.log(file)
+                for(var i=0;i<res.url.length;i++){
+                    this.imgList.push(res.url[i])
+                }
+                
+            },
+            handleFormatError (file) { //文件格式验证失败的时候调用的函数
+                this.$Notice.warning({
+                    title: 'The file format is incorrect',
+                    desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
+                });
+            },
+            handleMaxSize (file) {
+                this.$Notice.warning({
+                    title: 'Exceeding file size limit',
+                    desc: 'File  ' + file.name + ' is too large, no more than 2M.'
+                });
+            },
+            handleBeforeUpload () {  //上传之前的函数
+                const check = this.uploadList.length < 5;
+                if (!check) {
+                    this.$Notice.warning({
+                        title: 'Up to five pictures can be uploaded.'
+                    });
+                }
+                return check;
+            },
+            getClass(){
+                var that=this
+                this.$axios.get(that.api + "/categories", {})
+                .then(function(res) {
+                        console.log(res.data.data)
+                        
+                        let aaa=[{
+                            id:"id1",
+                            name:"name1"
+                        },{
+                            id:"id2",
+                            name:"name2"
+                        }];
+                        //let arr=aaa;
+                        let arr=res.data.data;
+
+                        let temp=[]
+                        let obj={}
+                        for(var item of arr){
+                            obj={
+                                value:item.id,
+                                label:item.name
+                            };
+                            temp.push(obj)
+                        }
+                        console.log(temp)
+                        that.typeList=temp
+                })
             }
+            
         },
         
 

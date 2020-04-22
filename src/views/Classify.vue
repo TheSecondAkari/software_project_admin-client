@@ -269,6 +269,9 @@ export default {
       ]
     };
   },
+  mounted(){
+    console.log(sessionStorage.getItem("Authorization"))
+  },
   methods: {
     show(row) {
       this.second = true;
@@ -321,7 +324,11 @@ export default {
       this.translate = false;
       this.second_data.splice(this.index, 1);
     },
-    delAndTran(){},
+    delAndTran(){
+      this.translate = false;
+      this.second_data.splice(this.index, 1);
+      
+    },
   }
 };
 </script>

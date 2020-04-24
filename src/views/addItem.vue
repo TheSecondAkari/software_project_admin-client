@@ -195,15 +195,35 @@ textarea{
                                     </div>
                                     <button style="margin-top:10px;margin-left:50px;" @click="toTable">确认添加</button>    
                                     <i-table style="margin-top:10px;margin-left:50px;" border :columns="item_column" :data="item_details"></i-table>
-                                    <div style="margin-top:10px;">
+                                    <div style="height:300px;margin-top:10px;">
                                         <a style="color:black;">详情:</a>
-                                        <i-input v-model="des" type="textarea" :rows="4" placeholder="请输入..."></i-input>
+                                            <Upload
+                                                ref="upload"
+                                                :show-upload-list="false"
+                                                :on-success="handleSuccess2"
+                                                :format="['jpg','jpeg','png']"
+                                                :max-size="2048"
+                                                :on-format-error="handleFormatError"
+                                                :on-exceeded-size="handleMaxSize"
+                                                :before-upload="handleBeforeUpload"
+                                                multiple
+                                                type="drag"
+                                                action="/api/pictures"
+                                                :headers="headers"
+                                                style="display:none;">
+                                                <div style="width: 58px;height:58px;line-height: 58px;" id="quill-img">
+                                                    <Icon type="ios-camera" size="20"></Icon>
+                                                </div>
+                                            </Upload>
+                                        <quill-editor ref="myTextEditor" v-model="des" :options="editorOption" style="height:200px;margin-top:5px;"></quill-editor>
+                                        
                                     </div>
-                                    <div style="margin-top:10px;">
+                                    <div style="margin-top:10px;padding-bottom:10px;">
                                         <div style="width:10%;float:left;">选择图片：</div>
                                         <div class="img_block" style="width:90%;float:left;">
-                                            <div v-for="(item,key) in imgList" :key="key" >
-                                                <img :src="item" style="height：100px;width:100px;margin-right:10px;"></img>
+                                            <div v-for="(item,key) in imgList" :key="key" style="position:relative;height:100px;width:100px;margin-right:10px;">
+                                                <img v-bind:src="del_url" style="position:absolute;top:0px;right:0px;height:15px;height:15px;" @click="del_img(key)">
+                                                <img :src="item" style="position:absolute;height：85px;width:85px;top:10px;left:0px;">
                                             </div>
                                             <Upload
                                                 ref="upload"
@@ -227,7 +247,7 @@ textarea{
                                         <div style="clear:both;"></div>
                                     </div>   
                                     <!-- <input type="file" @change="handleFileChange" ref="inputer" /> -->
-                                    <button>完成</button>
+                                    <button @click="upload()">完成</button>
                                     <button style="margin-left:20px;">取消</button>
                                 </div>
                             </div>
@@ -235,15 +255,31 @@ textarea{
                 </Layout>
             </Layout>
         </Layout>
-        <div @click="test()">test</div>
+        
     </div>
     
 </template>
 <script>
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
+import { quillEditor } from 'vue-quill-editor';
+const toolbarOptions=[
+    ["bold",'italic',"underline","strike"],
+    [{size:["small",false,"large","huge"]}],
+    [{font:[]}],
+    [{color:[]}],
+    [{align:[]}],
+    ["link","image"]
+];
     export default {
+        components:{
+            quillEditor
+        },
         data () {
             return {
                 api:"/api",
+                del_url:require("../assets/delete.png"),
                 headers:{},
                 uploadList: [],
                 imgList:[],
@@ -275,10 +311,8 @@ textarea{
                 {title:"数量",key:"数量"},
                 ],
                 item_details:[//表格内容数组
-
                 ],
                 numDes:[ //用数组下标表示规格选择情况的数组
-
                 ],
                 typeList: [
                     // {
@@ -291,6 +325,24 @@ textarea{
                     // }
                 ],
                 model1: '',
+                editorOption: { //富文本
+                    placeholder: '编辑文章内容',
+                    modules:{
+                        toolbar:{
+                            container:toolbarOptions,
+                            handlers: {
+                                "image":function(value){
+                                    if(value){
+                                        document.getElementById("quill-img").click();
+                                    }
+                                    else{
+                                        this.quill.format("image",false)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
 
             }
         },
@@ -315,12 +367,11 @@ textarea{
             }
         },
         mounted(){
-            var that=this
             this.$refs.tabs.activeKey=1
             this.getClass();
         },
         methods:{
-            test(){
+            upload(){
                 let name=this.name;         //商品名
                 let imgArray=this.imgList; //图片url
                 let des=this.des;       //商品描述
@@ -349,25 +400,29 @@ textarea{
                         temp.price=parseInt(item.价格);
                         temp.purchase_price=parseInt(item.进货价);
                         sku.push(temp);
-                        price=(price<parseInt(item.进货价))?price:parseInt(item.进货价);
+                        price=(price<parseInt(item.价格))?price:parseInt(item.价格);
                     }
-                    // that.$axios.post(that.api+"/admin/goods",{
-                    //     headers:{
-                    //         "Content-Type":application/json,
-                    //         Authorization:''
-                    //     },
-                    //     name:name,
-                    //     pic:imgArray,
-                    //     description:des,
-                    //     category_id:cateId,
-                    //     has_spec:ifType,
-                    //     spec_num:specNum,
-                    //     spec:spec,
-                    //     options:options,
-                    //     sku:sku,
-                    //     price:price,
-                    //     stock_num:total
-                    // })
+                    that.$axios.post(that.api+"/admin/goods",{
+                            name:name,
+                            pic:imgArray,
+                            description:des,
+                            category_id:2,
+                            has_spec:true,
+                            spec_num:specNum,
+                            spec:spec,
+                            options:options,
+                            sku:sku,
+                            price:price,
+                            stock_num:total,
+                    },{
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4'
+                        }}).then(function(e){
+                            console.log(e)
+                        }).catch(function(err){
+                            console.log(err)
+                    })
                     console.log("有规格")
                     console.log("商品名：",name)
                     console.log("图片url：",imgArray)
@@ -382,15 +437,33 @@ textarea{
                     console.log("价格：",price)
                     
                 }else{
+                    that.$axios.post(that.api+"/admin/goods",{
+                            name: name,
+                            pic: imgArray,
+                            description: des,
+                            category_id: 2,
+                            has_spec: false,
+                            price: parseInt(that.outPrice),
+                            purchase_price: parseInt(that.inPrice),
+                            stock_num:parseInt(that.totalNumber)
+                    },{
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4'
+                        }}).then(function(e){
+                            console.log(e)
+                        }).catch(function(err){
+                            console.log(err)
+                    })
                     console.log("无规格")
                     console.log("商品名：",name)
                     console.log("类别id：",cateId)
                     console.log("图片url：",imgArray)
                     console.log("商品详情：",des)
                     console.log("是否有规格分类：",ifType)
-                    console.log("总库存：",this.totalNumber)
-                    console.log("价格：",this.outPrice)
-                    console.log("进货价：",this.inPrice)
+                    console.log("总库存：",parseInt(this.totalNumber))
+                    console.log("价格：",parseInt(this.outPrice))
+                    console.log("进货价：",parseInt(this.inPrice))
                 }
             },
             handleFileChange (e) {
@@ -517,6 +590,19 @@ textarea{
                 }
                 
             },
+            handleSuccess2 (res, file) { //富文本上传成功的时候调用的函数
+                console.log("成功")
+                console.log(res)
+                console.log(file)
+                this.quillImgSuccess(res.url[0])
+            },
+            quillImgSuccess(res){
+                let quill =this.$refs.myTextEditor.quill;
+                let length=quill.getSelection().index;
+                quill.insertEmbed(length,"image",res);
+                quill.setSelection(length+1);
+                console.log("现在是："+this.des)
+            },
             handleFormatError (file) { //文件格式验证失败的时候调用的函数
                 this.$Notice.warning({
                     title: 'The file format is incorrect',
@@ -543,15 +629,6 @@ textarea{
                 this.$axios.get(that.api + "/categories", {})
                 .then(function(res) {
                         console.log(res.data.data)
-                        
-                        let aaa=[{
-                            id:"id1",
-                            name:"name1"
-                        },{
-                            id:"id2",
-                            name:"name2"
-                        }];
-                        //let arr=aaa;
                         let arr=res.data.data;
 
                         let temp=[]
@@ -566,6 +643,14 @@ textarea{
                         console.log(temp)
                         that.typeList=temp
                 })
+            },
+            onEditorChange({html}) {
+                this.content = html;
+            },
+            del_img(e){
+                let temp=this.imgList;
+                temp.splice(e,1)
+                this.imgList=temp;
             }
             
         },

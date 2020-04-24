@@ -155,6 +155,7 @@ button{
     export default {
         data () {
             return {
+                api:"/api",
                 currentPage:1,
                 totalNumber:10,
                 pageSize:10,
@@ -173,77 +174,64 @@ button{
                     title:"增加时间",
                     key:"addTime"
                 }],
-                history_info:[{
-                    id:1,
-                    name:"小米9/黄色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:2,
-                    name:"小米9/绿色/256g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:3,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:4,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:5,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:6,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:7,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:8,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:9,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:10,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },{
-                    id:11,
-                    name:"小米9/绿色/128g",
-                    addNumber:"100",
-                    addTime:"2020-4-3"
-                },
+                history_info:[
+                // {
+                //     id:1,
+                //     name:"小米9/黄色/128g",
+                //     addNumber:"100",
+                //     addTime:"2020-4-3"
+                // }
                 ]
 
             }
         },
         mounted(){
-                this.$refs.tabs.activeKey=2
-                var temp = this.history_info;
-                var size = this.pageSize;
-                this.totalNumber=this.history_info.length
-                this.currentPage = 1;
-                this.itemList_father = temp.slice(0,size);
+                this.getAll();
         },
         methods:{
             test(id){
                 console.log(id)
+            },
+            getAll(){
+                var that=this
+                this.$axios.get(that.api + "/admin/records",{
+                    headers:{
+                        "Authorization":'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzQ0Njg1MCwiZXhwIjoxNTg3NTMzMjUwfQ.bPbEkirCVaHN-GtkN-z9cPHymSERg5-75jFYsVi1W1k'
+                    }})
+                .then(function(res) {
+                        console.log(res.data)
+                        that.totalNumber=res.data.rows
+                        let tempArr=[];
+                        
+                        for(var item of res.data.items){
+                            var tempObj={};
+                            tempObj.id=item.id,
+                            tempObj.name=item.sku.goods.name
+                            tempObj.addNumber=item.num
+                            tempObj.addTime=item.updated_at
+                            tempArr.push(tempObj)
+                        }
+                        that.history_info=tempArr;
+                        that.$refs.tabs.activeKey=2
+                        that.totalNumber=that.history_info.length
+                        that.currentPage = 1;
+                        var size = that.pageSize;
+                        that.itemList_father = that.history_info.slice(0,size);
+                        console.log(that.history_info)
+                // {
+                //     id:5,
+                //     name:"小米9/绿色/128g",
+                //     addNumber:"100",
+                //     addTime:"2020-4-3"
+                // }
+
+                // created_at: "2020-04-21 14:00:43"
+                // updated_at: "2020-04-21 14:00:43"
+                // id: 6
+                // sku_id: 7
+                // num: 111
+                // price: 24642
+                })
             },
             show_detail(e){
                 console.log(e)

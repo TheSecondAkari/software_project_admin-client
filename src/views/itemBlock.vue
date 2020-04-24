@@ -77,7 +77,7 @@ button{
             </div>
             <div style="clear:both"></div>
             <button style="position:absolute;top:30px;right:10%;">修改</button>
-            <button style="position:absolute;top:130px;right:10%;" @click="change_detail($event)">{{showORhide}}</button>
+            <button style="position:absolute;top:130px;right:10%;" v-if="item.item_colums" @click="change_detail($event)">{{showORhide}}</button>
             <div style="display:none;">
                 <Table  border :columns="itemList[key].item_colums" :data="itemList[key].item_details" class="table">
                             <template slot-scope="{ row, index }" slot="action">
@@ -105,14 +105,14 @@ button{
             change_detail(e){
                 console.log(e.currentTarget.nextElementSibling.style.display);
                 if(e.currentTarget.nextElementSibling.style.display=="none"){
-                    console.log("改成显示")
-                    e.currentTarget.innerHTML= "显示";
+                    console.log("改成隐藏")
+                    e.currentTarget.innerHTML= "隐藏";
                     e.currentTarget.nextElementSibling.style.display="block";
                     console.log("现在是"+e.currentTarget.nextElementSibling.style.display)
                 }
                 else{
-                    console.log("改成隐藏")
-                    e.currentTarget.innerHTML= "隐藏";
+                    console.log("改成显示")
+                    e.currentTarget.innerHTML= "显示";
                     e.currentTarget.nextElementSibling.style.display="none";
                 }
                 

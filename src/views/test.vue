@@ -1,7 +1,7 @@
 <template>
 <div >
     <div v-for="(item,key) in imgList" :key="key" >
-        <img :src="item" style="height：100px;height:100px;"></img>
+        <img :src="item" style="height：100px;height:100px;">
     </div>
     <Upload
         ref="upload"
@@ -21,7 +21,11 @@
             <Icon type="ios-camera" size="20"></Icon>
         </div>
     </Upload>
-    <button @click="test()">test</button>
+    <!-- <button @click="test()">test</button> -->
+    <div v-for="(item,key) in test" :key="key" style="position:relative;height:100px;width:100px;border:1px solid black">
+        <div style="height:50px;width:50px;border:1px solid black">{{item}}</div>
+        <div style="position:absolute;top:0px;right:0px;height:15px;width:15px;background-color:red;" @click="del(key)"></div>
+    </div>
 </div>
 </template>
 <script>
@@ -31,37 +35,38 @@
                 api:"/api",
                 headers:{},
                 uploadList: [],
-                imgList:[]
+                imgList:[],
+                test:[1,2,3,4,5]
             }
         },
         methods: {
-            test(){
-                var that=this
-                // this.$axios.post(that.api + "/科技创新环境/get_all/", {
-                //     token: sessionStorage.getItem("token")
-                //     })
-                //     .then(function(res) {
-                //         var temp = [];
-                //         var template = {};
-                //         res.data.forEach(v => {
-                //             temp.push(v.fields);
-                //         });
-                //         for (var key in temp[0]) {
-                //             template[key] = "";
-                //         }
-                //         that.contentNew = template;
-                //         that.data = res.data;
-                //         that.field = temp;
-                //         that.tableData = temp.slice(0, that.size);
-                //         that.total = res.data.length;
-                //     })
-                this.$axios.get(that.api + "/categories", {
-                    })
-                    .then(function(res) {
-                        console.log(res)
+            // test(){
+            //     var that=this
+            //     // this.$axios.post(that.api + "/科技创新环境/get_all/", {
+            //     //     token: sessionStorage.getItem("token")
+            //     //     })
+            //     //     .then(function(res) {
+            //     //         var temp = [];
+            //     //         var template = {};
+            //     //         res.data.forEach(v => {
+            //     //             temp.push(v.fields);
+            //     //         });
+            //     //         for (var key in temp[0]) {
+            //     //             template[key] = "";
+            //     //         }
+            //     //         that.contentNew = template;
+            //     //         that.data = res.data;
+            //     //         that.field = temp;
+            //     //         that.tableData = temp.slice(0, that.size);
+            //     //         that.total = res.data.length;
+            //     //     })
+            //     this.$axios.get(that.api + "/categories", {
+            //         })
+            //         .then(function(res) {
+            //             console.log(res)
 
-                    })
-            },
+            //         })
+            // },
             handleSuccess (res, file) { //上传成功的时候调用的函数
                 console.log("成功")
                 console.log(res)
@@ -89,8 +94,12 @@
                     });
                 }
                 return check;
-            }
+            },
+            del(e){
+                console.log(e)
+            },
         },
+
         mounted () {
             this.uploadList = this.$refs.upload.fileList;
         }
@@ -132,5 +141,6 @@
         font-size: 20px;
         cursor: pointer;
         margin: 0 2px;
+        
     }
 </style>

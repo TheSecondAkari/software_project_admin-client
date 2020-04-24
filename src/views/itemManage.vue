@@ -92,7 +92,7 @@ button{
                 </Menu>
             </Header>
             <Layout>
-                <Sider hide-trigger :style="{background: '#fff'}">
+                <Sider hide-trigger :style="{position:'absolute',top:'65px',bottom:'0px', background: '#fff'}">
                     <Menu active-name="1-2" theme="light" width="auto" :open-names="['1']">
                         <Submenu name="1">
                             <template slot="title">
@@ -121,13 +121,14 @@ button{
                         </Submenu>
                     </Menu>
                 </Sider>
-                <Layout :style="{padding: '0 24px 24px'}">
+                <Layout :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'0px',top:'65px',right:'0px',overflow:'hidden'}">
                     <Breadcrumb :style="{margin: '24px 0'}">
                         <BreadcrumbItem>Home</BreadcrumbItem>
                         <BreadcrumbItem>Components</BreadcrumbItem>
                         <BreadcrumbItem>Layout</BreadcrumbItem>
                     </Breadcrumb>
-                    <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
+                    <Content :style="{padding: '10px', background: '#fff', position:'relative'}">
+                        
                             <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
                                 <Tab-pane label="查看商品" key="key1" ></Tab-pane>
                                 <Tab-pane label="新增商品" key="key2"></Tab-pane>
@@ -138,13 +139,16 @@ button{
                         <button style="margin-left:10px;">查找</button>
                         <button style="margin-left:10px;">新增</button>
                         <div style="height:20px;"></div>
+                        <div style="position:absolute;top:120px;left:0px;right:0px;bottom:0px;overflow:auto;">
                         <ItemBlock :itemList="itemList_father"></ItemBlock>
                         <Page 
+                        style="margin-top:20px;margin-left:10px;margin-bottom:10px;"
                         :total="totalNumber"
                         :page-size="pageSize"
                         @on-change="changePage"
                         show-total
                          />
+                        </div>
                     </Content>
                 </Layout>
             </Layout>
@@ -160,141 +164,117 @@ import ItemBlock from "./itemBlock"
         },
         data () {
             return {
+                api:"/api",
                 currentPage:1,
                 totalNumber:10,
                 pageSize:5,
                 input_item_name:'',
                 itemList_father:[],
-                all_itemList:[{
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:1,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                    item_details:[{
-                        color:"黄色",
-                        storage:"128g"
-                    },{
-                        color:"绿色",
-                        storage:"256g"
-                    }],
-                    item_colums:[{
-                        title:"颜色",
-                        key:"color"
-                    },{
-                        title:"内存",
-                        key:"storage"
-                    }],
-                },{
-                    item_name:"小米电视",
-                    item_obj:"家电",
-                    item_id:2,
-                    item_price:4999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                    item_details:[{
-                        color:"黄色",
-                        size:"50寸"
-                    },{
-                        color:"蓝色",
-                        size:"80寸"
-                    }],
-                    item_colums:[{
-                        title:"颜色",
-                        key:"color"
-                    },{
-                        title:"尺寸",
-                        key:"size"
-                    }],
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:3,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:4,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:5,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:6,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:7,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:8,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:9,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
-                {
-                    item_name:"小米手机",
-                    item_obj:"手机",
-                    item_id:10,
-                    item_price:2999,
-                    item_viewed_times:4,
-                    item_total_left:999,
-                },
+                all_itemList:[
+                //     {
+                //     item_name:"小米手机",
+                //     item_obj:"手机",
+                //     item_id:1,
+                //     item_price:2999,
+                //     item_viewed_times:4,
+                //     item_total_left:999,
+                //     item_details:[{
+                //         color:"黄色",
+                //         storage:"128g"
+                //     },{
+                //         color:"绿色",
+                //         storage:"256g"
+                //     }],
+                //     item_colums:[{
+                //         title:"颜色",
+                //         key:"color"
+                //     },{
+                //         title:"内存",
+                //         key:"storage"
+                //     }],
+                // },
+                // {
+                //     item_name:"小米手机",
+                //     item_obj:"手机",
+                //     item_id:3,
+                //     item_price:2999,
+                //     item_viewed_times:4,
+                //     item_total_left:999,
+                // }
                 ],
 
             }
         },
         mounted(){
                 this.$refs.tabs.activeKey=0
-                var temp = this.all_itemList;
-                var size = this.pageSize;
-                this.currentPage = 1;
-                this.itemList_father = temp.slice(0,size);
+                this.getAll()
+                //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4
+                
+        },
+        methods:{
+            getAll(){
+                var that=this
+                this.$axios.get(that.api + "admin/goods", {
+                    headers:{
+                        "Authorization":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4"
+                    }
+                })
+                .then(function(res) {
+                        console.log(res.data.data)
+                        var arr=[];
+                        var temp={};
+                        //let item=res.data.data.items[0];
+                        for(var item of res.data.data.items){
+                            temp={}
+                            console.log(item)
+                            temp.item_name=item.name;
+                            temp.item_obj=item.category.name;
+                            temp.item_id=item.id;
+                            temp.item_price=item.price;
+                            temp.item_viewed_times=item.view;
+                            temp.item_total_left=item.stock_num;
+                            if(item.specifications.length>0){
+                                temp.item_details=[];
+                                temp.item_colums=[];
+                                let tempOut={};
+                                let count=0;
+                                for(let item of item.specifications){
+                                    tempOut={};
+                                    tempOut.title=item.name;
+                                    tempOut.key=item.name;
+                                    temp.item_colums.push(tempOut);
+                                }
+                                let tempIn={};
+                                for(let item of item.sku){
+                                    tempIn={};
+                                    count=0;
+                                    for(let item2 of item.options){
+                                    tempIn[temp.item_colums[count].title]=item2.name;
+                                    count++;
+                                    }
+                                    temp.item_details.push(tempIn)
+                                }
+
+                            }
+                            arr.push(temp)
+                        }
+                that.all_itemList=arr
+                var size = that.pageSize;
+                that.currentPage = 1;
+                that.itemList_father = arr.slice(0,size);
                 var a= {
                         title: 'Action',
                         slot: 'action',
                         width: 150,
                         align: 'center'
                     }
-                for(let item in this.all_itemList){
-                    this.all_itemList[item].item_colums.push(a)
-
+                for(let item in that.all_itemList){
+                    if(that.all_itemList[item].item_colums)
+                        that.all_itemList[item].item_colums.push(a)
                 }
-                
-        },
-        methods:{
+                console.log(arr);
+                })
+            },
             show_detail(e){
                 console.log(e)
                 // document.getElementsByClassName("test").setAttribute("display","block")

@@ -148,9 +148,10 @@ textarea{
                                         <a style="color:black;">商品名称:</a>
                                         <input style="width:200px;margin-left:20px;" placeholder="请输入商品名">
                                     </div>
-                                    <div style="margin-top:10px;margin-left:20px;">
+                                    <div style="height:300px;margin-top:10px;margin-left:20px;">
                                         <a style="color:black;">详情:</a>
-                                        <i-input type="textarea" :rows="4" placeholder="请输入备注信息" style="display:block;width:400px;"></i-input>
+                                        <!-- <i-input type="textarea" :rows="4" placeholder="请输入备注信息" style="display:block;width:400px;"></i-input> -->
+                                        <quill-editor ref="myTextEditor" v-model="des" :options="editorOption" style="height:200px;margin-top:5px;"></quill-editor>
                                     </div>
                                     <div style="margin-top:10px;margin-left:20px;">
                                         <div style="width:10%;float:left;">选择图片：</div>
@@ -163,7 +164,6 @@ textarea{
                                         </div>
                                         <div style="clear:both;"></div>
                                     </div>   
-                                    <input type="file" @change="handleFileChange" ref="inputer" />
                                     <button>完成</button>
                                     <button style="margin-left:20px;">取消</button>
                                     <Modal
@@ -194,6 +194,10 @@ textarea{
     
 </template>
 <script>
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+import { quillEditor } from 'vue-quill-editor'
     export default {
         data () {
             return {
@@ -231,6 +235,9 @@ textarea{
                     {color:"黄色",storage:"128g",total_number:200,priceIn:1000,priceOut:2000},
                     {color:"黄色",storage:"128g",total_number:200,priceIn:1000,priceOut:2000},
                 ],
+                editorOption: { //富文本
+                    placeholder: '编辑文章内容'
+                },
             }
         },
         watch:{

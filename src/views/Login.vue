@@ -70,7 +70,7 @@ export default {
       var name = this.formInline.user;
       var password = this.formInline.password;
       this.$axios
-        .post("api/admin/auth", {
+        .post("/api/admin/auth", {
           name: name,
           password: password
         })

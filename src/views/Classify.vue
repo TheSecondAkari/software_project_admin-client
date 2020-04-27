@@ -27,6 +27,11 @@
   display: flex;
   flex-wrap: wrap;
 }
+.addSecond {
+  display: inline-block;
+  margin: -10% 0 0 20%;
+}
+
 </style>
 <template>
   <div class="layout">
@@ -51,21 +56,97 @@
           <Content
             style="padding: 24px; minHeight: 500px; background-color: #fff; margin-top: 24px;"
           >
-            <Tabs active-key="1" @on-click="choosePage" ref="tabs">
-              <Tab-pane label="查看分类" key="key1"></Tab-pane>
-              <Tab-pane label="添加分类" key="key2"></Tab-pane>
+            <Tabs>
+              <Tab-pane label="查看分类" key="key1">
+                <Table :columns="columns" :data="data" @on-row-dblclick="show">
+                  <template slot-scope="{ row, index }" slot="action">
+                    <Button
+                      type="primary"
+                      size="small"
+                      style="margin-right: 5px"
+                      @click="editFirst(row, index)"
+                    >编辑</Button>
+                    <Button type="error" size="small" @click="remove(index)">删除</Button>
+                  </template>
+                </Table>
+              </Tab-pane>
+              <Tab-pane label="添加分类" key="key2">
+                <div style="width: 350px; margin-top: 20px">
+                  <i-Form :label-width="90">
+                    <FormItem label="分类名称：">
+                      <Row>
+                        <i-Col span="18">
+                          <i-Input v-model="createName" placeholder="请输入名称" maxlength="10"></i-Input>
+                        </i-Col>
+                        <i-Col span="4" offset="1">
+                          <Button type="primary" @click="createFirst">创建一级分类</Button>
+                        </i-Col>
+                      </Row>
+                    </FormItem>
+                  </i-Form>
+                </div>
+                <Divider style="margin-top: 30px;" />
+                <div style="margin-bottom: 24px; height: 375px; overflow-y: scroll;">
+                  <i-Form :label-width="150" label-position="left">
+                    <FormItem label="从属分类：">
+                      <Row>
+                        <i-Col span="5">
+                          <Select v-model="followTo" style="width:200px">
+                            <Option
+                              v-for="item in data"
+                              :value="item.id"
+                              :key="item.id"
+                            >{{ item.name }}</Option>
+                          </Select>
+                        </i-Col>
+                        <i-Col span="5">
+                          <Button type="primary" @click="keepAdd">继续添加</Button>
+                        </i-Col>
+                      </Row>
+                    </FormItem>
+                    <FormItem
+                      v-for="(item, index) in create"
+                      :key="index"
+                      label="分类名称和图片："
+                      style="width: 500px;"
+                    >
+                      <Row>
+                        <i-Col span="14">
+                          <i-Input v-model="item.name" placeholder="请输入名称" maxlength="10"></i-Input>
+                        </i-Col>
+                        <i-Col span="2">
+                          <Upload
+                            id="ss"
+                            ref="upload"
+                            :show-upload-list="false"
+                            :on-success="(value => handle(index, value))"
+                            :format="['jpg','jpeg','png']"
+                            :max-size="2048"
+                            :on-format-error="handleFormatError"
+                            :on-exceeded-size="handleMaxSize"
+                            type="drag"
+                            action="/api/pictures"
+                            class="addSecond"
+                          >
+                            <img
+                              v-if="item.picture != null"
+                              :src="item.picture"
+                              width="40"
+                              height="40"
+                            />
+                            <img v-else :src="require('../assets/add.png')" width="40" height="40" />
+                          </Upload>
+                        </i-Col>
+                        <i-Col span="2" offset="2" v-if="index != 0">
+                          <Icon type="ios-close-circle" size="24" style="margin-top: 5px;" @click.native="revoke(index)"/>
+                        </i-Col>
+                      </Row>
+                    </FormItem>
+                  </i-Form>
+                  <Button type="primary" @click="createSecond" style="margin: -2.5% 0 0 12.5%;">创建二级分类</Button>
+                </div>
+              </Tab-pane>
             </Tabs>
-            <Table :columns="columns" :data="data" @on-row-dblclick="show">
-              <template slot-scope="{ row, index }" slot="action">
-                <Button
-                  type="primary"
-                  size="small"
-                  style="margin-right: 5px"
-                  @click="editFirst(row, index)"
-                >编辑</Button>
-                <Button type="error" size="small" @click="remove(index)">删除</Button>
-              </template>
-            </Table>
           </Content>
         </Layout>
 
@@ -76,6 +157,9 @@
             <strong style="font-size: 24px; margin-left: 15px;">{{second_title}}</strong>
           </template>
           <Table :columns="second_columns" :data="second_data">
+            <template slot-scope="{row}" slot="picture">
+              <img :src="row.picture" width="40" height="40" style="margin-top: 5px" />
+            </template>
             <template slot-scope="{ row, index }" slot="action">
               <Button
                 type="primary"
@@ -109,12 +193,25 @@
           </FormItem>
           <FormItem label="从属分类：">
             <Select v-model="parent" style="width:200px">
-              <Option v-for="item in data" :value="item.name" :key="item.id">{{ item.name }}</Option>
+              <Option v-for="item in data" :value="item.id" :key="item.id">{{ item.name}}</Option>
             </Select>
           </FormItem>
           <FormItem label="分类图片：">
             <div class="img_block" style="width:90%;float:left;">
-              <img :src="require('../assets/add.png')" style="height:100px;width:100px;" />
+              <Upload
+                ref="upload"
+                :show-upload-list="false"
+                :on-success="handleSuccess"
+                :format="['jpg','jpeg','png']"
+                :max-size="2048"
+                :on-format-error="handleFormatError"
+                :on-exceeded-size="handleMaxSize"
+                type="drag"
+                action="/api/pictures"
+                style="display: inline-block;"
+              >
+                <img :src="imgURL" style="height:100px;width:100px;" />
+              </Upload>
             </div>
           </FormItem>
         </i-Form>
@@ -123,36 +220,40 @@
 
     <!-- 删除二级分类 -->
     <Modal v-model="delSecond" width="360">
-        <p slot="header" style="color: #f60; text-align: center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>确认删除该分类</span>
-        </p>
-        <div style="text-align:center">
-            <p>删除后该分类将从列表中消失！</p>
-            <p>是否继续删除该分类？</p>
-        </div>
-        <div slot="footer">
-            <Button style="margin-right: 30px;" @click="delSecond = false">取消</Button>
-            <Button type="error" style="margin-right: 80px;" @click="translate = true; delSecond = false">删除</Button>
-        </div>
+      <p slot="header" style="color: #f60; text-align: center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>确认删除该分类</span>
+      </p>
+      <div style="text-align:center">
+        <p>删除后该分类将从列表中消失！</p>
+        <p>是否继续删除该分类？</p>
+      </div>
+      <div slot="footer">
+        <Button style="margin-right: 30px;" @click="delSecond = false">取消</Button>
+        <Button
+          type="error"
+          style="margin-right: 80px;"
+          @click="translate = true; delSecond = false"
+        >删除</Button>
+      </div>
     </Modal>
 
     <!-- 转移二级分类 -->
     <Modal v-model="translate" width="360">
-        <p slot="header" style="color: #f60; text-align: center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>是否转移该分类下的商品</span>
-        </p>
-        <div style="text-align:center">
-            <p>是否将该分类下的商品转移至其他分类当中？</p>
-            <Select v-model="tran" style="width:200px">
-              <Option v-for="item in data" :value="item.name" :key="item.id">{{ item.name }}</Option>
-            </Select>
-        </div>
-        <div slot="footer">
-            <Button style="margin-right: 30px;" @click="onlyDel">取消</Button>
-            <Button type="primary" style="margin-right: 80px;" @click="delAndTra">确认</Button>
-        </div>
+      <p slot="header" style="color: #f60; text-align: center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>是否转移该分类下的商品</span>
+      </p>
+      <div style="text-align:center">
+        <p>是否将该分类下的商品转移至其他分类当中？</p>
+        <Select v-model="tran" style="width:200px">
+          <Option v-for="item in data" :value="item.name" :key="item.id">{{ item.name }}</Option>
+        </Select>
+      </div>
+      <div slot="footer">
+        <Button style="margin-right: 30px;" @click="onlyDel">取消</Button>
+        <Button type="primary" style="margin-right: 80px;" @click="delAndTra">确认</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -160,6 +261,7 @@
 export default {
   data() {
     return {
+      api: "/api",
       second: false,
       edit_first: false, // 一级分类编辑页面显示
       edit_second: false, // 二级分类编辑页面显示
@@ -168,18 +270,28 @@ export default {
       translate: false,
       second_data: [], // 二级分类数据表
       second_title: "", // 二级分类页显示的标题
-      parent: "", // 所要编辑的二级分类要绑定的父类
+      parent: -1, // 所要编辑的二级分类要绑定的父类
+      imgURL: "", // 所要编辑的二级分类的图片
       tran: "", // 所要转移到的父类
       firstRow: [], // 选中的一级分类行
       secondRow: [], // 选中的二级分类行
-      firstName: [],
-      secondName: [],
+      firstName: "",
+      secondName: "",
+      createName: "",
+      create: [
+        {
+          name: "",
+          picture: null
+        }
+      ],
+      followTo: -1, // 二级分类从属分类
       index: -1, // 选中的行，可以是一级也可以是二级
 
       columns: [
         {
           title: "分类编号",
-          key: "id"
+          key: "id",
+          sortable: true,
         },
         {
           title: "分类名称",
@@ -203,7 +315,8 @@ export default {
         },
         {
           title: "分类图片",
-          key: "picture"
+          slot: "picture",
+          align: "center"
         },
         {
           title: "操作",
@@ -213,69 +326,73 @@ export default {
         }
       ],
       data: [
-        {
-          id: 1,
-          parent_id: 1,
-          name: "家具家电",
-          picture: "New York No. 1 Lake Park",
-          child: [
-            {
-              id: 5,
-              parent_id: 1,
-              name: "冰箱",
-              picture: "New York No. 1 Lake Park"
-            },
-            {
-              id: 6,
-              parent_id: 1,
-              name: "洗衣机",
-              picture: "New York No. 1 Lake Park"
-            },
-            {
-              id: 7,
-              parent_id: 1,
-              name: "消毒柜",
-              picture: "New York No. 1 Lake Park"
-            },
-            {
-              id: 8,
-              parent_id: 1,
-              name: "电视",
-              picture: "New York No. 1 Lake Park"
-            }
-          ]
-        },
-        {
-          id: 2,
-          parent_id: 2,
-          name: "鞋靴箱包",
-          picture: "New York No. 1 Lake Park",
-          child: []
-        },
-        {
-          id: 3,
-          parent_id: 3,
-          name: "智能家庭",
-          picture: "New York No. 1 Lake Park",
-          child: []
-        },
-        {
-          id: 4,
-          parent_id: 4,
-          name: "户外运动",
-          picture: "New York No. 1 Lake Park",
-          child: []
-        }
+        // {
+        //   created_at: "2020-04-22 18:31:10",
+        //   updated_at: "2020-04-22 18:31:10",
+        //   id: 1,
+        //   name: "西八罗马",
+        //   parent_id: 0,
+        //   picture: null,
+        //   childrens: [
+        //     {
+        //       created_at: "2020-04-22 18:31:10",
+        //       updated_at: "2020-04-22 18:31:10",
+        //       id: 2,
+        //       name: "手机啊",
+        //       parent_id: 1,
+        //       picture:
+        //         "https://www.cbfgo.cn/tdyb/20200417/182bfc55-88aa-492c-92e2-1307382556ad.jpg"
+        //     },
+        //     {
+        //       created_at: "2020-04-22 18:31:10",
+        //       updated_at: "2020-04-22 18:31:10",
+        //       id: 3,
+        //       name: "笔记本",
+        //       parent_id: 1,
+        //       picture:
+        //         "https://www.cbfgo.cn/tdyb/20200417/d6519f71-c455-4326-b8ff-980d9c99f3bf.jpg"
+        //     }
+        //   ]
+        // },
+        // {
+        //   created_at: "2020-04-22 18:31:10",
+        //   updated_at: "2020-04-22 18:31:10",
+        //   id: 4,
+        //   name: "鸡巴罗马",
+        //   parent_id: 0,
+        //   picture: null,
+        //   childrens: [
+        //     {
+        //       created_at: "2020-04-22 18:31:10",
+        //       updated_at: "2020-04-22 18:31:10",
+        //       id: 5,
+        //       name: "手机啊",
+        //       parent_id: 4,
+        //       picture:
+        //         "https://www.cbfgo.cn/tdyb/20200417/182bfc55-88aa-492c-92e2-1307382556ad.jpg"
+        //     },
+        //     {
+        //       created_at: "2020-04-22 18:31:10",
+        //       updated_at: "2020-04-22 18:31:10",
+        //       id: 6,
+        //       name: "笔记本",
+        //       parent_id: 4,
+        //       picture:
+        //         "https://www.cbfgo.cn/tdyb/20200417/d6519f71-c455-4326-b8ff-980d9c99f3bf.jpg"
+        //     }
+        //   ]
+        // }
       ]
     };
   },
-  mounted(){
-    console.log(sessionStorage.getItem("Authorization"))
+  mounted() {
+    console.log(sessionStorage.getItem("Authorization"));
+    this.all();
   },
   methods: {
     show(row) {
       this.second = true;
-      this.second_data = row.child;
+      this.second_data = row.childrens;
       this.second_title = row.name;
     },
     remove(index) {
@@ -295,15 +412,116 @@ export default {
       this.secondRow = row;
       this.index = index;
       this.secondName = row.name;
+      this.imgURL = row.picture;
 
-      var temp = this.data.findIndex((value)=>value.parent_id == row.parent_id);
-      this.parent = this.data[temp].name;
+      var temp = this.data.findIndex(value => value.id == row.parent_id);
+      this.parent = this.data[temp].id;
+    },
+    all() {
+      var that = this;
+      this.$axios.get(that.api + "/categories").then(function(res) {
+        that.data = res.data.data;
+        console.log(that.data);
+      });
+    },
+
+    handleSuccess(res) {
+      const msg = this.$Message.loading({
+        content: "加载中...",
+        duration: 0
+      });
+      setTimeout(msg, 1000);
+      this.imgURL = res.url[0];
+    },
+
+    handle(index, res) {
+      const msg = this.$Message.loading({
+        content: "加载中...",
+        duration: 0
+      });
+      setTimeout(msg, 1000);
+      this.create[index].picture = res.url[0];
+    },
+    handleFormatError(file) {
+      //文件格式验证失败的时候调用的函数
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc:
+          "File format of " +
+          file.name +
+          " is incorrect, please select jpg or png."
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "Exceeding file size limit",
+        desc: "File  " + file.name + " is too large, no more than 2M."
+      });
     },
     comfirmFirst() {
-      this.firstRow.name = this.firstName;
+      var that = this;
+      this.$axios({
+        method: "PUT",
+        url: that.api + "/admin/category/" + that.firstRow.id,
+        headers: {
+          Authorization: sessionStorage.getItem("Authorization")
+        },
+        data: {
+          parent_id: that.firstRow.parent_id,
+          name: that.firstName,
+          picture: null
+        }
+      })
+        .then(function(res) {
+          console.log(res);
+          that.firstRow.name = that.firstName;
+          that.$Message.success({
+            content: "分类名称修改成功！",
+            duration: 1,
+            closable: true
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.$Message.error({
+            content: "分类名称修改失败！",
+            duration: 1,
+            closable: true
+          });
+        });
     },
     comfirmSecond() {
-      this.secondRow.name = this.secondName;
+      var that = this;
+      this.$axios({
+        method: "PUT",
+        url: that.api + "/admin/category/" + that.secondRow.id,
+        headers: {
+          Authorization: sessionStorage.getItem("Authorization")
+        },
+        data: {
+          parent_id: that.parent,
+          name: that.secondName,
+          picture: that.imgURL
+        }
+      })
+        .then(function(res) {
+          console.log(res);
+          that.secondRow.name = that.secondName;
+          that.secondRow.picture = that.imgURL;
+          that.$Message.success({
+            content: "分类编辑成功！",
+            duration: 1,
+            closable: true
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.$Message.error({
+            content: "分类编辑失败！",
+            duration: 1,
+            closable: true
+          });
+        });
     },
     cancelFirst() {
       this.index = -1;
@@ -311,24 +529,104 @@ export default {
     cancelSecond() {
       this.index = -1;
     },
-    choosePage() {},
     close() {
       this.second = false;
     },
-    del(row, index){
+    del(row, index) {
       this.secondRow = row;
       this.index = index;
       this.delSecond = true;
     },
-    onlyDel(){
+    onlyDel() {
       this.translate = false;
       this.second_data.splice(this.index, 1);
     },
-    delAndTran(){
+    delAndTra() {
       this.translate = false;
       this.second_data.splice(this.index, 1);
-      
     },
+
+    createFirst() {
+      var that = this;
+      var item = [{ name: that.createName, picture: null }];
+      this.$axios({
+        method: "POST",
+        url: that.api + "/admin/categories",
+        headers: {
+          Authorization: sessionStorage.getItem("Authorization")
+        },
+        data: {
+          parent_id: 0,
+          items: item
+        }
+      })
+        .then(function(res) {
+          console.log(res);
+          that.all();
+          that.createName = "";
+          that.$Message.success({
+            content: "一级分类创建成功！",
+            duration: 1,
+            closable: true
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.$Message.error({
+            content: "一级分类创建失败！",
+            duration: 1,
+            closable: true
+          });
+        });
+    },
+    createSecond(){
+      var that = this;
+      this.$axios({
+        method: "POST",
+        url: that.api + "/admin/categories",
+        headers: {
+          Authorization: sessionStorage.getItem("Authorization")
+        },
+        data: {
+          parent_id: that.followTo,
+          items: that.create
+        }
+      })
+        .then(function(res) {
+          console.log(res);
+          that.all();
+          that.create = [
+            {
+              name: '',
+              picture: null,
+            }
+          ];
+          that.followTo = -1;
+          that.$Message.success({
+            content: "二级分类创建成功！",
+            duration: 1,
+            closable: true
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.$Message.error({
+            content: "二级分类创建失败！",
+            duration: 1,
+            closable: true
+          });
+        });
+    },
+    keepAdd(){
+      this.create.push({
+        name: '',
+        picture: null
+      })
+    },
+    revoke(index) {
+      console.log(index)
+      this.create.splice(index, 1)
+    }
   }
 };
 </script>

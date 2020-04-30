@@ -66,7 +66,7 @@ button{
 <template>
     <div>
         <div class="item_block" v-for=" (item,key) in itemList" :key="key">
-            <div class="item_img"></div>
+            <img class="item_img" :src="item.item_img">
             <div class="item_info_block">
                 <div class="item_info"><b>商品id：</b> {{item.item_id}}</div>
                 <div class="item_info"><b>商品类别：</b> {{item.item_obj}}</div>

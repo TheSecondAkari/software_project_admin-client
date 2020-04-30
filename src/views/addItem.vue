@@ -35,7 +35,6 @@ button{
 .main_block{
     width:90%;
     min-height: 500px;
-    border: 1px solid grey;
     padding:15px;
     
 }

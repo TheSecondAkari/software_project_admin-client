@@ -226,13 +226,13 @@ import ItemBlock from "./itemBlock"
                         //let item=res.data.data.items[0];
                         for(var item of res.data.data.items){
                             temp={}
-                            console.log(item)
                             temp.item_name=item.name;
                             temp.item_obj=item.category.name;
                             temp.item_id=item.id;
                             temp.item_price=item.price;
                             temp.item_viewed_times=item.view;
                             temp.item_total_left=item.stock_num;
+                            temp.item_img=item.pic[0];
                             if(item.specifications.length>0){
                                 temp.item_details=[];
                                 temp.item_colums=[];

@@ -14,6 +14,13 @@ const routers = [
         component: (resolve) => require(['./views/Classify.vue'], resolve)
     },
     {
+        path: '/addclass',
+        meta: {
+            title: '添加分类'
+        },
+        component: (resolve) => require(['./views/AddClass.vue'], resolve)
+    },
+    {
         path: '/itemManage',
         meta: {
             title: '商品管理'

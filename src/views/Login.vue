@@ -66,22 +66,23 @@ export default {
   },
   methods: {
     handleSubmit() {
-      // var that = this;
-      // var name = this.formInline.user;
-      // var password = this.formInline.password;
-      this.$router.push({path: "/classify"});
-      // this.$axios
-      //   .post("api/admin/auth", {
-      //     name: name,
-      //     password: password
-      //   })
-      //   .then(function(res) {
-      //     console.log(res.data);
-      //   })
-      //   .catch(function(err) {
-      //     console.log(err);
-      //     that.show = true;
-      //   });
+      var that = this;
+      var name = this.formInline.user;
+      var password = this.formInline.password;
+      this.$axios
+        .post("/api/admin/auth", {
+          name: name,
+          password: password
+        })
+        .then(function(res) {
+          console.log(res.data);
+          sessionStorage.setItem("Authorization", res.data.Authorization);
+          that.$router.push({ path: "/classify" });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.show = true;
+        });
     }
   }
 };

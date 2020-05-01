@@ -24,7 +24,7 @@
     margin: 0 auto;
     margin-right: 20px;
 }
-button{
+Button{
     width:auto;
     font-size: 13px;
     padding-top: 5px;
@@ -131,12 +131,7 @@ textarea{
                             </Tabs>
                             <div class="main_block">
                                 <a style="color:black;">选择分类:</a>
-                                    <Select v-model="model1" size="small" style="width:200px;margin-left:20px;">
-                                        <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                                    </Select>
-                                    <!-- <i-select :model.sync="model1" style="width:200px;margin-left:20px;">
-                                        <i-option v-for="(item,key) in typeList" :value="item.value" :key="key">{{ item.label }}</i-option>
-                                    </i-select> -->
+                                <Cascader :data="typeList" v-model="model1" style="width:200px;margin-left:20px;display:inline-block;" change-on-select ></Cascader>
                                 <div style="margin-top:10px;">
                                     <a style="color:black;">商品名称:</a>
                                     <input v-model="name" style="width:200px;margin-left:20px;" placeholder="请输入商品名">
@@ -163,7 +158,7 @@ textarea{
                                                 </RadioGroup>
                                             </div>
                                         </div>
-                                        <button style="margin-top:10px;margin-left:20px;" @click="modal2=true">添加规格</button>
+                                        <Button type="primary" style="margin-top:10px;margin-left:10px;" @click="modal2=true">添加规格</Button>
                                         <Modal
                                             v-model="modal2"
                                             title="新增规格内部选项"
@@ -192,7 +187,7 @@ textarea{
                                         <a style="color:black;">数量:</a>
                                         <input style="width:200px;margin-left:20px;" placeholder="请输入商品数量" v-model="totalNumber">
                                     </div>
-                                    <button style="margin-top:10px;margin-left:50px;" @click="toTable">确认添加</button>    
+                                    <Button type="primary" style="margin-top:10px;margin-left:50px;" @click="toTable">确认添加</Button>    
                                     <i-table style="margin-top:10px;margin-left:50px;" border :columns="item_column" :data="item_details"></i-table>
                                     <div style="height:300px;margin-top:10px;">
                                         <a style="color:black;">详情:</a>
@@ -246,8 +241,8 @@ textarea{
                                         <div style="clear:both;"></div>
                                     </div>   
                                     <!-- <input type="file" @change="handleFileChange" ref="inputer" /> -->
-                                    <button @click="upload()">完成</button>
-                                    <button style="margin-left:20px;">取消</button>
+                                    <Button type="primary" @click="upload()">完成</Button>
+                                    <Button style="margin-left:20px;">取消</Button>
                                 </div>
                             </div>
                     </Content>
@@ -278,6 +273,7 @@ const toolbarOptions=[
         data () {
             return {
                 api:"/api",
+                token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4ODMwMjk1MiwiZXhwIjoxNTg4Mzg5MzUyfQ.Q12hCON9pHXDskH7ZDO8_L0UiOp9bujeNqdZvS7Hv-E",
                 del_url:require("../assets/delete.png"),
                 headers:{},
                 uploadList: [],
@@ -323,7 +319,7 @@ const toolbarOptions=[
                     //     label: '电子设备'
                     // }
                 ],
-                model1: '',
+                model1: [],//联机选择器选择的值
                 editorOption: { //富文本
                     placeholder: '编辑文章内容',
                     modules:{
@@ -374,7 +370,7 @@ const toolbarOptions=[
                 let name=this.name;         //商品名
                 let imgArray=this.imgList; //图片url
                 let des=this.des;       //商品描述
-                let cateId=this.model1;               //类别id
+                let cateId=this.model1[this.model1.length-1];   //类别id
                 let ifType=false;           //是否有分类规格
                 let spec=[];                //商品规格名称
                 let options=[];             //每个规格的内部分类
@@ -401,27 +397,6 @@ const toolbarOptions=[
                         sku.push(temp);
                         price=(price<parseInt(item.价格))?price:parseInt(item.价格);
                     }
-                    that.$axios.post(that.api+"/admin/goods",{
-                            name:name,
-                            pic:imgArray,
-                            description:des,
-                            category_id:2,
-                            has_spec:true,
-                            spec_num:specNum,
-                            spec:spec,
-                            options:options,
-                            sku:sku,
-                            price:price,
-                            stock_num:total,
-                    },{
-                        headers:{
-                            "Content-Type":"application/json",
-                            "Authorization":'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4'
-                        }}).then(function(e){
-                            console.log(e)
-                        }).catch(function(err){
-                            console.log(err)
-                    })
                     console.log("有规格")
                     console.log("商品名：",name)
                     console.log("图片url：",imgArray)
@@ -434,26 +409,30 @@ const toolbarOptions=[
                     console.log("库存单位：",sku)
                     console.log("总库存：",total)
                     console.log("价格：",price)
-                    
-                }else{
                     that.$axios.post(that.api+"/admin/goods",{
-                            name: name,
-                            pic: imgArray,
-                            description: des,
-                            category_id: 2,
-                            has_spec: false,
-                            price: parseInt(that.outPrice),
-                            purchase_price: parseInt(that.inPrice),
-                            stock_num:parseInt(that.totalNumber)
+                            name:name,
+                            pic:imgArray,
+                            description:des,
+                            category_id:cateId,
+                            has_spec:true,
+                            spec_num:specNum,
+                            spec:spec,
+                            options:options,
+                            sku:sku,
+                            price:price,
+                            stock_num:total,
                     },{
                         headers:{
                             "Content-Type":"application/json",
-                            "Authorization":'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4'
+                            "Authorization":that.token
                         }}).then(function(e){
                             console.log(e)
                         }).catch(function(err){
                             console.log(err)
                     })
+
+                    
+                }else{
                     console.log("无规格")
                     console.log("商品名：",name)
                     console.log("类别id：",cateId)
@@ -463,6 +442,25 @@ const toolbarOptions=[
                     console.log("总库存：",parseInt(this.totalNumber))
                     console.log("价格：",parseInt(this.outPrice))
                     console.log("进货价：",parseInt(this.inPrice))
+                    that.$axios.post(that.api+"/admin/goods",{
+                            name: name,
+                            pic: imgArray,
+                            description: des,
+                            category_id: cateId,
+                            has_spec: false,
+                            price: parseInt(that.outPrice),
+                            purchase_price: parseInt(that.inPrice),
+                            stock_num:parseInt(that.totalNumber)
+                    },{
+                        headers:{
+                            "Content-Type":"application/json",
+                            "Authorization":that.token
+                        }}).then(function(e){
+                            console.log(e)
+                        }).catch(function(err){
+                            console.log(err)
+                    })
+
                 }
             },
             handleFileChange (e) {
@@ -637,6 +635,18 @@ const toolbarOptions=[
                                 value:item.id,
                                 label:item.name
                             };
+                            let children=[]
+                            let inObj={}
+                            if(item.childrens.length>0){
+                                for(var inItem of item.childrens){
+                                    inObj={
+                                        value:inItem.id,
+                                        label:inItem.name
+                                    }
+                                    children.push(inObj)
+                                }
+                                obj.children=children
+                            }
                             temp.push(obj)
                         }
                         console.log(temp)

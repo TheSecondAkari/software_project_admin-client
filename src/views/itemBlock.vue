@@ -68,7 +68,7 @@ button{
         <div class="item_block" v-for=" (item,key) in itemList" :key="key">
             <img class="item_img" :src="item.item_img">
             <div class="item_info_block">
-                <div class="item_info"><b>商品id：</b> {{item.item_id}}</div>
+                <div id="itemId" class="item_info"><b>商品id：</b> {{item.item_id}}</div>
                 <div class="item_info"><b>商品类别：</b> {{item.item_obj}}</div>
                 <div class="item_info"><b>商品名称：</b> {{item.item_name}}</div>
                 <div class="item_info"><b>商品价格：</b> {{item.item_price}}</div>
@@ -76,12 +76,12 @@ button{
                 <div class="item_info" style="position:absolute;top:0px;left:150px;"><b>剩余总库存：</b> {{item.item_total_left}} </div>
             </div>
             <div style="clear:both"></div>
-            <button style="position:absolute;top:30px;right:10%;">修改</button>
-            <button style="position:absolute;top:130px;right:10%;" v-if="item.item_colums" @click="change_detail($event)">{{showORhide}}</button>
+            <Button id="change" style="position:absolute;top:30px;right:10%;">修改</Button>
+            <Button type="primary" style="position:absolute;top:130px;right:10%;" v-if="item.item_colums" @click="change_detail($event)">{{showORhide}}</Button>
             <div style="display:none;">
                 <Table  border :columns="itemList[key].item_colums" :data="itemList[key].item_details" class="table">
                             <template slot-scope="{ row, index }" slot="action">
-                                <Button size="small" style="margin-right: 5px" @click="selectItem(row,index)">修改</Button>
+                                <Button style="font-size:15px;" @click="selectItem(row,index)">增加库存</Button>
                             </template>
                 </Table>
             </div>
@@ -118,7 +118,12 @@ button{
                 
             },
             selectItem (row,index) {
-                console.log(row.color)
+                let obj={
+                    id:row.id,
+                    total:row.库存,
+                }
+                this.$emit('showModal', obj);
+                console.log(row)
                 console.log(index)
             }
         }

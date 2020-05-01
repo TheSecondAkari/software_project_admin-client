@@ -42,9 +42,9 @@ const routers = [
         component: (resolve) => require(['./views/addItem.vue'], resolve)
     },
     {
-        path: '/changeItem',
+        path: '/changeItem/:id',
         meta: {
-            title: '新增商品'
+            title: '修改商品'
         },
         component: (resolve) => require(['./views/changeItem.vue'], resolve)
     },

@@ -35,13 +35,12 @@ button{
 .main_block{
     width:90%;
     min-height: 500px;
-    border: 1px solid grey;
-    padding:15px;
+    /* border: 1px solid grey; */
+    padding:10px;
     
 }
 .special{
     min-width: 200px;
-    margin-top: 10px;
 }
 .special_block{
     min-height: 50px;
@@ -123,49 +122,77 @@ textarea{
                         <BreadcrumbItem>Components</BreadcrumbItem>
                         <BreadcrumbItem>Layout</BreadcrumbItem>
                     </Breadcrumb>
-                    <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
-                            <Tabs active-key="key3" @on-click="choosePage" ref="tabs">
-                                <Tab-pane label="查看商品" key="key1" ></Tab-pane>
-                                <Tab-pane label="新增商品" key="key2"></Tab-pane>
-                                <Tab-pane label="增加库存记录" key="key3"></Tab-pane>
-                                <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
-                            </Tabs>
+                    <Content :style="{padding: '20px', minHeight: '700px', background: '#fff'}">
                             <div class="main_block">
                                 <div class="special">   
-                                    <!-- <i-table style="margin-top:10px;margin-left:20px;" border :columns="item_column" :data="item_details"></i-table> -->
-                                    <Table  border :columns="item_column" :data="item_details" style="margin-top:10px;margin-left:20px;" ref="table">
-                                        <template slot-scope="{ row, index }" slot="action">
-                                            <a @click="change(index)">更改</a>
-                                        </template>
-                                    </Table>
-                                    <div style="margin-top:10px;margin-left:20px;">
-                                        <a style="color:black;">选择分类:</a>
-                                        <i-select :model.sync="model1" style="width:200px;margin-left:20px;">
-                                            <i-option v-for="(item,key) in typeList" :value="item.value" :key="key">{{ item.label }}</i-option>
-                                        </i-select>
+                                    <div style="padding-bottom:20px;">
+                                        <h2>更新商品数量/售价</h2>
+                                        <Table  border :columns="item_column" :data="item_details" style="margin-top:10px;" ref="table">
+                                            <template slot-scope="{ row }" slot="action">
+                                                <a @click="change(row)">更改</a>
+                                            </template>
+                                        </Table>
                                     </div>
-                                    <div style="margin-top:10px;margin-left:20px;">
-                                        <a style="color:black;">商品名称:</a>
-                                        <input style="width:200px;margin-left:20px;" placeholder="请输入商品名">
-                                    </div>
-                                    <div style="height:300px;margin-top:10px;margin-left:20px;">
-                                        <a style="color:black;">详情:</a>
-                                        <!-- <i-input type="textarea" :rows="4" placeholder="请输入备注信息" style="display:block;width:400px;"></i-input> -->
-                                        <quill-editor ref="myTextEditor" v-model="des" :options="editorOption" style="height:200px;margin-top:5px;"></quill-editor>
-                                    </div>
-                                    <div style="margin-top:10px;margin-left:20px;">
-                                        <div style="width:10%;float:left;">选择图片：</div>
-                                        <div class="img_block" style="width:90%;float:left;">
-                                            <div v-for="(item,key) in imgList" :key="key">
-                                                <img :src="item.imgUrl" style="height:100px;width:100px;">
-                                            </div>
-                                            <input style="display: none" type="file" id="fileExport" ref="getF" accept=".jpg" @change="get_name">
-                                            <img @click="getFile()" src="../assets/add.png" style="height:100px;width:100px;">
+                                    <div style="width:100%;margin-top:10px;">
+                                        <h2 style="margin-top:10px; ">更新商品内容</h2>
+                                        <div style="margin-top:10px; ">
+                                            <a style="color:black;">选择分类:</a>
+                                            <Cascader :data="typeList" v-model="model1" style="margin-left:10px;width:200px; display:inline-block;" change-on-select ></Cascader>
                                         </div>
-                                        <div style="clear:both;"></div>
-                                    </div>   
-                                    <button>完成</button>
-                                    <button style="margin-left:20px;">取消</button>
+                                        <div style="margin-top:10px; ">
+                                            <a style="color:black;">商品名称:</a>
+                                            <Input v-model="name" style="margin-left:10px;width:200px; " placeholder="请输入商品名" />
+                                        </div>
+                                        <div style="height:300px;margin-top:10px; ">
+                                            <a style="color:black;">详情:</a>
+                                                <Upload
+                                                    ref="upload"
+                                                    :show-upload-list="false"
+                                                    :on-success="handleSuccess2"
+                                                    :format="['jpg','jpeg','png']"
+                                                    :max-size="2048"
+                                                    :on-format-error="handleFormatError"
+                                                    :on-exceeded-size="handleMaxSize"
+                                                    :before-upload="handleBeforeUpload"
+                                                    multiple
+                                                    type="drag"
+                                                    action="/api/pictures"
+                                                    :headers="headers"
+                                                    style="display:none;">
+                                                    <div style="width: 58px;height:58px;line-height: 58px;" id="quill-img">
+                                                        <Icon type="ios-camera" size="20"></Icon>
+                                                    </div>
+                                                </Upload>
+                                            <!-- <i-input type="textarea" :rows="4" placeholder="请输入备注信息" style="display:block;width:400px;"></i-input> -->
+                                            <quill-editor ref="myTextEditor" v-model="des" :options="editorOption" style="height:200px;margin-top:5px;background:white"></quill-editor>
+                                        </div>
+                                        <div style="margin-top:10px; display:flex;flex-wrap:wrap;">
+                                                <div v-for="(item,key) in imgList" :key="key" style="position:relative;height:120px;width:150px;margin-right:10px;">
+                                                    <img v-bind:src="del_url" style="position:absolute;top:0px;right:0px;height:15px;height:15px;" @click="del_img(key)">
+                                                    <img :src="item" style="position:absolute;height100px;width:135px;top:15px;left:0px;">
+                                                </div>
+                                                <Upload
+                                                    ref="upload"
+                                                    :show-upload-list="false"
+                                                    :on-success="handleSuccess"
+                                                    :format="['jpg','jpeg','png']"
+                                                    :max-size="2048"
+                                                    :on-format-error="handleFormatError"
+                                                    :on-exceeded-size="handleMaxSize"
+                                                    :before-upload="handleBeforeUpload"
+                                                    multiple
+                                                    type="drag"
+                                                    action="/api/pictures"
+                                                    :headers="headers"
+                                                    style="display: inline-block;width:100px;">
+                                                    <div style="width:100px;height:100px;line-height:100px;">
+                                                        <Icon type="ios-camera" size="100"></Icon>
+                                                    </div>
+                                                </Upload>
+                                        </div>   
+                                        <Button type="primary" style=" margin-top:20px;" @click="submit_des()">提交修改</Button>
+                                    </div>
+
                                     <Modal
                                         v-model="modal1"
                                         title="修改规格"
@@ -173,15 +200,15 @@ textarea{
                                         @on-cancel="cancelIn">
                                         <div style="margin-top:10px;">
                                             <a>商品总数：</a>
-                                            <input v-model="item_details[theChosenItem].total_number">
+                                            <p style="display:inline-block;">{{now_id}}</p>
                                         </div>
                                         <div style="margin-top:10px;">
                                             <a>商品进价：</a>
-                                            <input v-model="item_details[theChosenItem].priceIn">
+                                            <Input style="width:200px;" v-model="now_in" />
                                         </div>
                                         <div style="margin-top:10px;">
                                             <a>商品售价：</a>
-                                            <input v-model="item_details[theChosenItem].priceOut">
+                                            <Input style="width:200px;" v-model="now_out" />
                                         </div>
                                     </Modal>
                                 </div>
@@ -198,17 +225,36 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+const toolbarOptions=[
+    ["bold",'italic',"underline","strike"],
+    [{size:["small",false,"large","huge"]}],
+    [{font:[]}],
+    [{color:[]}],
+    [{align:[]}],
+    ["link","image"]
+];
     export default {
+        components:{
+            quillEditor
+        },
         data () {
             return {
+                api:"/api",
+                token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4ODMwMjk1MiwiZXhwIjoxNTg4Mzg5MzUyfQ.Q12hCON9pHXDskH7ZDO8_L0UiOp9bujeNqdZvS7Hv-E",
+                name:"",
+                des:"",
+                id:0,
+                del_url:require("../assets/delete.png"),//删除照片的叉叉的url
+                uploadList: [],
+                headers:{},
                 theChosenItem:0,//用来定位当前要修改的是哪一个规格
                 modal1: false,//用来决定增加规格内部分类的对话框是否显示的
+                now_in:0, //
+                now_out:0,
+                now_id:0,
                 target:'',
                 disabledGroup:true,
-                imgList:[
-                    {imgUrl: require('../assets/add.png')},
-                    {imgUrl: require('../assets/add.png')},
-                    ],
+                imgList:[],
                 typeList: [
                     {
                         value: 'elect',
@@ -219,7 +265,7 @@ import { quillEditor } from 'vue-quill-editor'
                         label: '电子设备'
                     }
                 ],
-                model1: '',
+                model1: [],
                 item_column:[//表格列的数组
                     {title:"颜色",key:"color"},
                     {title:"内存",key:"storage"},
@@ -228,24 +274,121 @@ import { quillEditor } from 'vue-quill-editor'
                     {title:"售价",key:"priceOut"},
                     {title: 'Action',slot: 'action',width: 150,align: 'center'}
                     ],
-
                 item_details:[//表格内容数组
-                    {color:"黄色",storage:"128g",total_number:200,priceIn:1000,priceOut:2000},
-                    {color:"绿色",storage:"128g",total_number:200,priceIn:1000,priceOut:2000},
-                    {color:"黄色",storage:"128g",total_number:200,priceIn:1000,priceOut:2000},
                     {color:"黄色",storage:"128g",total_number:200,priceIn:1000,priceOut:2000},
                 ],
                 editorOption: { //富文本
-                    placeholder: '编辑文章内容'
+                    placeholder: '编辑文章内容',
+                    modules:{
+                        toolbar:{
+                            container:toolbarOptions,
+                            handlers: {
+                                "image":function(value){
+                                    if(value){
+                                        document.getElementById("quill-img").click();
+                                    }
+                                    else{
+                                        this.quill.format("image",false)
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
             }
         },
         watch:{
         },
         mounted(){
-            this.$refs.tabs.activeKey=1
+            this.onload()
+            this.getClass()
         },
         methods:{
+            onload(){
+                var that=this
+                let id=this.$route.params.id;
+                this.id=id;
+                this.$axios.get(that.api + 'admin/goods/'+id,{
+                    headers:{
+                        "Authorization":that.token
+                    }
+                }).then(function(res){
+                    let data=res.data.data
+                    console.log(data)
+                    that.name=data.name
+                    that.des=data.description
+                    that.imgList=data.pic
+                    let item_details=[];
+                    let item_colums=[];
+                    if(data.specifications.length>0){
+                        let tempOut={};
+                        let count=0;
+                        item_colums.push({title:"id",key:"ID"})
+                        for(let item of data.specifications){
+                            tempOut={};
+                            tempOut.title=item.name;
+                            tempOut.key=item.name;
+                            item_colums.push(tempOut);
+                        }
+                        item_colums.push({title:"数量",key:"数量"})
+                        item_colums.push({title:"进货价",key:"进货价"})
+                        item_colums.push({title:"售价",key:"售价"})
+                        item_colums.push({title: 'Action',slot: 'action',width: 150,align: 'center'})
+                        let tempIn={};
+                        for(let item of data.sku){
+                            tempIn={};
+                            count=0;
+                            tempIn.ID=item.id;
+                            tempIn.进货价=item.purchase_price;
+                            tempIn.售价=item.price;
+                            tempIn.数量=item.stock_num;
+                            for(let item2 of item.options){
+                            tempIn[item_colums[count+1].title]=item2.name;
+                            count++;
+                            }
+                            item_details.push(tempIn)
+                        }
+
+                    }
+                    console.log(item_colums)
+                    console.log(item_details)
+                    that.item_column=item_colums
+                    that.item_details=item_details
+                    that.model1=[data.category.parent_id,data.category_id]
+                })
+            },
+            getClass(){
+                var that=this
+                this.$axios.get(that.api + "/categories", {})
+                .then(function(res) {
+                        console.log(res.data.data)
+                        let arr=res.data.data;
+
+                        let temp=[]
+                        let obj={}
+                        for(var item of arr){
+                            obj={
+                                value:item.id,
+                                label:item.name
+                            };
+                            let children=[]
+                            let inObj={}
+                            if(item.childrens.length>0){
+                                for(var inItem of item.childrens){
+                                    inObj={
+                                        value:inItem.id,
+                                        label:inItem.name
+                                    }
+                                    children.push(inObj)
+                                }
+                                obj.children=children
+                            }
+                            temp.push(obj)
+                        }
+                        console.log(temp)
+                        that.typeList=temp
+                })
+            },
             test(){
                 let a=[]
                 let b=['aa','bb']
@@ -253,6 +396,24 @@ import { quillEditor } from 'vue-quill-editor'
                     a.push({[item]:item})
                 }
                 console.log(a)
+            },
+            submit_des(){
+                let that=this
+                that.$axios.put(that.api+"/admin/goods/"+this.id,{
+                        name: that.name,
+                        pic: that.imgList,
+                        description: that.des,
+                        category_id: that.model1[that.model1.length-1],
+                },{
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":that.token
+                    }}).then(function(e){
+                        console.log(e)
+                        that.onload()
+                    }).catch(function(err){
+                        console.log(err)
+                })
             },
             handleFileChange (e) {
                 console.log(e.target.files[0])
@@ -268,21 +429,22 @@ import { quillEditor } from 'vue-quill-editor'
                 console.log(filename)
                 console.log(e.target.files[0])     
             },
-            choosePage(id){
-                var that=this
-                console.log(id)
-                if(id==0){
-                     that.$router.push({ path:'/item_manage'  })
-                }
-                else if(id==2){
-                     that.$router.push({ path:'/item_history'  })
-                }
-                else if(id==3){
-                     that.$router.push({ path:'/img_manage'  })
-                }
-            },
             okIn () {
-                this.$Message.info('更改成功');
+                let that =this
+                that.$axios.put(that.api+"/admin/goods/"+this.id+"/sku/"+this.now_id,{
+                        price: parseInt(that.now_out) ,
+                        purchase_price: parseInt(that.now_in),
+                },{
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":that.token
+                    }}).then(function(e){
+                        console.log(e)
+                        that.$Message.info('修改成功');
+                        that.onload()
+                    }).catch(function(err){
+                        console.log(err)
+                })
             },
             cancelIn () {
                 this.$Message.info('取消更改');
@@ -290,9 +452,60 @@ import { quillEditor } from 'vue-quill-editor'
             cancelOut () {
                 this.$Message.info('Clicked cancel');
             },
-            change(e){
-                this.theChosenItem=e;
+            change(rows){
+                this.now_in=rows.进货价;
+                this.now_out=rows.售价;
+                this.now_id=rows.ID;
+                // this.theChosenItem=e;
                 this.modal1=true;
+            },
+            handleSuccess (res, file) { //上传成功的时候调用的函数
+                console.log("成功")
+                console.log(res)
+                console.log(file)
+                for(var i=0;i<res.url.length;i++){
+                    this.imgList.push(res.url[i])
+                }
+                
+            },
+            handleSuccess2 (res, file) { //富文本上传成功的时候调用的函数
+                console.log("成功")
+                console.log(res)
+                console.log(file)
+                this.quillImgSuccess(res.url[0])
+            },
+            quillImgSuccess(res){
+                let quill =this.$refs.myTextEditor.quill;
+                let length=quill.getSelection().index;
+                quill.insertEmbed(length,"image",res);
+                quill.setSelection(length+1);
+                console.log("现在是："+this.des)
+            },
+            handleFormatError (file) { //文件格式验证失败的时候调用的函数
+                this.$Notice.warning({
+                    title: 'The file format is incorrect',
+                    desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
+                });
+            },
+            handleMaxSize (file) {
+                this.$Notice.warning({
+                    title: 'Exceeding file size limit',
+                    desc: 'File  ' + file.name + ' is too large, no more than 2M.'
+                });
+            },
+            handleBeforeUpload () {  //上传之前的函数
+                const check = this.uploadList.length < 5;
+                if (!check) {
+                    this.$Notice.warning({
+                        title: 'Up to five pictures can be uploaded.'
+                    });
+                }
+                return check;
+            },
+            del_img(e){
+                let temp=this.imgList;
+                temp.splice(e,1)
+                this.imgList=temp;
             }
         },
         

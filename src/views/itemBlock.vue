@@ -153,26 +153,6 @@ export default {
       console.log(row);
       console.log(index);
     },
-
-    // 侧边栏页面跳转
-    redirect(name) {
-      console.log("");
-      var that = this;
-      var id = parseInt(name);
-      switch (id) {
-        case 1:
-          that.$router.push({ path: "/Classify" });
-          break;
-        case 2:
-          that.$router.push({ path: "/itemManage" });
-          break;
-        case 3:
-          //  that.$router.push({ path:'/item_manage'});
-          break;
-        default:
-          break;
-      }
-    }
   },
 };
 </script>

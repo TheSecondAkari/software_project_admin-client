@@ -135,7 +135,7 @@ button{
                                 <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
                             </Tabs>
                         <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
-                        <button style="margin-left:10px;">查找</button>
+                        <Button type="primary" style="margin-left:10px;">查找</Button>
                         <Page 
                         style="margin-top:20px;"
                         :total="totalNumber"
@@ -196,7 +196,7 @@ button{
                 var that=this
                 this.$axios.get(that.api + "/admin/records",{
                     headers:{
-                        "Authorization":'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzQ0Njg1MCwiZXhwIjoxNTg3NTMzMjUwfQ.bPbEkirCVaHN-GtkN-z9cPHymSERg5-75jFYsVi1W1k'
+                        "Authorization":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4ODMwMjk1MiwiZXhwIjoxNTg4Mzg5MzUyfQ.Q12hCON9pHXDskH7ZDO8_L0UiOp9bujeNqdZvS7Hv-E"
                     }})
                 .then(function(res) {
                         console.log(res.data)

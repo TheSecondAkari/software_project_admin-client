@@ -129,26 +129,40 @@ button{
                     </Breadcrumb>
                     <Content :style="{padding: '10px', background: '#fff', position:'relative'}">
                         
-                            <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
-                                <Tab-pane label="查看商品" key="key1" ></Tab-pane>
-                                <Tab-pane label="新增商品" key="key2"></Tab-pane>
-                                <Tab-pane label="增加库存记录" key="key3"></Tab-pane>
-                                <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
-                            </Tabs>
+                        <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
+                            <Tab-pane label="查看商品" key="key1" ></Tab-pane>
+                            <Tab-pane label="新增商品" key="key2"></Tab-pane>
+                            <Tab-pane label="增加库存记录" key="key3"></Tab-pane>
+                            <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
+                        </Tabs>
                         <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
-                        <button style="margin-left:10px;">查找</button>
-                        <button style="margin-left:10px;">新增</button>
+                        <Button type="primary" style="margin-left:10px;" @click="search()">查找</Button>
+                        <Button style="margin-left:10px;">新增</Button>
                         <div style="height:20px;"></div>
-                        <div style="position:absolute;top:120px;left:0px;right:0px;bottom:0px;overflow:auto;">
-                        <ItemBlock :itemList="itemList_father"></ItemBlock>
-                        <Page 
-                        style="margin-top:20px;margin-left:10px;margin-bottom:10px;"
-                        :total="totalNumber"
-                        :page-size="pageSize"
-                        @on-change="changePage"
-                        show-total
-                         />
+                        <div id="itemTable" style="position:absolute;top:120px;left:0px;right:0px;bottom:0px;overflow:auto;">
+                            <ItemBlock @showModal="parentFn" :itemList="itemList_father"></ItemBlock>
+                            <Page 
+                            style="margin-top:20px;margin-left:10px;margin-bottom:10px;"
+                            :total="totalNumber"
+                            :page-size="pageSize"
+                            @on-change="changePage"
+                            show-total
+                            />
                         </div>
+                        <Modal
+                            v-model="show"
+                            title="修改商品总数"
+                            @on-ok="modal_ok()"
+                            @on-cancel="modal_cancel()">
+                            <div style="margin-top:10px;">
+                                <a style="display:inline-block;">商品id：</a>
+                                <p style="display:inline-block;">{{spec_id}}</p><br>
+                                <a>商品总数：</a>
+                                <p style="display:inline-block;">{{total}}</p><br>
+                                <a>新增数量：</a>
+                                <Input v-model="add_num" style="width:200px"/>
+                            </div>
+                        </Modal>
                     </Content>
                 </Layout>
             </Layout>
@@ -165,10 +179,15 @@ import ItemBlock from "./itemBlock"
         data () {
             return {
                 api:"/api",
+                token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4ODMwMjk1MiwiZXhwIjoxNTg4Mzg5MzUyfQ.Q12hCON9pHXDskH7ZDO8_L0UiOp9bujeNqdZvS7Hv-E",
                 currentPage:1,
                 totalNumber:10,
                 pageSize:5,
+                add_num:0,
                 input_item_name:'',
+                show:false,  //修改数量的框是否显示
+                total:0,  //暂存当前要修改的商品数
+                spec_id:0, //暂存当前要修改的规格id
                 itemList_father:[],
                 all_itemList:[
                 //     {
@@ -208,7 +227,20 @@ import ItemBlock from "./itemBlock"
         mounted(){
                 this.$refs.tabs.activeKey=0
                 this.getAll()
+                let that=this
                 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4
+                let a=document.getElementById("itemTable")
+                function chooseItem(e){
+                    if(e.target.id=="change"){
+                        let parent=e.target.parentNode;
+                        let itemId=parent.childNodes[1].childNodes[0];
+                        let id=itemId.innerText.substr(6)
+                        that.$router.push({
+                        path: `/changeItem/${id}`,
+                        })
+                    }
+                }
+                a.addEventListener("click",chooseItem)
                 
         },
         methods:{
@@ -216,11 +248,11 @@ import ItemBlock from "./itemBlock"
                 var that=this
                 this.$axios.get(that.api + "admin/goods", {
                     headers:{
-                        "Authorization":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiYWRtaW4iOnRydWUsImlhdCI6MTU4NzcwMDQ2OSwiZXhwIjoxNTg3Nzg2ODY5fQ.fLrU3joxE-llq1N4H5O0-sqZhCZhSz79IDwZKoatdz4"
+                        "Authorization":that.token
                     }
                 })
                 .then(function(res) {
-                        console.log(res.data.data)
+                        that.totalNumber=res.data.data.rows;
                         var arr=[];
                         var temp={};
                         //let item=res.data.data.items[0];
@@ -238,23 +270,26 @@ import ItemBlock from "./itemBlock"
                                 temp.item_colums=[];
                                 let tempOut={};
                                 let count=0;
+                                temp.item_colums.push({title:"id",key:"id"})
                                 for(let item of item.specifications){
                                     tempOut={};
                                     tempOut.title=item.name;
                                     tempOut.key=item.name;
                                     temp.item_colums.push(tempOut);
                                 }
+                                temp.item_colums.push({title:"库存",key:"库存"})
                                 let tempIn={};
                                 for(let item of item.sku){
                                     tempIn={};
                                     count=0;
+                                    tempIn.id=item.id
+                                    tempIn.库存=item.stock_num
                                     for(let item2 of item.options){
-                                    tempIn[temp.item_colums[count].title]=item2.name;
+                                    tempIn[temp.item_colums[count+1].title]=item2.name;
                                     count++;
                                     }
                                     temp.item_details.push(tempIn)
                                 }
-
                             }
                             arr.push(temp)
                         }
@@ -274,6 +309,75 @@ import ItemBlock from "./itemBlock"
                 }
                 console.log(arr);
                 })
+            },
+            search(){
+                let that=this
+                this.$axios.get(that.api + "/admin/goods/search", {
+                    params:{
+                        key:that.input_item_name
+                    },
+                    headers:{
+                        "Authorization":that.token
+                    }
+                }).then(function(res){
+                    that.totalNumber=res.data.data.rows;
+                    var arr=[];
+                    var temp={};
+                    //let item=res.data.data.items[0];
+                    for(var item of res.data.data.items){
+                        temp={}
+                        temp.item_name=item.name;
+                        temp.item_obj=item.category.name;
+                        temp.item_id=item.id;
+                        temp.item_price=item.price;
+                        temp.item_viewed_times=item.view;
+                        temp.item_total_left=item.stock_num;
+                        temp.item_img=item.pic[0];
+                        if(item.specifications.length>0){
+                            temp.item_details=[];
+                            temp.item_colums=[];
+                            let tempOut={};
+                            let count=0;
+                            for(let item of item.specifications){
+                                tempOut={};
+                                tempOut.title=item.name;
+                                tempOut.key=item.name;
+                                temp.item_colums.push(tempOut);
+                            }
+                            temp.item_colums.push({title:"id",key:"id"})
+                            temp.item_colums.push({title:"库存",key:"库存"})
+                            let tempIn={};
+                            for(let item of item.sku){
+                                tempIn={};
+                                count=0;
+                                tempIn.id=item.id
+                                tempIn.库存=item.stock_num
+                                for(let item2 of item.options){
+                                tempIn[temp.item_colums[count].title]=item2.name;
+                                count++;
+                                }
+                                temp.item_details.push(tempIn)
+                            }
+                        }
+                        arr.push(temp)
+                    }
+                    that.all_itemList=arr
+                    var size = that.pageSize;
+                    that.currentPage = 1;
+                    that.itemList_father = arr.slice(0,size);
+                    var a= {
+                            title: 'Action',
+                            slot: 'action',
+                            width: 150,
+                            align: 'center'
+                        }
+                    for(let item in that.all_itemList){
+                        if(that.all_itemList[item].item_colums)
+                            that.all_itemList[item].item_colums.push(a)
+                    }
+                    console.log(arr);
+                })
+                console.log("ok")
             },
             show_detail(e){
                 console.log(e)
@@ -307,6 +411,31 @@ import ItemBlock from "./itemBlock"
                 //     content: `姓名：${this.data6[index].name}<br>年龄：${this.data6[index].age}<br>地址：${this.data6[index].address}`
                 // })
             },
+            modal_ok(){
+                let that=this
+                this.$axios.post(that.api + "/admin/goods/sku/"+that.spec_id+"/stock", {
+                        num: that.add_num
+                },{
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":that.token
+                    }
+                    }).then(function(e){
+                        console.log(e)
+                        location.reload
+                    }).catch(function(err){
+                        console.log(err)
+                })
+                console.log("ok")
+            },
+            modal_cancel(){
+                console.log("cancel")
+            },
+            parentFn(obj){
+                this.show=true;
+                this.total=obj.total;
+                this.spec_id=obj.id;
+            }
         }
 
     };

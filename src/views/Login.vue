@@ -21,7 +21,13 @@
               prop="password"
               style="width: 65%; margin: 8% 0 0 17.5%; border-radius: 10px;"
             >
-              <i-Input type="password" v-model="formInline.password" placeholder="密码" size="large">
+              <i-Input
+                type="password"
+                v-model="formInline.password"
+                placeholder="密码"
+                size="large"
+                @keyup.enter.native="handleSubmit()"
+              >
                 <Icon type="ios-lock-outline" slot="prepend" size="24" />
               </i-Input>
             </FormItem>

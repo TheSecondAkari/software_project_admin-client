@@ -1,4 +1,4 @@
-<style scoped>
+<style>
 /* 当前网页布局有问题，高度不能填满整个画面。 */
 .layout {
   border: 1px solid #d7dde4;
@@ -272,7 +272,11 @@
         <p>是否将该分类下的商品转移至其他分类当中？</p>
         <Select v-model="tran" style="width:200px">
           <OptionGroup v-for="item in data" :key="item.id" :label="item.name">
-            <Option v-for="item2 in item.childrens" :value="item2.id" :key="item2.id">{{ item2.name }}</Option>
+            <Option
+              v-for="item2 in item.childrens"
+              :value="item2.id"
+              :key="item2.id"
+            >{{ item2.name }}</Option>
           </OptionGroup>
         </Select>
       </div>
@@ -288,6 +292,7 @@ export default {
   data() {
     return {
       api: "/api",
+      token: "",
       second: false,
       edit_first: false, // 一级分类编辑页面显示
       edit_second: false, // 二级分类编辑页面显示
@@ -412,7 +417,7 @@ export default {
     };
   },
   mounted() {
-    console.log(sessionStorage.getItem("Authorization"));
+    this.token = sessionStorage.getItem("Authorization");
     this.all();
   },
   methods: {
@@ -447,7 +452,6 @@ export default {
       var that = this;
       this.$axios.get(that.api + "/categories").then(function(res) {
         that.data = res.data.data;
-        console.log(that.data);
       });
     },
 
@@ -490,7 +494,7 @@ export default {
         method: "PUT",
         url: that.api + "/admin/category/" + that.firstRow.id,
         headers: {
-          Authorization: sessionStorage.getItem("Authorization")
+          Authorization: that.token
         },
         data: {
           parent_id: that.firstRow.parent_id,
@@ -498,8 +502,7 @@ export default {
           picture: null
         }
       })
-        .then(function(res) {
-          console.log(res);
+        .then(function() {
           that.firstRow.name = that.firstName;
           that.$Message.success({
             content: "分类名称修改成功！",
@@ -507,8 +510,7 @@ export default {
             closable: true
           });
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function() {
           that.$Message.error({
             content: "分类名称修改失败！",
             duration: 1,
@@ -522,7 +524,7 @@ export default {
         method: "PUT",
         url: that.api + "/admin/category/" + that.secondRow.id,
         headers: {
-          Authorization: sessionStorage.getItem("Authorization")
+          Authorization: that.token
         },
         data: {
           parent_id: that.parent,
@@ -530,8 +532,7 @@ export default {
           picture: that.imgURL
         }
       })
-        .then(function(res) {
-          console.log(res);
+        .then(function() {
           that.secondRow.name = that.secondName;
           that.secondRow.picture = that.imgURL;
           if (that.parent != that.secondRow.parent_id) {
@@ -546,8 +547,7 @@ export default {
             closable: true
           });
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function() {
           that.$Message.error({
             content: "分类编辑失败！",
             duration: 1,
@@ -576,11 +576,10 @@ export default {
         method: "DELETE",
         url: that.api + "/admin/category/" + id,
         headers: {
-          Authorization: sessionStorage.getItem("Authorization")
+          Authorization: that.token
         }
       })
-        .then(function(res) {
-          console.log(res.data);
+        .then(function() {
           that.delFirst = false;
           that.data.splice(that.index, 1);
           that.$Message.success({
@@ -589,8 +588,7 @@ export default {
             closable: true
           });
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function() {
           that.$Message.error({
             content: "分类删除失败！",
             duration: 1,
@@ -606,11 +604,10 @@ export default {
         method: "DELETE",
         url: that.api + "/admin/category/" + id,
         headers: {
-          Authorization: sessionStorage.getItem("Authorization")
+          Authorization: that.token
         }
       })
-        .then(function(res) {
-          console.log(res.data);
+        .then(function() {
           that.translate = false;
           that.second_data.splice(that.index, 1);
           that.$Message.success({
@@ -619,8 +616,7 @@ export default {
             closable: true
           });
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function() {
           that.$Message.error({
             content: "分类删除失败！",
             duration: 1,
@@ -636,14 +632,13 @@ export default {
         method: "DELETE",
         url: that.api + "/admin/category/" + id,
         headers: {
-          Authorization: sessionStorage.getItem("Authorization")
+          Authorization: that.token
         },
         data: {
           change_id: that.tran
         }
       })
-        .then(function(res) {
-          console.log(res.data);
+        .then(function() {
           that.translate = false;
           that.second_data.splice(that.index, 1);
           that.$Message.success({
@@ -652,8 +647,7 @@ export default {
             closable: true
           });
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function() {
           that.$Message.error({
             content: "分类转移并删除失败！",
             duration: 1,
@@ -669,15 +663,14 @@ export default {
         method: "POST",
         url: that.api + "/admin/categories",
         headers: {
-          Authorization: sessionStorage.getItem("Authorization")
+          Authorization: that.token
         },
         data: {
           parent_id: 0,
           items: item
         }
       })
-        .then(function(res) {
-          console.log(res);
+        .then(function() {
           that.all();
           that.createName = "";
           that.$Message.success({
@@ -686,8 +679,7 @@ export default {
             closable: true
           });
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function() {
           that.$Message.error({
             content: "一级分类创建失败！",
             duration: 1,
@@ -701,15 +693,14 @@ export default {
         method: "POST",
         url: that.api + "/admin/categories",
         headers: {
-          Authorization: sessionStorage.getItem("Authorization")
+          Authorization: that.token
         },
         data: {
           parent_id: that.followTo,
           items: that.create
         }
       })
-        .then(function(res) {
-          console.log(res);
+        .then(function() {
           that.all();
           that.create = [
             {
@@ -724,8 +715,7 @@ export default {
             closable: true
           });
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function() {
           that.$Message.error({
             content: "二级分类创建失败！",
             duration: 1,
@@ -742,21 +732,23 @@ export default {
       });
     },
     revoke(index) {
-      console.log(index);
       this.create.splice(index, 1);
     },
 
     // 页面跳转
-    redirect(name){
+    redirect(name) {
       var that = this;
       var id = parseInt(name);
-      switch(id){
+      switch (id) {
+        case 1:
+          that.$router.push({ path: "/Classify" });
+          break;
         case 2:
-           that.$router.push({ path:'/itemManage'});
-           break;
+          that.$router.push({ path: "/itemManage" });
+          break;
         case 3:
           //  that.$router.push({ path:'/item_manage'});
-           break;
+          break;
         default:
           break;
       }

@@ -31,7 +31,6 @@
   display: inline-block;
   margin: -10% 0 0 20%;
 }
-
 </style>
 <template>
   <div class="layout">
@@ -39,7 +38,7 @@
       <Header></Header>
       <Layout>
         <Sider hide-trigger :style="{background: '#fff'}">
-          <Menu active-name="1" theme="light" width="auto">
+          <Menu active-name="1" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
             </MenuItem>
@@ -138,12 +137,21 @@
                           </Upload>
                         </i-Col>
                         <i-Col span="2" offset="2" v-if="index != 0">
-                          <Icon type="ios-close-circle" size="24" style="margin-top: 5px;" @click.native="revoke(index)"/>
+                          <Icon
+                            type="ios-close-circle"
+                            size="24"
+                            style="margin-top: 5px;"
+                            @click.native="revoke(index)"
+                          />
                         </i-Col>
                       </Row>
                     </FormItem>
                   </i-Form>
-                  <Button type="primary" @click="createSecond" style="margin: -2.5% 0 0 12.5%;">创建二级分类</Button>
+                  <Button
+                    type="primary"
+                    @click="createSecond"
+                    style="margin: -2.5% 0 0 12.5%;"
+                  >创建二级分类</Button>
                 </div>
               </Tab-pane>
             </Tabs>
@@ -218,6 +226,22 @@
       </div>
     </Modal>
 
+    <!-- 删除一级分类 -->
+    <Modal v-model="delFirst" width="360">
+      <p slot="header" style="color: #f60; text-align: center">
+        <Icon type="ios-information-circle"></Icon>
+        <span>确认删除该分类</span>
+      </p>
+      <div style="text-align:center">
+        <p>删除后该分类将从列表中消失！</p>
+        <p>是否继续删除该分类？</p>
+      </div>
+      <div slot="footer">
+        <Button style="margin-right: 30px;" @click="delFirst = false">取消</Button>
+        <Button type="error" style="margin-right: 80px;" @click="firstDel">删除</Button>
+      </div>
+    </Modal>
+
     <!-- 删除二级分类 -->
     <Modal v-model="delSecond" width="360">
       <p slot="header" style="color: #f60; text-align: center">
@@ -247,7 +271,9 @@
       <div style="text-align:center">
         <p>是否将该分类下的商品转移至其他分类当中？</p>
         <Select v-model="tran" style="width:200px">
-          <Option v-for="item in data" :value="item.name" :key="item.id">{{ item.name }}</Option>
+          <OptionGroup v-for="item in data" :key="item.id" :label="item.name">
+            <Option v-for="item2 in item.childrens" :value="item2.id" :key="item2.id">{{ item2.name }}</Option>
+          </OptionGroup>
         </Select>
       </div>
       <div slot="footer">
@@ -272,7 +298,7 @@ export default {
       second_title: "", // 二级分类页显示的标题
       parent: -1, // 所要编辑的二级分类要绑定的父类
       imgURL: "", // 所要编辑的二级分类的图片
-      tran: "", // 所要转移到的父类
+      tran: -1, // 所要转移到的父类
       firstRow: [], // 选中的一级分类行
       secondRow: [], // 选中的二级分类行
       firstName: "",
@@ -291,7 +317,7 @@ export default {
         {
           title: "分类编号",
           key: "id",
-          sortable: true,
+          sortable: true
         },
         {
           title: "分类名称",
@@ -396,17 +422,17 @@ export default {
       this.second_title = row.name;
     },
     remove(index) {
-      this.data.splice(index, 1);
+      this.delFirst = true;
+      this.index = index;
     },
-    // remove_(index) {
-    //   this.second_data.splice(index, 1);
-    // },
+
     editFirst(row, index) {
       this.edit_first = true;
       this.firstRow = row;
       this.index = index;
       this.firstName = row.name;
     },
+
     editSecond(row, index) {
       this.edit_second = true;
       this.secondRow = row;
@@ -508,6 +534,12 @@ export default {
           console.log(res);
           that.secondRow.name = that.secondName;
           that.secondRow.picture = that.imgURL;
+          if (that.parent != that.secondRow.parent_id) {
+            that.secondRow.parent_id = that.parent;
+            that.second_data.splice(that.secondRow._index, 1);
+            var temp = that.data.findIndex(value => value.id == that.parent);
+            that.data[temp].childrens.push(that.secondRow);
+          }
           that.$Message.success({
             content: "分类编辑成功！",
             duration: 1,
@@ -537,13 +569,97 @@ export default {
       this.index = index;
       this.delSecond = true;
     },
-    onlyDel() {
-      this.translate = false;
-      this.second_data.splice(this.index, 1);
+    firstDel() {
+      var that = this;
+      var id = this.data[this.index].id;
+      this.$axios({
+        method: "DELETE",
+        url: that.api + "/admin/category/" + id,
+        headers: {
+          Authorization: sessionStorage.getItem("Authorization")
+        }
+      })
+        .then(function(res) {
+          console.log(res.data);
+          that.delFirst = false;
+          that.data.splice(that.index, 1);
+          that.$Message.success({
+            content: "分类删除成功！",
+            duration: 1,
+            closable: true
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.$Message.error({
+            content: "分类删除失败！",
+            duration: 1,
+            closable: true
+          });
+        });
     },
+
+    onlyDel() {
+      var that = this;
+      var id = this.second_data[this.index].id;
+      this.$axios({
+        method: "DELETE",
+        url: that.api + "/admin/category/" + id,
+        headers: {
+          Authorization: sessionStorage.getItem("Authorization")
+        }
+      })
+        .then(function(res) {
+          console.log(res.data);
+          that.translate = false;
+          that.second_data.splice(that.index, 1);
+          that.$Message.success({
+            content: "分类删除成功！",
+            duration: 1,
+            closable: true
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.$Message.error({
+            content: "分类删除失败！",
+            duration: 1,
+            closable: true
+          });
+        });
+    },
+
     delAndTra() {
-      this.translate = false;
-      this.second_data.splice(this.index, 1);
+      var that = this;
+      var id = this.second_data[this.index].id;
+      this.$axios({
+        method: "DELETE",
+        url: that.api + "/admin/category/" + id,
+        headers: {
+          Authorization: sessionStorage.getItem("Authorization")
+        },
+        data: {
+          change_id: that.tran
+        }
+      })
+        .then(function(res) {
+          console.log(res.data);
+          that.translate = false;
+          that.second_data.splice(that.index, 1);
+          that.$Message.success({
+            content: "分类转移并删除成功！",
+            duration: 1,
+            closable: true
+          });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.$Message.error({
+            content: "分类转移并删除失败！",
+            duration: 1,
+            closable: true
+          });
+        });
     },
 
     createFirst() {
@@ -579,7 +695,7 @@ export default {
           });
         });
     },
-    createSecond(){
+    createSecond() {
       var that = this;
       this.$axios({
         method: "POST",
@@ -597,8 +713,8 @@ export default {
           that.all();
           that.create = [
             {
-              name: '',
-              picture: null,
+              name: "",
+              picture: null
             }
           ];
           that.followTo = -1;
@@ -617,15 +733,33 @@ export default {
           });
         });
     },
-    keepAdd(){
+
+    // 添加、撤销二级分类
+    keepAdd() {
       this.create.push({
-        name: '',
+        name: "",
         picture: null
-      })
+      });
     },
     revoke(index) {
-      console.log(index)
-      this.create.splice(index, 1)
+      console.log(index);
+      this.create.splice(index, 1);
+    },
+
+    // 页面跳转
+    redirect(name){
+      var that = this;
+      var id = parseInt(name);
+      switch(id){
+        case 2:
+           that.$router.push({ path:'/itemManage'});
+           break;
+        case 3:
+          //  that.$router.push({ path:'/item_manage'});
+           break;
+        default:
+          break;
+      }
     }
   }
 };

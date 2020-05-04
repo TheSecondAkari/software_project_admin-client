@@ -112,20 +112,22 @@ button {
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
           </Breadcrumb>
-          <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
+          <Content :style="{padding: '24px', minHeight: '700px', background: '#fff' , position: 'relative'}">
             <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
               <Tab-pane label="增加库存记录" key="key3"></Tab-pane>
               <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
             </Tabs>
-            <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
+            
+            <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 150px" />
+            <Cascader :data="sort" v-model="sort_type" style="margin-left:20px;width:150px;display:inline-block;"></Cascader>
             <Button type="primary" style="margin-left:10px;" @click="search()">查找</Button>
             <Button style="margin-left:10px;">新增</Button>
             <div style="height:20px;"></div>
             <div
               id="itemTable"
-              style="position:absolute;top: 30%;left:2%;right:0px;bottom:0px;overflow:auto;"
+              style="position:absolute;top:120px;left:20px;right:0px;bottom:0px;overflow:auto;"
             >
               <ItemBlock @showModal="parentFn" :itemList="itemList_father"></ItemBlock>
               <Page
@@ -163,6 +165,17 @@ export default {
   data() {
     return {
       api: "/api",
+      sort:[{
+        value:0,
+        label:"时间排序"
+      },{
+        value:1,
+        label:"销量排序"
+      },{
+        value:2,
+        label:"浏览量排序"
+      }],
+      sort_type:[0],//最终选择的排序方式
       token: "",
       currentPage: 1,
       totalNumber: 10,
@@ -298,7 +311,8 @@ export default {
       this.$axios
         .get(that.api + "/admin/goods/search", {
           params: {
-            key: that.input_item_name
+            key: that.input_item_name,
+            sort:that.sort_type[0]
           },
           headers: {
             Authorization: that.token
@@ -385,38 +399,39 @@ export default {
         that.$router.push({ path: "/imgManage" });
       }
     },
-    selectItem(index, e, p) {
-      console.log(index);
-      console.log(e.currentTarget.parentNode);
-      console.log(p);
-      // this.$Modal.info({
-      //     title: '用户信息',
-      //     content: `姓名：${this.data6[index].name}<br>年龄：${this.data6[index].age}<br>地址：${this.data6[index].address}`
-      // })
-    },
+    // selectItem(index, e, p) {
+    //   console.log(index);
+    //   console.log(e.currentTarget.parentNode);
+    //   console.log(p);
+    //   // this.$Modal.info({
+    //   //     title: '用户信息',
+    //   //     content: `姓名：${this.data6[index].name}<br>年龄：${this.data6[index].age}<br>地址：${this.data6[index].address}`
+    //   // })
+    // },
     modal_ok() {
-      let that = this;
-      this.$axios
-        .post(
-          that.api + "/admin/goods/sku/" + that.spec_id + "/stock",
-          {
-            num: that.add_num
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: that.token
-            }
-          }
-        )
-        .then(function(e) {
-          console.log(e);
-          location.reload;
-        })
-        .catch(function(err) {
-          console.log(err);
-        });
-      console.log("ok");
+      console.log("????????")
+      // let that = this;
+      // this.$axios
+      //   .post(
+      //     that.api + "/admin/goods/sku/" + that.spec_id + "/stock",
+      //     {
+      //       num: that.add_num
+      //     },
+      //     {
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Authorization: that.token
+      //       }
+      //     }
+      //   )
+      //   .then(function(e) {
+      //     console.log(e);
+      //     location.reload;
+      //   })
+      //   .catch(function(err) {
+      //     console.log(err);
+      //   });
+      // console.log("ok");
     },
     modal_cancel() {
       console.log("cancel");

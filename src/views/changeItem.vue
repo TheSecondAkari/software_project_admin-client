@@ -97,12 +97,12 @@ textarea {
           </Menu>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Breadcrumb :style="{margin: '24px 0'}">
+          <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content :style="{padding: '20px', minHeight: '700px', background: '#fff'}">
+          </Breadcrumb> -->
+          <Content :style="{padding: '20px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , marginTop: '20px'}">
             <div class="main_block">
               <div class="special">
                 <div style="padding-bottom:20px;">

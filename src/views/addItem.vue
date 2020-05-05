@@ -96,12 +96,12 @@ textarea {
           </Menu>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Breadcrumb :style="{margin: '24px 0'}">
+          <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
+          </Breadcrumb> -->
+          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff', marginTop: '20px'}">
             <Tabs active-key="key3" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
@@ -255,7 +255,7 @@ textarea {
                   <div style="clear:both;"></div>
                 </div>
                 <!-- <input type="file" @change="handleFileChange" ref="inputer" /> -->
-                <Button type="primary" @click="upload()">完成</Button>
+                <Button id="submit_button" type="primary" @click="upload()">完成</Button>
                 <Button style="margin-left:20px;">取消</Button>
               </div>
             </div>
@@ -382,6 +382,7 @@ export default {
   },
   methods: {
     upload() {
+      document.getElementById("submit_button").disabled=true;
       let name = this.name; //商品名
       let imgArray = this.imgList; //图片url
       let des = this.des; //商品描述
@@ -412,18 +413,18 @@ export default {
           sku.push(temp);
           price = price < parseInt(item.价格) ? price : parseInt(item.价格);
         }
-        console.log("有规格");
-        console.log("商品名：", name);
-        console.log("图片url：", imgArray);
-        console.log("商品详情：", des);
-        console.log("类别id：", cateId);
-        console.log("是否有规格分类：", ifType);
-        console.log("规格数目：", specNum);
-        console.log("规格名：", spec);
-        console.log("规格（options）：", options);
-        console.log("库存单位：", sku);
-        console.log("总库存：", total);
-        console.log("价格：", price);
+        // console.log("有规格");
+        // console.log("商品名：", name);
+        // console.log("图片url：", imgArray);
+        // console.log("商品详情：", des);
+        // console.log("类别id：", cateId);
+        // console.log("是否有规格分类：", ifType);
+        // console.log("规格数目：", specNum);
+        // console.log("规格名：", spec);
+        // console.log("规格（options）：", options);
+        // console.log("库存单位：", sku);
+        // console.log("总库存：", total);
+        // console.log("价格：", price);
         that.$axios
           .post(
             that.api + "/admin/goods",
@@ -449,8 +450,12 @@ export default {
           )
           .then(function(e) {
             console.log(e);
+            document.getElementById("submit_button").disabled=true;
+            that.$Message.info("新增成功");
+            location.reload()
           })
           .catch(function(err) {
+            that.$Message.info("新增失败");
             console.log(err);
           });
       } else {
@@ -485,9 +490,12 @@ export default {
           )
           .then(function(e) {
             console.log(e);
+            that.$Message.info("新增成功");
+            document.getElementById("submit_button").disabled=true;
           })
           .catch(function(err) {
             console.log(err);
+            that.$Message.info("新增失败");
           });
       }
     },

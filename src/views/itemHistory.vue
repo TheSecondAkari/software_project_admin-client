@@ -102,12 +102,12 @@ button {
           </Menu>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Breadcrumb :style="{margin: '24px 0'}">
+          <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
+          </Breadcrumb> -->
+          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff', marginTop: '20px'}">
             <Tabs active-key="3" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>

@@ -382,7 +382,8 @@ export default {
   },
   methods: {
     upload() {
-      document.getElementById("submit_button").disabled=true;
+      let button=document.getElementById("submit_button")
+      button.disabled=true;
       let name = this.name; //商品名
       let imgArray = this.imgList; //图片url
       let des = this.des; //商品描述
@@ -450,8 +451,8 @@ export default {
           )
           .then(function(e) {
             console.log(e);
-            document.getElementById("submit_button").disabled=true;
-            that.$Message.info("新增成功");
+            button.disabled=false;
+            that.$Message.info("商品新增成功");
             location.reload()
           })
           .catch(function(err) {
@@ -459,15 +460,15 @@ export default {
             console.log(err);
           });
       } else {
-        console.log("无规格");
-        console.log("商品名：", name);
-        console.log("类别id：", cateId);
-        console.log("图片url：", imgArray);
-        console.log("商品详情：", des);
-        console.log("是否有规格分类：", ifType);
-        console.log("总库存：", parseInt(this.totalNumber));
-        console.log("价格：", parseInt(this.outPrice));
-        console.log("进货价：", parseInt(this.inPrice));
+        // console.log("无规格");
+        // console.log("商品名：", name);
+        // console.log("类别id：", cateId);
+        // console.log("图片url：", imgArray);
+        // console.log("商品详情：", des);
+        // console.log("是否有规格分类：", ifType);
+        // console.log("总库存：", parseInt(this.totalNumber));
+        // console.log("价格：", parseInt(this.outPrice));
+        // console.log("进货价：", parseInt(this.inPrice));
         that.$axios
           .post(
             that.api + "/admin/goods",
@@ -490,8 +491,9 @@ export default {
           )
           .then(function(e) {
             console.log(e);
-            that.$Message.info("新增成功");
-            document.getElementById("submit_button").disabled=true;
+            button.disabled=false;
+            that.$Message.info("商品新增成功");
+            location.reload()
           })
           .catch(function(err) {
             console.log(err);

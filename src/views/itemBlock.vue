@@ -96,6 +96,18 @@ button {
       <div style="clear:both"></div>
       <Button id="change" style="position:absolute;top:30px;right:10%;">修改</Button>
       <Button
+        v-if="item.over==0"
+        type="warning"
+        style="position:absolute;top:80px;right:10%;"
+        @click="kill_item(item.item_id,item.item_name)"
+      >下架</button>
+      <Button
+        v-if="item.over==1"
+        type="warning"
+        style="position:absolute;top:80px;right:10%;"
+        @click="restock(item.item_id,item.item_name)"
+      >上架</button>
+      <Button
         type="primary"
         style="position:absolute;top:130px;right:10%;"
         v-if="item.item_colums"
@@ -125,7 +137,7 @@ export default {
     return {
       input_item_name: "",
       show: 0,
-      showORhide: "显示"
+      showORhide: "显示",
     };
   },
   methods: {
@@ -153,6 +165,20 @@ export default {
       console.log(row);
       console.log(index);
     },
+    kill_item(id,name){
+      let obj = {
+        id: id,
+        name: name
+      };
+      this.$emit("showModalDel",obj)
+    },
+    restock(id,name){
+      let obj = {
+        id: id,
+        name: name
+      };
+      this.$emit("showModalRe",obj)
+    }
   },
 };
 </script>

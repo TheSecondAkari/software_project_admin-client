@@ -22,11 +22,14 @@ body {
 </template>
 <script>
 export default {
+  name:'app',
   data() {
-    return {};
+    return {
+    };
   },
   mounted() {},
   beforeDestroy() {},
-  methods: {}
+  methods: {
+  }
 };
 </script>

@@ -57,12 +57,28 @@ button {
 .item_info {
   margin-top: 10px;
 }
-.test {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  background-color: yellow;
-  left: 180px;
+.rightMenu{
+  position: absolute;
+  padding: 20px;
+  right:0px;
+  top:64px;
+  bottom: 0px;
+  width:300px;
+  background:	#F0F8FF;
+  z-index: 100;
+}
+.back{
+  position: absolute;
+  top:0px;
+  right: 0px;
+  left: 0px;
+  bottom: 0px;
+}
+.search_des{
+  display: inline-block;
+  height:20px;
+  color: grey;
+  margin-left: 20px;
 }
 </style>
 <template>
@@ -105,36 +121,50 @@ button {
           </Menu>
         </Sider>
         <Layout
-          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'0px',top:'65px',right:'0px',overflow:'hidden'}"
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'0px',top:'65px',right:'0px',overflow:'hidden', minWidth: '1166px'}"
         >
-          <Breadcrumb :style="{margin: '24px 0'}">
+          <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
+          </Breadcrumb> -->
+          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px'}">
             <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
               <Tab-pane label="增加库存记录" key="key3"></Tab-pane>
               <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
             </Tabs>
-            <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
-            <Button type="primary" style="margin-left:10px;" @click="search()">查找</Button>
-            <Button style="margin-left:10px;">新增</Button>
+            <div style="height:50px;line-height:50px;">
+              <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 150px" />
+              <Cascader
+                :data="typeList"
+                v-model="model1"
+                style="width:150px;margin-left:10px;display:inline-block;"
+                change-on-select
+              ></Cascader>
+              <Button type="primary" style="margin-left:10px;" @click="search()">查找</Button>
+              <Button style="margin-left:10px;" @click="getAll()">重新加载</Button>
+              <!-- <Button style="margin-left:10px;">新增</Button> -->
+              <Button style="margin-left:10px;" @click="right_dis=true">查找选项</Button>
+              <div class="search_des">{{sortVal}} / {{sort[sort_type[0]].label}} / {{overdue}}</div>
+            </div>
+
             <div style="height:20px;"></div>
             <div
               id="itemTable"
-              style="position:absolute;top: 30%;left:2%;right:0px;bottom:0px;overflow:auto;"
+              style="position:absolute;top:120px;left:20px;right:0px;bottom:0px;overflow:auto;"
             >
-              <ItemBlock @showModal="parentFn" :itemList="itemList_father"></ItemBlock>
-              <Page
-                style="margin-top:20px;margin-left:75%;margin-bottom:10px;"
-                :total="totalNumber"
-                :page-size="pageSize"
-                @on-change="changePage"
-                show-total
-              />
+              <ItemBlock @showModal="parentFn" @showModalDel="del_item" @showModalRe="restock" :itemList="itemList_father"></ItemBlock>
+              <div style="height:60px;line-height:60px;display:flex;justify-content: center;">
+                <Page
+                  :total="totalNumber"
+                  :page-size="pageSize"
+                  @on-change="changePage"
+                  show-total
+                />
+              </div>
+
             </div>
             <Modal v-model="show" title="修改商品总数" @on-ok="modal_ok()" @on-cancel="modal_cancel()">
               <div style="margin-top:10px;">
@@ -148,10 +178,40 @@ button {
                 <Input v-model="add_num" style="width:200px" />
               </div>
             </Modal>
+            <Modal v-model="del" title="下架商品" @on-ok="del_ok()" @on-cancel="del_cancel()">
+              <div style="margin-top:10px;">
+                <p>确定要下架 <a>{{del_name}}</a> 吗</p>
+              </div>
+            </Modal>
+            <Modal v-model="re" title="重新上架商品" @on-ok="re_ok()" @on-cancel="re_cancel()">
+              <div style="margin-top:10px;">
+                <p>确定要重新上架 <a>{{re_name}}</a> 吗</p>
+              </div>
+            </Modal>
           </Content>
         </Layout>
       </Layout>
     </Layout>
+    <div class="rightMenu" v-show="right_dis">
+      <p>排序选项</p>
+      <RadioGroup style="margin-top:10px;" v-model="sortVal" type="button">
+          <Radio label="正序"></Radio>
+          <Radio label="倒序"></Radio>
+      </RadioGroup>
+      <p style="margin-top:10px;">排序方式</p>
+      <Cascader :data="sort" v-model="sort_type" style="margin-top:10px;width:150px;display:inline-block;"></Cascader>
+      <br>
+      <p>商品选项</p>
+      <RadioGroup style="margin-top:10px;" v-model="overdue" type="button">
+          <Radio label="未下架"></Radio>
+          <Radio label="已下架"></Radio>
+      </RadioGroup>
+      <p style="margin-top:20px;margin-bottom:10px;">共{{total_page}}页商品 <br>当前为第 {{now_page}} 页</p>
+      <Button type="primary" @click="prePage()" id="prebutton" disabled>上一页</Button>
+      <Button type="primary" style="margin-left:20px;" @click="nextPage()" id="nextbutton">下一页</Button> 
+      <!-- <Button style="margin-top:50px;" @click="right_dis=false">收起菜单</Button> -->
+    </div>
+    <div class="back" v-show="right_dis" @click="right_dis=false"></div>
   </div>
 </template>
 <script>
@@ -163,13 +223,37 @@ export default {
   data() {
     return {
       api: "/api",
+      sort:[{
+        value:0,
+        label:"时间排序"
+      },{
+        value:1,
+        label:"销量排序"
+      },{
+        value:2,
+        label:"浏览量排序"
+      }],
+      typeList:[],//商品分类的选择框
+      model1:[0],  //商品分类最终选择结果
+      sort_type:[0],//最终选择的排序方式
+      sortVal:'正序',//正序还是倒序
+      total_page:1, //商品总页数
+      now_page:1,//当前商品页数
+      overdue:'未下架', //设置查看未下架商品还是已下架商品
+      del_name:'',//准备下架的商品名
+      del_id:0,//准备下架的商品id
+      re_name:'',//准备重新上架商品名
+      re_id:0,//准备重新上架商品id
+      right_dis:false,
       token: "",
       currentPage: 1,
       totalNumber: 10,
-      pageSize: 5,
+      pageSize: 10,
       add_num: 0,
       input_item_name: "",
       show: false, //修改数量的框是否显示
+      del:false, //下架商品的框是否显示
+      re:false,//重新上架商品的框是否显示
       total: 0, //暂存当前要修改的商品数
       spec_id: 0, //暂存当前要修改的规格id
       itemList_father: [],
@@ -209,8 +293,10 @@ export default {
   },
   mounted() {
     this.token = sessionStorage.getItem("Authorization");
+    console.log(this.token)
     this.$refs.tabs.activeKey = 0;
     this.getAll();
+    this.getClass();
     let that = this;
     let a = document.getElementById("itemTable");
     function chooseItem(e) {
@@ -228,19 +314,44 @@ export default {
   methods: {
     getAll() {
       var that = this;
+      //model1[model1.length-1]
+      let sortVal=0;
+      if (this.sortVal!="正序")
+        sortVal=1;
+      let overdue=0;
+      if(this.overdue!="未下架")
+        overdue=1;
       this.$axios
         .get(that.api + "admin/goods", {
+          params: {
+            category_id: that.model1[that.model1.length-1],
+            sort:that.sort_type[0],
+            desc:sortVal,
+            overdue:overdue,
+            page:that.now_page
+          },
           headers: {
             Authorization: that.token
           }
         })
         .then(function(res) {
+          console.log(res)
+          if(res.data.data.count<=20)
+            document.getElementById("nextbutton").disabled=true
+          if(res.data.data.count%20==0)
+            that.total_page=res.data.data.count/20
+          else
+            that.total_page=Math.floor(res.data.data.count/20)+1
           that.totalNumber = res.data.data.rows;
           var arr = [];
           var temp = {};
           //let item=res.data.data.items[0];
           for (var item of res.data.data.items) {
             temp = {};
+            if(that.overdue=="未下架")
+              temp.over=0
+            else
+              temp.over=1
             temp.item_name = item.name;
             temp.item_obj = item.category.name;
             temp.item_id = item.id;
@@ -290,15 +401,20 @@ export default {
             if (that.all_itemList[item].item_colums)
               that.all_itemList[item].item_colums.push(a);
           }
-          console.log(arr);
         });
     },
     search() {
       let that = this;
+      let sortVal=1;
+      if (this.sortVal!="正序")
+        sortVal=0;
       this.$axios
         .get(that.api + "/admin/goods/search", {
           params: {
-            key: that.input_item_name
+            key: that.input_item_name,
+            category_id: that.model1[that.model1.length-1],
+            sort:that.sort_type[0],
+            desc:sortVal
           },
           headers: {
             Authorization: that.token
@@ -360,9 +476,115 @@ export default {
             if (that.all_itemList[item].item_colums)
               that.all_itemList[item].item_colums.push(a);
           }
-          console.log(arr);
         });
-      console.log("ok");
+    },
+    getClass() {
+      var that = this;
+      this.$axios.get(that.api + "/categories", {}).then(function(res) {
+        console.log(res.data.data);
+        let arr = res.data.data;
+        let temp = [];
+        let obj = {};
+        for (var item of arr) {
+          obj = {
+            value: item.id,
+            label: item.name
+          };
+          let children = [];
+          let inObj = {};
+          if (item.childrens.length > 0) {
+            for (var inItem of item.childrens) {
+              inObj = {
+                value: inItem.id,
+                label: inItem.name
+              };
+              children.push(inObj);
+            }
+            obj.children = children;
+          }
+          temp.push(obj);
+        }
+        obj = {
+          value: 0,
+          label: "全部分类"
+        };
+        temp.unshift(obj)
+        that.typeList = temp;
+        console.log(that.typeList)
+      });
+    },
+    nextPage(){
+      document.getElementById("prebutton").disabled=false
+      this.now_page=this.now_page+1
+      if(this.now_page==this.total_page){
+        document.getElementById("nextbutton").disabled=true
+      }
+      this.getAll()
+    },
+    prePage(){
+      document.getElementById("nextbutton").disabled=false
+      this.now_page=this.now_page-1
+      if(this.now_page==1){
+        document.getElementById("prebutton").disabled=true
+      }
+      this.getAll()
+    },
+    del_item(e){
+      this.del=true
+      this.del_id=e.id
+      this.del_name=e.name
+      console.log(e)
+    },
+    restock(e){
+      this.re=true
+      this.re_id=e.id
+      this.re_name=e.name
+      console.log(e)
+    },
+    del_ok(){
+      let that = this;
+      this.$axios
+        .delete(
+          that.api + "/admin/goods/"+that.del_id,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: that.token
+            }
+          }
+        )
+        .then(function(e) {
+          console.log(e);
+          location.reload();
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    },
+    del_cancel(){
+
+    },
+    re_ok(){
+      let that = this;
+      this.$axios
+        .post(
+          that.api + "/admin/goods/" + that.re_id + "/putaway",{},
+          {
+            headers: {
+              Authorization: that.token
+            }
+          }
+        )
+        .then(function(e) {
+          console.log(e);
+          location.reload();
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    },
+    re_cancel(){
+
     },
     show_detail(e) {
       console.log(e);
@@ -385,15 +607,15 @@ export default {
         that.$router.push({ path: "/imgManage" });
       }
     },
-    selectItem(index, e, p) {
-      console.log(index);
-      console.log(e.currentTarget.parentNode);
-      console.log(p);
-      // this.$Modal.info({
-      //     title: '用户信息',
-      //     content: `姓名：${this.data6[index].name}<br>年龄：${this.data6[index].age}<br>地址：${this.data6[index].address}`
-      // })
-    },
+    // selectItem(index, e, p) {
+    //   console.log(index);
+    //   console.log(e.currentTarget.parentNode);
+    //   console.log(p);
+    //   // this.$Modal.info({
+    //   //     title: '用户信息',
+    //   //     content: `姓名：${this.data6[index].name}<br>年龄：${this.data6[index].age}<br>地址：${this.data6[index].address}`
+    //   // })
+    // },
     modal_ok() {
       let that = this;
       this.$axios
@@ -411,12 +633,11 @@ export default {
         )
         .then(function(e) {
           console.log(e);
-          location.reload;
+          location.reload();
         })
         .catch(function(err) {
           console.log(err);
         });
-      console.log("ok");
     },
     modal_cancel() {
       console.log("cancel");

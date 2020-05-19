@@ -57,6 +57,7 @@ textarea {
 .img_block {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-end;
 }
 </style>
 <template>
@@ -96,12 +97,12 @@ textarea {
           </Menu>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Breadcrumb :style="{margin: '24px 0'}">
+          <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content :style="{padding: '20px', minHeight: '700px', background: '#fff'}">
+          </Breadcrumb> -->
+          <Content :style="{padding: '20px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , marginTop: '20px'}">
             <div class="main_block">
               <div class="special">
                 <div style="padding-bottom:20px;">
@@ -170,7 +171,7 @@ textarea {
                     <div
                       v-for="(item,key) in imgList"
                       :key="key"
-                      style="position:relative;height:120px;width:150px;margin-right:10px;"
+                      style="position:relative;height:150px;width:150px;margin-right:10px;"
                     >
                       <img
                         v-bind:src="del_url"
@@ -179,7 +180,7 @@ textarea {
                       />
                       <img
                         :src="item"
-                        style="position:absolute;height100px;width:135px;top:15px;left:0px;"
+                        style="position:absolute;height:135px;width:135px;top:15px;left:0px;"
                       />
                     </div>
                     <Upload
@@ -202,7 +203,7 @@ textarea {
                       </div>
                     </Upload>
                   </div>
-                  <Button type="primary" style=" margin-top:20px;" @click="submit_des()">提交修改</Button>
+                  <Button id="submitButton" type="primary" style=" margin-top:20px;" @click="submit_des()">提交修改</Button>
                 </div>
 
                 <Modal v-model="modal1" title="修改规格" @on-ok="okIn" @on-cancel="cancelIn">
@@ -419,6 +420,8 @@ export default {
     },
     submit_des() {
       let that = this;
+      let a=document.getElementById("submitButton");
+      a.disabled=true;
       that.$axios
         .put(
           that.api + "/admin/goods/" + this.id,
@@ -436,8 +439,10 @@ export default {
           }
         )
         .then(function(e) {
+          a.disabled=false;
           console.log(e);
-          that.onload();
+          that.$Message.info("修改成功");
+          location.reload();
         })
         .catch(function(err) {
           console.log(err);
@@ -449,12 +454,10 @@ export default {
     getFile() {
       this.$refs.getF.click();
     },
-    get_name(e) {
+    get_name() {
       var filename = this.$refs.getF.value;
       var filenames = filename.split("\\");
       filename = filenames[filenames.length - 1];
-      console.log(filename);
-      console.log(e.target.files[0]);
     },
     okIn() {
       let that = this;
@@ -475,7 +478,7 @@ export default {
         .then(function(e) {
           console.log(e);
           that.$Message.info("修改成功");
-          that.onload();
+          location.reload();
         })
         .catch(function(err) {
           console.log(err);

@@ -35,7 +35,7 @@ button {
   width: 500px;
   border-bottom: 1px solid grey;
   position: relative;
-  padding: 20px;
+  padding: 15px;
   overflow: hidden;
   /* border: 1px solid gray; */
 }
@@ -74,18 +74,25 @@ button {
 .rightForm {
   padding: 10px;
   position: absolute;
-  margin-top: 20px;
-  float: left;
+  top:80px;
   width: 525px;
   left: 500px;
   height: 590px;
   background-color: #f5f7f9;
-  position: relative;
 }
 .Page {
   position: absolute;
   bottom: 10px;
   left: 160px;
+}
+.pageDiv{
+  position: absolute;
+  bottom: 15px;
+  padding-bottom:10px;
+  left:0px;
+  right:0px;
+  display: flex;
+  justify-content: center;
 }
 </style>
 <template>
@@ -125,12 +132,12 @@ button {
           </Menu>
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
-          <Breadcrumb :style="{margin: '24px 0'}">
+          <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content :style="{padding: '24px', minHeight: '700px', background: '#fff'}">
+          </Breadcrumb> -->
+          <Content :style="{padding: '24px', minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px'}">
             <Tabs active-key="4" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
@@ -138,8 +145,8 @@ button {
               <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
             </Tabs>
             <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
-            <button style="margin-left:10px;">查找</button>
-            <div style="width:100%;position:relative;">
+            <Button @click="search()" style="margin-left:10px;" type="primary">查找</Button>
+            <!-- <div style="width:100%;position:relative;"> -->
               <div class="leftForm">
                 <Table
                   border
@@ -154,10 +161,12 @@ button {
                     <a @click="moveDown(index)" style="margin-left:10px;">下移</a>
                   </template>
                 </Table>
+                <Button id="submitImg" style="margin-top:20px;" @click="submitImg()">提交轮播图</Button>
               </div>
-              <div class="rightForm">
+            <!-- </div> -->
+            <div class="rightForm">
                 <div class="item_block" v-for=" (item,key) in itemList" :key="key" :id="key">
-                  <div class="item_img"></div>
+                  <img :src="item.img_url" class="item_img">
                   <div class="item_info_block">
                     <div class="item_info">
                       <b>商品id：</b>
@@ -184,21 +193,21 @@ button {
                       {{item.item_total_left}}
                     </div>
                   </div>
-                  <button
+                  <Button
                     style="position:absolute;right:20px;bottom:20px;"
                     @click="addTo($event)"
-                  >添加到轮播图</button>
+                  >添加到轮播图</Button>
                   <div style="clear:both"></div>
                 </div>
-                <Page
-                  class="Page"
-                  :total="totalNumber"
-                  :page-size="pageSize"
-                  @on-change="changePage"
-                  show-total
-                />
+                <div class="pageDiv">
+                  <Page
+                    :total="totalNumber"
+                    :page-size="pageSize"
+                    @on-change="changePage"
+                    show-total
+                  />
+                </div>
               </div>
-            </div>
           </Content>
         </Layout>
       </Layout>
@@ -209,6 +218,8 @@ button {
 export default {
   data() {
     return {
+      api:"/api",
+      token:"",
       currentPage: 1,
       totalNumber: 0,
       pageSize: 3,
@@ -232,67 +243,142 @@ export default {
         }
       ],
       selectedList: [
-        {
-          id: 12,
-          name: "小米电视"
-        },
-        {
-          id: 43,
-          name: "台灯"
-        },
-        {
-          id: 54,
-          name: "水壶"
-        }
+        // {
+        //   id: 12,
+        //   name: "小米电视"
+        // }
       ],
       all_itemList: [
-        {
-          item_name: "小米手机",
-          item_obj: "手机",
-          item_id: 1,
-          item_price: 2999,
-          item_viewed_times: 4,
-          item_total_left: 999
-        },
-        {
-          item_name: "小米手机",
-          item_obj: "手机",
-          item_id: 2,
-          item_price: 2999,
-          item_viewed_times: 4,
-          item_total_left: 999
-        },
-        {
-          item_name: "小米手机",
-          item_obj: "手机",
-          item_id: 3,
-          item_price: 2999,
-          item_viewed_times: 4,
-          item_total_left: 999
-        },
-        {
-          item_name: "小米手机",
-          item_obj: "手机",
-          item_id: 4,
-          item_price: 2999,
-          item_viewed_times: 4,
-          item_total_left: 999
-        }
+        // {
+        //   item_name: "小米手机",
+        //   item_obj: "手机",
+        //   item_id: 1,
+        //   item_price: 2999,
+        //   item_viewed_times: 4,
+        //   item_total_left: 999
+        // }
       ]
     };
   },
   mounted() {
-    this.totalNumber = this.all_itemList.length;
-    this.$refs.tabs.activeKey = 3;
-    var temp = this.all_itemList;
-    var size = this.pageSize;
-    this.currentPage = 1;
-    this.itemList = temp.slice(0, size);
-    this.img_number = this.selectedList.length;
+    this.token = sessionStorage.getItem("Authorization");
+    this.getImgList();
+    this.getItem();
   },
   methods: {
     test(id) {
       console.log(id);
+    },
+    getImgList(){
+      let that=this
+      this.$axios.get(this.api + "/carousel")
+      .then(function(res){
+          let data=res.data.data
+          let temp_arr=[]
+          let temp_obj={}
+          for(let item of data){
+            temp_obj={};
+            temp_obj.id=item.id;
+            temp_obj.name=item.name;
+            temp_arr.push(temp_obj);
+          }
+          that.selectedList=temp_arr;
+        }
+      )
+    },
+    getItem(){
+      var that = this;
+      this.$axios
+        .get(that.api + "admin/goods", {
+          headers: {
+            Authorization: that.token
+          }
+        })
+        .then(function(res) {
+          let data=res.data.data
+          console.log(data)
+          let temp_arr=[]
+          let temp_obj={}
+          for(let item of data.items){
+            temp_obj={};
+            temp_obj.item_name=item.name;
+            temp_obj.item_obj=item.category.name;
+            temp_obj.item_id=item.id;
+            temp_obj.item_price=item.price;
+            temp_obj.item_viewed_times=item.view
+            temp_obj.item_total_left=item.stock_num
+            temp_obj.img_url=item.pic[0]
+            temp_arr.push(temp_obj)
+          }
+          that.slicePage(temp_arr)
+        });
+    },
+    slicePage(temp_arr){
+      let that=this
+      that.all_itemList=temp_arr;
+      that.totalNumber = that.all_itemList.length;
+      that.$refs.tabs.activeKey = 3;
+      var temp = that.all_itemList;
+      var size = that.pageSize;
+      that.currentPage = 1;
+      that.itemList = temp.slice(0, size);
+      that.img_number = that.selectedList.length;
+    },
+    search() {
+      let that = this;
+      this.$axios
+        .get(that.api + "/admin/goods/search", {
+          params: {
+            key: that.input_item_name
+          },
+          headers: {
+            Authorization: that.token
+          }
+        })
+        .then(function(res) {
+          let data=res.data.data
+          console.log(data)
+          let temp_arr=[]
+          let temp_obj={}
+          for(let item of data.items){
+            temp_obj={};
+            temp_obj.item_name=item.name;
+            temp_obj.item_obj=item.category.name;
+            temp_obj.item_id=item.id;
+            temp_obj.item_price=item.price;
+            temp_obj.item_viewed_times=item.view
+            temp_obj.item_total_left=item.stock_num
+            temp_obj.img_url=item.pic[0]
+            temp_arr.push(temp_obj)
+          }
+          that.slicePage(temp_arr)
+        });
+      console.log("ok");
+    },
+    submitImg(){
+      document.getElementById("submitImg").disabled=true;
+      let that=this
+      let temp_arr=this.selectedList;
+      let submit_arr=[]
+      for(let item of temp_arr){
+        submit_arr.push(item.id)
+      }
+      this.$axios.post(
+        that.api + "/admin/carousel",
+        {
+          goods_id: submit_arr
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: that.token
+          }
+        })
+        .then(function(res){
+          console.log(res)
+          that.$Message.info("修改成功");
+          document.getElementById("submitImg").disabled=false;
+        })
     },
     show_detail(e) {
       console.log(e);

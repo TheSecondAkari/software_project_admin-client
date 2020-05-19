@@ -11,7 +11,7 @@
             style="height: 100px; width: 100px; margin: 10% 0 0 40%;"
           />
           <div style="margin: 5% 0 0 27%; font-size: 28px; font-family: STKaiti">天东易宝管理系统</div>
-          <i-Form ref="formInline" :model="formInline" :rules="ruleInline">
+          <i-Form :model="formInline" :rules="ruleInline">
             <FormItem prop="user" style="width: 65%; margin: 8% 0 0 17.5%;">
               <i-Input type="text" v-model="formInline.user" placeholder="用户名" size="large">
                 <Icon type="ios-contact" slot="prepend" size="24" />
@@ -21,7 +21,13 @@
               prop="password"
               style="width: 65%; margin: 8% 0 0 17.5%; border-radius: 10px;"
             >
-              <i-Input type="password" v-model="formInline.password" placeholder="密码" size="large">
+              <i-Input
+                type="password"
+                v-model="formInline.password"
+                placeholder="密码"
+                size="large"
+                @keyup.enter.native="handleSubmit()"
+              >
                 <Icon type="ios-lock-outline" slot="prepend" size="24" />
               </i-Input>
             </FormItem>
@@ -66,22 +72,23 @@ export default {
   },
   methods: {
     handleSubmit() {
-      // var that = this;
-      // var name = this.formInline.user;
-      // var password = this.formInline.password;
-      this.$router.push({path: "/classify"});
-      // this.$axios
-      //   .post("api/admin/auth", {
-      //     name: name,
-      //     password: password
-      //   })
-      //   .then(function(res) {
-      //     console.log(res.data);
-      //   })
-      //   .catch(function(err) {
-      //     console.log(err);
-      //     that.show = true;
-      //   });
+      var that = this;
+      var name = this.formInline.user;
+      var password = this.formInline.password;
+      this.$axios
+        .post("/api/admin/auth", {
+          name: name,
+          password: password
+        })
+        .then(function(res) {
+          console.log(res.data);
+          sessionStorage.setItem("Authorization", res.data.Authorization);
+          that.$router.push({ path: "/classify" });
+        })
+        .catch(function(err) {
+          console.log(err);
+          that.show = true;
+        });
     }
   }
 };

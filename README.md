@@ -1,5 +1,6 @@
 # admin-client
-##需要 npm install view-design --save  // vue-router
+##管理端原型设计 https://www.cbfgo.cn/archetype/admin
+##需要 npm install view-design --save  // vue-router // vue-quill-editor
 ## Project setup
 ```
 npm install

@@ -9,44 +9,51 @@ const routers = [
     {
         path: '/classify',
         meta: {
-            title: '首页'
+            title: '分类管理'
         },
         component: (resolve) => require(['./views/Classify.vue'], resolve)
     },
     {
-        path: '/item_manage',
+        path: '/itemManage',
         meta: {
             title: '商品管理'
         },
-        component: (resolve) => require(['./views/item_manage.vue'], resolve)
+        component: (resolve) => require(['./views/itemManage.vue'], resolve)
     },
     {
-        path: '/item_block',
+        path: '/itemBlock',
         meta: {
             title: '商品详情组件'
         },
-        component: (resolve) => require(['./views/item_block.vue'], resolve)
+        component: (resolve) => require(['./views/itemBlock.vue'], resolve)
     },
     {
-        path: '/add_item',
+        path: '/addItem',
         meta: {
             title: '新增商品'
         },
-        component: (resolve) => require(['./views/add_item.vue'], resolve)
+        component: (resolve) => require(['./views/addItem.vue'], resolve)
     },
     {
-        path: '/item_history',
+        path: '/changeItem/:id',
+        meta: {
+            title: '修改商品'
+        },
+        component: (resolve) => require(['./views/changeItem.vue'], resolve)
+    },
+    {
+        path: '/itemHistory',
         meta: {
             title: '修改记录'
         },
-        component: (resolve) => require(['./views/item_history.vue'], resolve)
+        component: (resolve) => require(['./views/itemHistory.vue'], resolve)
     },
     {
-        path: '/img_manage',
+        path: '/imgManage',
         meta: {
             title: '轮播图管理'
         },
-        component: (resolve) => require(['./views/img_manage.vue'], resolve)
+        component: (resolve) => require(['./views/imgManage.vue'], resolve)
     },
     {
         path: '/test',

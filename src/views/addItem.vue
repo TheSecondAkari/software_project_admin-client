@@ -388,7 +388,7 @@ export default {
       let imgArray = this.imgList; //图片url
       let des = this.des; //商品描述
       let cateId = this.model1[this.model1.length - 1]; //类别id
-      let ifType = false; //是否有分类规格
+      // let ifType = false; //是否有分类规格
       let spec = []; //商品规格名称
       let options = []; //每个规格的内部分类
       let sku = []; //具体商品细节内容（如定价等）
@@ -397,7 +397,7 @@ export default {
       var that = this;
       if (this.itemType.length > 0) {
         let specNum = this.itemType.length;
-        ifType = true;
+        // ifType = true;
         for (let item of this.itemType) {
           spec.push(item.typeName);
           options.push(item.type);

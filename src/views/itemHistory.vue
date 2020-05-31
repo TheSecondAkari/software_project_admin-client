@@ -5,7 +5,6 @@
   background: #f5f7f9;
   position: relative;
   border-radius: 4px;
-  overflow: hidden;
   height: 100%;
 }
 .layout-logo {
@@ -30,14 +29,6 @@ button {
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 5px;
-}
-.item_block {
-  width: 99%;
-  border-bottom: 1px solid grey;
-  position: relative;
-  padding: 20px;
-  overflow: hidden;
-  /* border: 1px solid gray; */
 }
 .item_img {
   height: 160px;
@@ -68,27 +59,15 @@ button {
 <template>
   <div class="layout">
     <Layout>
-      <Header>
+      <Header :style="{height: '65px'}">
         <Menu mode="horizontal" theme="dark" active-name="1">
-          <div class="layout-logo"></div>
-          <div class="layout-nav">
-            <MenuItem name="1">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </MenuItem>
-            <MenuItem name="2">
-              <Icon type="ios-keypad"></Icon>Item 2
-            </MenuItem>
-            <MenuItem name="3">
-              <Icon type="ios-analytics"></Icon>Item 3
-            </MenuItem>
-            <MenuItem name="4">
-              <Icon type="ios-paper"></Icon>Item 4
-            </MenuItem>
-          </div>
         </Menu>
       </Header>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
+        <Sider 
+          hide-trigger 
+          :style="{position:'absolute',top:'65px',bottom:'0px', background: '#fff'}"
+        >
           <Menu active-name="2" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
@@ -101,29 +80,25 @@ button {
             </MenuItem>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
-          <!-- <Breadcrumb :style="{margin: '24px 0'}">
-            <BreadcrumbItem>Home</BreadcrumbItem>
-            <BreadcrumbItem>Components</BreadcrumbItem>
-            <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb> -->
-          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff', marginTop: '20px'}">
-            <Tabs active-key="3" @on-click="choosePage" ref="tabs">
+        <Layout 
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'65px',right:'0px',overflow:'auto'}"
+          >
+          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px'}">
+            <Tabs active-key="key3" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
               <Tab-pane label="增加库存记录" key="key3"></Tab-pane>
               <Tab-pane label="轮播图管理" key="key4"></Tab-pane>
             </Tabs>
-            <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
-            <Button type="primary" style="margin-left:10px;">查找</Button>
-            <Page
-              style="margin-top:20px;"
-              :total="totalNumber"
-              :page-size="pageSize"
-              @on-change="changePage"
-              show-total
-            />
-            <Table border :columns="item_colums" :data="itemList_father" style="margin-top:20px;"></Table>
+            <!-- <Input v-model="input_item_name" placeholder="请输入商品名" style="width: 300px" />
+            <Button type="primary" style="margin-left:10px;">查找</Button> -->
+            <Button style="margin-left:10px;" @click="prePage()" id="pre">上一页</Button>
+            <Button type="primary" style="margin-left:10px;" @click="nextPage()" id="next">下一页</Button>
+            <p style="margin-left:10px;display:inline-block;">第 {{get_page}} 页</p>
+            <p style="display:inline-block;margin-left:10px;">共 {{total_page}} 页</p>
+            <div style="left:20px;right:20px;position:absolute;overflow:auto;top:120px;bottom:0px;">
+              <Table border :columns="item_colums" :data="itemList_father"></Table>
+            </div>
           </Content>
         </Layout>
       </Layout>
@@ -138,9 +113,11 @@ export default {
       token: "",
       currentPage: 1,
       totalNumber: 10,
-      pageSize: 10,
+      pageSize: 20,
       input_item_name: "",
       itemList_father: [],
+      get_page:1,  //获取第几页的商品记录
+      total_page:0,   //总商品记录页数
       item_colums: [
         {
           title: "商品ID",
@@ -172,6 +149,8 @@ export default {
   mounted() {
     this.token = sessionStorage.getItem("Authorization");
     this.getAll();
+    let pre=document.getElementById("pre")
+    pre.disabled=true;
   },
   methods: {
     test(id) {
@@ -179,14 +158,25 @@ export default {
     },
     getAll() {
       var that = this;
+      console.log(this.get_page)
       this.$axios
         .get(that.api + "/admin/records", {
+          params:{
+            page:that.get_page
+          },
           headers: {
             Authorization: that.token
           }
         })
         .then(function(res) {
-          console.log(res.data);
+          if(res.data.count<=20){
+            let next=document.getElementById("next")
+            next.disabled=true;
+          }
+          if(res.data.count%20==0)
+            that.total_page=res.data.count/20
+          else
+            that.total_page=Math.floor(res.data.count/20)+1
           that.totalNumber = res.data.rows;
           let tempArr = [];
 
@@ -240,7 +230,22 @@ export default {
         that.$router.push({ path: "/imgManage" });
       }
     },
-
+    prePage(){
+      document.getElementById("next").disabled=false
+      this.get_page=this.get_page-1
+      if(this.get_page==0){
+        document.getElementById("pre").disabled=true
+      }
+      this.getAll()
+    },
+    nextPage(){
+      document.getElementById("pre").disabled=false
+      this.get_page=this.get_page+1
+      if(this.get_page==this.total_page){
+        document.getElementById("next").disabled=true
+      }
+      this.getAll()
+    },
     // 侧边栏页面跳转
     redirect(name) {
       console.log("");

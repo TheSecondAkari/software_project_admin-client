@@ -65,21 +65,6 @@ textarea {
     <Layout>
       <Header>
         <Menu mode="horizontal" theme="dark" active-name="1">
-          <div class="layout-logo"></div>
-          <div class="layout-nav">
-            <MenuItem name="1">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </MenuItem>
-            <MenuItem name="2">
-              <Icon type="ios-keypad"></Icon>Item 2
-            </MenuItem>
-            <MenuItem name="3">
-              <Icon type="ios-analytics"></Icon>Item 3
-            </MenuItem>
-            <MenuItem name="4">
-              <Icon type="ios-paper"></Icon>Item 4
-            </MenuItem>
-          </div>
         </Menu>
       </Header>
       <Layout>
@@ -96,7 +81,7 @@ textarea {
             </MenuItem>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
+        <Layout :style="{padding: '0 24px 24px',overflow:'auto'}">
           <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
@@ -168,20 +153,39 @@ textarea {
                     ></quill-editor>
                   </div>
                   <div style="margin-top:10px; display:flex;flex-wrap:wrap;">
-                    <div
+                    <!-- <div
                       v-for="(item,key) in imgList"
                       :key="key"
-                      style="position:relative;height:150px;width:150px;margin-right:10px;"
+                      style="position:relative;height:100px;width:100px;margin-right:10px;background:#d7dde4;border-radius:5px;"
                     >
                       <img
                         v-bind:src="del_url"
                         style="position:absolute;top:0px;right:0px;height:15px;height:15px;"
                         @click="del_img(key)"
                       />
-                      <img
-                        :src="item"
-                        style="position:absolute;height:135px;width:135px;top:15px;left:0px;"
-                      />
+                      <div style="position:absolute;height：85px;width:85px;top:10px;left:0px;display:flex;align-items:center;justify-content:center;">
+                        <img
+                          :src="item"
+                          style="max-width:85px;max-height:85px;"
+                        />
+                      </div>
+                    </div> -->
+                    <div
+                      v-for="(item,key) in imgList"
+                      :key="key"
+                      style="position:relative;height:100px;width:100px;margin-right:10px;background:#d7dde4;border-radius:5px;"
+                    >
+                      <div style="border-radius:5px 5px 0px 0px ;height:75px;width:100px;display:flex;align-items:center;justify-content:center;align-items:center">
+                        <img
+                          :src="item"
+                          style="max-width:100px;max-height:75px;"
+                        />
+                      </div>
+                      <div 
+                        style="height:25px;width:100px;background:grey;border-radius: 0px 0px 5px 5px ;display:flex;align-items:center;justify-content:center;align-items:center;color:white"
+                        @click="del_img(key)">
+                        删除
+                      </div>
                     </div>
                     <Upload
                       ref="upload"
@@ -365,12 +369,32 @@ export default {
               tempIn.进货价 = item.purchase_price;
               tempIn.售价 = item.price;
               tempIn.数量 = item.stock_num;
+              console.log(tempIn)
               for (let item2 of item.options) {
                 tempIn[item_colums[count + 1].title] = item2.name;
                 count++;
               }
               item_details.push(tempIn);
             }
+          }
+          else{
+            item_colums.push({ title: "id", key: "ID" });
+            item_colums.push({ title: "数量", key: "数量" });
+            item_colums.push({ title: "进货价", key: "进货价" });
+            item_colums.push({ title: "售价", key: "售价" });
+            item_colums.push({
+              title: "Action",
+              slot: "action",
+              width: 150,
+              align: "center"
+            });
+            let tempIn={}
+            tempIn = {};
+            tempIn.ID = data.sku[0].id;
+            tempIn.进货价 = data.sku[0].purchase_price;
+            tempIn.售价 = data.sku[0].price;
+            tempIn.数量 = data.sku[0].stock_num;
+            item_details.push(tempIn);
           }
           console.log(item_colums);
           console.log(item_details);

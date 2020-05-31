@@ -61,7 +61,7 @@ button {
   position: absolute;
   padding: 20px;
   right:0px;
-  top:64px;
+  top:65px;
   bottom: 0px;
   width:300px;
   background:	#F0F8FF;
@@ -84,29 +84,14 @@ button {
 <template>
   <div class="layout">
     <Layout>
-      <Header>
+      <Header :style="{height: '65px'}">
         <Menu mode="horizontal" theme="dark" active-name="1">
-          <div class="layout-logo"></div>
-          <div class="layout-nav">
-            <MenuItem name="1">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </MenuItem>
-            <MenuItem name="2">
-              <Icon type="ios-keypad"></Icon>Item 2
-            </MenuItem>
-            <MenuItem name="3">
-              <Icon type="ios-analytics"></Icon>Item 3
-            </MenuItem>
-            <MenuItem name="4">
-              <Icon type="ios-paper"></Icon>Item 4
-            </MenuItem>
-          </div>
         </Menu>
       </Header>
       <Layout>
         <Sider
           hide-trigger
-          :style="{position:'absolute',top:'65px',bottom:'0px', background: '#fff'}"
+          :style="{position:'absolute',overflow:'auto' ,top:'65px',bottom:'0px', background: '#fff'}"
         >
           <Menu active-name="2" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
@@ -121,14 +106,9 @@ button {
           </Menu>
         </Sider>
         <Layout
-          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'0px',top:'65px',right:'0px',overflow:'hidden', minWidth: '1166px'}"
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'65px',right:'0px',overflow:'auto',}"
         >
-          <!-- <Breadcrumb :style="{margin: '24px 0'}">
-            <BreadcrumbItem>Home</BreadcrumbItem>
-            <BreadcrumbItem>Components</BreadcrumbItem>
-            <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb> -->
-          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px'}">
+          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px' ,overflow:'auto'}">
             <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
@@ -153,7 +133,7 @@ button {
             <div style="height:20px;"></div>
             <div
               id="itemTable"
-              style="position:absolute;top:120px;left:20px;right:0px;bottom:0px;overflow:auto;"
+              style="position:absolute;top:120px;left:20px;right:20px;bottom:0px;overflow:auto;"
             >
               <ItemBlock @showModal="parentFn" @showModalDel="del_item" @showModalRe="restock" :itemList="itemList_father"></ItemBlock>
               <div style="height:60px;line-height:60px;display:flex;justify-content: center;">
@@ -201,14 +181,15 @@ button {
       <p style="margin-top:10px;">排序方式</p>
       <Cascader :data="sort" v-model="sort_type" style="margin-top:10px;width:150px;display:inline-block;"></Cascader>
       <br>
-      <p>商品选项</p>
+      <p style="margin-top:10px;">商品选项</p>
       <RadioGroup style="margin-top:10px;" v-model="overdue" type="button">
           <Radio label="未下架"></Radio>
           <Radio label="已下架"></Radio>
       </RadioGroup>
-      <p style="margin-top:20px;margin-bottom:10px;">共{{total_page}}页商品 <br>当前为第 {{now_page}} 页</p>
-      <Button type="primary" @click="prePage()" id="prebutton" disabled>上一页</Button>
-      <Button type="primary" style="margin-left:20px;" @click="nextPage()" id="nextbutton">下一页</Button> 
+      <br>
+      <Button type="primary" style="margin-top:20px;" @click="prePage()" id="prebutton" disabled>上一页</Button>
+      <Button type="primary" style="margin-left:10px;margin-top:20px" @click="nextPage()" id="nextbutton">下一页</Button>
+      <p style="margin-top:20px;margin-left:5px;">第 {{now_page}} 页 共 {{total_page}} 页</p>
       <!-- <Button style="margin-top:50px;" @click="right_dis=false">收起菜单</Button> -->
     </div>
     <div class="back" v-show="right_dis" @click="right_dis=false"></div>

@@ -36,6 +36,7 @@
   <div class="layout">
     <Layout>
       <Header></Header>
+      <!-- 导航栏 -->
       <Layout>
         <Sider
           hide-trigger
@@ -54,6 +55,7 @@
           </Menu>
         </Sider>
       </Layout>
+      <!-- 内容 -->
       <Layout
         :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'0px',top:'65px',right:'0px',overflow:'hidden', minWidth: '1166px'}"
       >
@@ -122,7 +124,7 @@
         </Content>
       </Layout>
     </Layout>
-
+<!-- 订单详情 -->
     <div v-if="info_show">
       <Modal v-model="info_show" title="订单详情">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -149,7 +151,7 @@
         </div>
       </Modal>
     </div>
-
+<!-- 输入订单号 -->
     <div>
       <Modal v-model="number_show" title="请输入订单号" @on-ok="Send()" @on-cancel="cancelSend()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -161,7 +163,7 @@
         </div>
       </Modal>
     </div>
-
+<!-- 退货确认框 -->
     <div>
       <Modal v-model="refund_show" title="确认退货吗？" @on-ok="Refund()" @on-cancel="cancelRefund()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -171,7 +173,7 @@
         </div>
       </Modal>
     </div>
-
+<!-- 搜索结果 -->
     <div>
       <Modal v-model="search_show" title="搜索结果" @on-ok="close()" @on-cancel="close()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -216,13 +218,13 @@ export default {
       number_show: false,
       refund_show: false,
       search_show: false,
-      info: {},
-      number: "",
-      id: "",
-      refund_remark: "",
-      search_content: "",
-      search_status: "",
-      info_status: "",
+      info: {},//详细信息
+      number: "",//输入物流编号
+      id: "",//订单id
+      refund_remark: "",//退款备注
+      search_content: "",//搜索内容
+      search_status: "",//搜索出的订单状态
+      info_status: "",//查看详细信息时的的订单状态
       columns_pre: [
         { title: "订单ID", key: "order_id", sortable: true },
         { title: "订单号", key: "order_number", sortable: true },
@@ -294,7 +296,7 @@ export default {
       var that = this;
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders?type=1&page=1",
+        url: that.api + "/admin/orders?type=1&page=1",//不会翻页，读取的page都写的是1
         headers: {
           Authorization: that.token
         }

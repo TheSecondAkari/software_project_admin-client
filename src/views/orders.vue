@@ -37,7 +37,7 @@
     <Layout>
       <Header></Header>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
+        <Sider hide-trigger :style="{background: '#fff', position:'absolute',top:'65px', bottom:'0px'}">
           <Menu active-name="3" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
@@ -51,8 +51,8 @@
           </Menu>
         </Sider>
       </Layout>
-      <Layout :style="{padding: '0 24px 24px'}">
-        <Content style="padding: 24px; minHeight: 500px; background-color: #fff; margin-top: 24px;">
+      <Layout :style="{padding: '0 24px 24px', position: 'absolute', left:'200px', top:'65px', bottom:'0px', right:'0px'  }">
+        <Content style="padding: 24px; background-color: #fff; margin-top: 24px; overflow:auto">
           <div>
             <Input
               search
@@ -64,7 +64,7 @@
           </div>
           <Tabs>
             <Tab-pane label="待发货" key="1">
-              <Table :columns="columns_pre" :data="orderlist_pre">
+              <Table :columns="columns_pre" :data="pre_showList">
                 <template slot-scope="row" slot="action">
                   <Button
                     type="primary"
@@ -75,9 +75,17 @@
                   <Button type="error" size="small" @click="checkSend(row)">确认发货</Button>
                 </template>
               </Table>
+              <div style="margin-top:20px;display:flex;justify-content:center;">
+                <Page
+                  :total="pre_totalNumber"
+                  :page-size="pre_pageSize"
+                  @on-change="pre_changePage"
+                  show-total
+                />
+              </div>
             </Tab-pane>
             <Tab-pane label="已发货" key="2">
-              <Table :columns="columns_snd" :data="orderlist_snd">
+              <Table :columns="columns_snd" :data="snd_showList">
                 <template slot-scope="row" slot="action">
                   <Button
                     type="primary"
@@ -87,9 +95,17 @@
                   >详情</Button>
                 </template>
               </Table>
+              <div style="margin-top:20px;display:flex;justify-content:center;">
+                <Page
+                  :total="snd_totalNumber"
+                  :page-size="snd_pageSize"
+                  @on-change="snd_changePage"
+                  show-total
+                />
+              </div>
             </Tab-pane>
             <Tab-pane label="已收货" key="3">
-              <Table :columns="columns_com" :data="orderlist_com">
+              <Table :columns="columns_com" :data="com_showList">
                 <template slot-scope="row" slot="action">
                   <Button
                     type="primary"
@@ -99,9 +115,17 @@
                   >详情</Button>
                 </template>
               </Table>
+              <div style="margin-top:20px;display:flex;justify-content:center;">
+                <Page
+                  :total="com_totalNumber"
+                  :page-size="com_pageSize"
+                  @on-change="com_changePage"
+                  show-total
+                />
+              </div>
             </Tab-pane>
             <Tab-pane label="退款中" key="4">
-              <Table :columns="columns_ref" :data="orderlist_ref">
+              <Table :columns="columns_ref" :data="ref_showList">
                 <template slot-scope="row" slot="action">
                   <Button
                     type="primary"
@@ -112,6 +136,14 @@
                   <Button type="error" size="small" @click="checkRefund(row)">通过申请</Button>
                 </template>
               </Table>
+              <div style="margin-top:20px;display:flex;justify-content:center;">
+                <Page
+                  :total="refund_totalNumber"
+                  :page-size="refund_pageSize"
+                  @on-change="refund_changePage"
+                  show-total
+                />
+              </div>
             </Tab-pane>
           </Tabs>
         </Content>
@@ -243,7 +275,23 @@ export default {
       orderlist_com: [],
       orderlist_ref: [],
       search_list: [],
-      goods: []
+      goods: [],
+
+      refund_totalNumber:0,
+      refund_pageSize:9,
+      ref_showList:[],
+
+      pre_totalNumber:0,
+      pre_pageSize:9,
+      pre_showList:[],
+
+      snd_totalNumber:0,
+      snd_pageSize:9,
+      snd_showList:[],
+
+      com_totalNumber:0,
+      com_pageSize:9,
+      com_showList:[],
     };
   },
   mounted() {
@@ -293,12 +341,14 @@ export default {
               updated_at: res[i].updated_at, //更新时间
               remark: res[i].remark, //备注
               refund_remark: res[i].refund_remark, //退款备注
-
               items: res[i].items, //物品
               address: res[i].address, //地址
               user: res[i].user //用户
             });
           }
+          that.pre_totalNumber=res.length
+          that.pre_showList = that.orderlist_pre.slice(0,that.pre_pageSize);
+          
         })
         .catch(function() {});
       this.$axios({
@@ -320,12 +370,13 @@ export default {
               updated_at: res[i].updated_at, //更新时间
               remark: res[i].remark, //备注
               refund_remark: res[i].refund_remark, //退款备注
-
               items: res[i].items, //物品
               address: res[i].address, //地址
               user: res[i].user //用户
             });
           }
+          that.snd_totalNumber=res.length
+          that.snd_showList = that.orderlist_snd.slice(0,that.snd_pageSize);
         })
         .catch(function() {});
       this.$axios({
@@ -353,6 +404,8 @@ export default {
               user: res[i].user //用户
             });
           }
+          that.com_totalNumber=res.length
+          that.com_showList = that.orderlist_com.slice(0,that.com_pageSize);
         })
         .catch(function() {});
       this.$axios({
@@ -381,6 +434,8 @@ export default {
               user: res[i].user //用户
             });
           }
+          that.refund_totalNumber=res.length
+          that.ref_showList = that.orderlist_ref.slice(0,that.refund_pageSize);
         })
         .catch(function() {});
     },
@@ -499,7 +554,28 @@ export default {
         .catch(function() {
           console.log("失败");
         });
-    }
+    },
+    refund_changePage(c) {
+      var temp = this.orderlist_ref
+      var size = this.refund_pageSize;
+      this.ref_showList = temp.slice((c - 1) * size, c * size);
+    },
+    snd_changePage(c) {
+      var temp = this.orderlist_snd
+      var size = this.snd_pageSize;
+      this.snd_showList = temp.slice((c - 1) * size, c * size);
+    },
+    com_changePage(c) {
+      var temp = this.orderlist_com
+      var size = this.com_pageSize;
+      this.com_showList = temp.slice((c - 1) * size, c * size);
+    },
+    pre_changePage(c) {
+      var temp = this.orderlist_pre
+      var size = this.pre_pageSize;
+      this.pre_showList = temp.slice((c - 1) * size, c * size);
+    },
+
   }
 };
 </script>

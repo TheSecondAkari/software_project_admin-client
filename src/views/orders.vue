@@ -36,6 +36,7 @@
   <div class="layout">
     <Layout>
       <Header></Header>
+      <!-- 导航栏 -->
       <Layout>
         <Sider hide-trigger :style="{background: '#fff', position:'absolute',top:'65px', bottom:'0px'}">
           <Menu active-name="3" theme="light" width="auto" @on-select="redirect">
@@ -149,7 +150,7 @@
         </Content>
       </Layout>
     </Layout>
-
+<!-- 订单详情 -->
     <div v-if="info_show">
       <Modal v-model="info_show" title="订单详情">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -157,9 +158,12 @@
             <FormItem label="分类名称：">
               <p>订单ID：{{info.order_id}}</p>
               <p>订单号：{{info.order_number}}</p>
+              <p v-if="info_status==2||info_status==3">物流号：{{info.number}}</p>
               <p>创建时间：{{info.created_at}}</p>
+              <p>更新时间：{{info.updated_at}}</p>
               <p>用户名：{{info.user.name}}</p>
               <p>用户ID：{{info.user.id}}</p>
+              <p v-if="info_status==4">退款原因：{{info.refund_remark}}</p>
               <p>收件人：{{info.address.name}}</p>
               <p>手机号：{{info.address.phone}}</p>
               <p>地址：{{info.address.province}}/{{info.address.city}}/{{info.address.county}}/{{info.address.detail}}</p>
@@ -173,7 +177,7 @@
         </div>
       </Modal>
     </div>
-
+<!-- 输入订单号 -->
     <div>
       <Modal v-model="number_show" title="请输入订单号" @on-ok="Send()" @on-cancel="cancelSend()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -185,7 +189,7 @@
         </div>
       </Modal>
     </div>
-
+<!-- 退货确认框 -->
     <div>
       <Modal v-model="refund_show" title="确认退货吗？" @on-ok="Refund()" @on-cancel="cancelRefund()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -195,11 +199,12 @@
         </div>
       </Modal>
     </div>
-
+<!-- 搜索结果 -->
     <div>
-      <Modal v-model="refund_show" title="搜索结果">
+      <Modal v-model="search_show" title="搜索结果" @on-ok="close()" @on-cancel="close()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
           <i-Form :label-width="90">
+            <p>当前状态为：{{info_status}}</p>
             <Table :columns="search_columns" :data="search_list">
               <template slot-scope="row" slot="action">
                 <Button
@@ -208,11 +213,20 @@
                   style="margin-right: 5px"
                   @click="getInfo(row)"
                 >详情</Button>
-                
-                <Button v-if="this.search_status==1" type="error" size="small" @click="checkSend(row)">确认发货</Button>
-                
-                  <Button v-if="this.search_status==4" type="error" size="small" @click="checkRefund(row)">通过申请</Button>
-                
+
+                <Button
+                  v-if="search_status==1"
+                  type="error"
+                  size="small"
+                  @click="checkSend(row)"
+                >确认发货</Button>
+
+                <Button
+                  v-if="search_status==4"
+                  type="error"
+                  size="small"
+                  @click="checkRefund(row)"
+                >通过申请</Button>
               </template>
             </Table>
           </i-Form>
@@ -230,12 +244,13 @@ export default {
       number_show: false,
       refund_show: false,
       search_show: false,
-      info: {},
-      number: "",
-      id: "",
-      refund_remark: "",
-      search_content: "",
-      search_status: "",
+      info: {},//详细信息
+      number: "",//输入物流编号
+      id: "",//订单id
+      refund_remark: "",//退款备注
+      search_content: "",//搜索内容
+      search_status: "",//搜索出的订单状态
+      info_status: "",//查看详细信息时的的订单状态
       columns_pre: [
         { title: "订单ID", key: "order_id", sortable: true },
         { title: "订单号", key: "order_number", sortable: true },
@@ -323,7 +338,7 @@ export default {
       var that = this;
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders?type=1&page=1",
+        url: that.api + "/admin/orders?type=1&page=1",//不会翻页，读取的page都写的是1
         headers: {
           Authorization: that.token
         }
@@ -341,6 +356,7 @@ export default {
               updated_at: res[i].updated_at, //更新时间
               remark: res[i].remark, //备注
               refund_remark: res[i].refund_remark, //退款备注
+              status: res[i].status,
               items: res[i].items, //物品
               address: res[i].address, //地址
               user: res[i].user //用户
@@ -370,6 +386,8 @@ export default {
               updated_at: res[i].updated_at, //更新时间
               remark: res[i].remark, //备注
               refund_remark: res[i].refund_remark, //退款备注
+              status: res[i].status,
+
               items: res[i].items, //物品
               address: res[i].address, //地址
               user: res[i].user //用户
@@ -398,6 +416,7 @@ export default {
               updated_at: res[i].updated_at, //更新时间
               remark: res[i].remark, //备注
               refund_remark: res[i].refund_remark, //退款备注
+              status: res[i].status,
 
               items: res[i].items, //物品
               address: res[i].address, //地址
@@ -428,7 +447,7 @@ export default {
               updated_at: res[i].updated_at, //更新时间
               remark: res[i].remark, //备注
               refund_remark: res[i].refund_remark, //退款备注
-
+              status: res[i].status,
               items: res[i].items, //物品
               address: res[i].address, //地址
               user: res[i].user //用户
@@ -444,7 +463,9 @@ export default {
       this.goods = [];
       this.info = row.row;
       this.info_show = true;
+      this.info_status = this.info.status;
       var options = "";
+
       for (var i = 0; i < this.info.items.length; i++) {
         options = "";
         for (var j = 0; j < this.info.items[i].sku.options.length; j++) {
@@ -478,6 +499,7 @@ export default {
         }
       })
         .then(function() {
+          that.close();
           console.log("成功");
         })
         .catch(function() {
@@ -506,6 +528,7 @@ export default {
         }
       })
         .then(function() {
+          that.close();
           console.log("成功");
         })
         .catch(function() {
@@ -520,13 +543,13 @@ export default {
       var that = this;
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders/search?key="+that.search,
+        url: that.api + "/admin/orders/search?key=" + that.search_content,
         headers: {
           Authorization: that.token
         }
       })
         .then(function(res) {
-          // res = res.data.data.items;
+          res = res.data.data.items[0];
           console.log(res);
 
           that.search_list.push({
@@ -544,11 +567,25 @@ export default {
             user: res.user //用户
           });
           that.search_status = res.status;
-          if (res.status == "1") that.search_columns = that.columns_pre;
-          else if (res.status == "2") that.search_columns = that.columns_snd;
-          else if (res.status == "3") that.search_columns = that.columns_com;
-          else if (res.status == "4") that.search_columns = that.columns_ref;
+          console.log(that.search_status);
+
+          if (res.status == "1") {
+            that.search_columns = that.columns_pre;
+            that.info_status = "待发货";
+          } else if (res.status == "2") {
+            that.search_columns = that.columns_snd;
+            that.info_status = "已发货";
+          } else if (res.status == "3") {
+            that.search_columns = that.columns_com;
+            that.info_status = "已收货";
+          } else if (res.status == "4") {
+            that.search_columns = that.columns_ref;
+            that.info_status = "退款中";
+          }
+
+          console.log(that.search_columns);
           that.search_show = true;
+
           console.log("成功");
         })
         .catch(function() {
@@ -576,6 +613,12 @@ export default {
       this.pre_showList = temp.slice((c - 1) * size, c * size);
     },
 
+    close() {
+      this.search_show = false;
+      this.search_status = 0;
+      this.search_columns = [];
+      this.search_list = [];
+    }
   }
 };
 </script>

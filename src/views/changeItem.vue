@@ -33,6 +33,7 @@ button {
   padding-bottom: 5px;
 }
 .main_block {
+  position: relative;
   width: 90%;
   min-height: 500px;
   /* border: 1px solid grey; */
@@ -58,6 +59,42 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
+}
+.hidden{
+  position: absolute;
+  right:0px;
+  top:0px;
+  bottom:0px;
+  left:0px;
+  background:rgba(192,192,192,0.5);
+  z-index: 1;
+  display: flex;
+}
+.Rich_text {
+  /* margin-top: 5%; */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  table-layout: fixed;
+  word-break: break-all;
+  text-align: center;
+  
+}
+
+.rich_block{
+  z-index:4;
+  margin:auto;
+  height: 600px;
+  overflow: auto;
+  width:375px;
+  background:white;
+  padding: 10px;
+}
+
+/* 在使用scoped的时候，使用穿透符即可 */
+.Rich_text >>> img {
+  width: 100% !important;
+  height: auto !important;
+  -ms-interpolation-mode: bicubic;
 }
 </style>
 <template>
@@ -208,6 +245,10 @@ textarea {
                     </Upload>
                   </div>
                   <Button id="submitButton" type="primary" style=" margin-top:20px;" @click="submit_des()">提交修改</Button>
+                  <Button style="margin-left:20px;margin-top:20px;" @click="hidden=true">预览富文本</Button>
+                </div>
+                <div v-show="hidden" id="backend" class="hidden">
+                  <div id="rich" class="rich_block Rich_text" v-html="des"></div>
                 </div>
 
                 <Modal v-model="modal1" title="修改规格" @on-ok="okIn" @on-cancel="cancelIn">
@@ -254,7 +295,8 @@ export default {
       api: "/api",
       token: "",
       name: "",
-      des: "",
+      des: "",  //富文本
+      hidden:false, //决定预览框是否显示
       id: 0,
       del_url: require("../assets/delete.png"), //删除照片的叉叉的url
       uploadList: [],
@@ -319,9 +361,14 @@ export default {
   },
   watch: {},
   mounted() {
+    let that=this
     this.token = sessionStorage.getItem("Authorization");
     this.onload();
     this.getClass();
+    let a=document.getElementById("backend")
+    let b=document.getElementById("rich")
+    a.addEventListener("click",function(){that.hidden=false})
+    b.addEventListener("click",function(e){e.stopPropagation()},true)
   },
   methods: {
     onload() {

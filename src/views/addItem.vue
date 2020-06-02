@@ -33,6 +33,7 @@ button {
   padding-bottom: 5px;
 }
 .main_block {
+  position: relative;
   width: 90%;
   min-height: 500px;
   padding: 15px;
@@ -57,6 +58,42 @@ textarea {
 .img_block {
   display: flex;
   flex-wrap: wrap;
+}
+.hidden{
+  position: absolute;
+  right:0px;
+  top:0px;
+  bottom:0px;
+  left:0px;
+  background:rgba(192,192,192,0.5);
+  z-index: 1;
+  display: flex;
+}
+.Rich_text {
+  /* margin-top: 5%; */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  table-layout: fixed;
+  word-break: break-all;
+  text-align: center;
+  
+}
+
+.rich_block{
+  z-index:4;
+  margin:auto;
+  height: 600px;
+  overflow: auto;
+  width:375px;
+  background:white;
+  padding: 10px;
+}
+
+/* 在使用scoped的时候，使用穿透符即可 */
+.Rich_text >>> img {
+  width: 100% !important;
+  height: auto !important;
+  -ms-interpolation-mode: bicubic;
 }
 </style>
 <template>
@@ -243,7 +280,11 @@ textarea {
                 </div>
                 <!-- <input type="file" @change="handleFileChange" ref="inputer" /> -->
                 <Button id="submit_button" type="primary" @click="upload()">完成</Button>
+                <Button style="margin-left:20px;" @click="hidden=true">预览富文本</Button>
                 <Button style="margin-left:20px;">取消</Button>
+              </div>
+              <div v-show="hidden" id="backend" class="hidden">
+                <div id="rich" class="rich_block Rich_text" v-html="des"></div>
               </div>
             </div>
           </Content>
@@ -281,7 +322,8 @@ export default {
       inPrice: 0,
       outPrice: 0,
       totalNumber: 0,
-      des: "",
+      des: "",  //富文本
+      hidden:false,  //决定富文本预览是否显示
       theChosenItem: 0, //用来定位当前要增加或者修改的是哪一个规格
       addItemValueIn: "", //增加某个规格内部分类其中一个选项的输入框的值
       addItemValueOut: "", //增加某个规格其中一个选项的输入框的值
@@ -363,9 +405,14 @@ export default {
     }
   },
   mounted() {
+    let that=this
     this.token = sessionStorage.getItem("Authorization");
     this.$refs.tabs.activeKey = 1;
     this.getClass();
+    let a=document.getElementById("backend")
+    let b=document.getElementById("rich")
+    a.addEventListener("click",function(){that.hidden=false})
+    b.addEventListener("click",function(e){e.stopPropagation()},true)
   },
   methods: {
     upload() {

@@ -281,6 +281,7 @@ export default {
     let that = this;
     let a = document.getElementById("itemTable");
     function chooseItem(e) {
+      console.log(e.target.id)
       if (e.target.id == "change") {
         let parent = e.target.parentNode;
         let itemId = parent.childNodes[1].childNodes[0];

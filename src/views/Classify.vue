@@ -747,7 +747,7 @@ export default {
           that.$router.push({ path: "/itemManage" });
           break;
         case 3:
-          //  that.$router.push({ path:'/item_manage'});
+           that.$router.push({ path:'/orders'});
           break;
         default:
           break;

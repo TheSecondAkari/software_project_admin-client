@@ -33,6 +33,7 @@ button {
   padding-bottom: 5px;
 }
 .main_block {
+  position: relative;
   width: 90%;
   min-height: 500px;
   padding: 15px;
@@ -58,27 +59,48 @@ textarea {
   display: flex;
   flex-wrap: wrap;
 }
+.hidden{
+  position: absolute;
+  right:0px;
+  top:0px;
+  bottom:0px;
+  left:0px;
+  background:rgba(192,192,192,0.5);
+  z-index: 1;
+  display: flex;
+}
+.Rich_text {
+  /* margin-top: 5%; */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  table-layout: fixed;
+  word-break: break-all;
+  text-align: center;
+  
+}
+
+.rich_block{
+  z-index:4;
+  margin:auto;
+  height: 600px;
+  overflow: auto;
+  width:375px;
+  background:white;
+  padding: 10px;
+}
+
+/* 在使用scoped的时候，使用穿透符即可 */
+.Rich_text >>> img {
+  width: 100% !important;
+  height: auto !important;
+  -ms-interpolation-mode: bicubic;
+}
 </style>
 <template>
   <div class="layout">
     <Layout>
       <Header>
         <Menu mode="horizontal" theme="dark" active-name="1">
-          <div class="layout-logo"></div>
-          <div class="layout-nav">
-            <MenuItem name="1">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </MenuItem>
-            <MenuItem name="2">
-              <Icon type="ios-keypad"></Icon>Item 2
-            </MenuItem>
-            <MenuItem name="3">
-              <Icon type="ios-analytics"></Icon>Item 3
-            </MenuItem>
-            <MenuItem name="4">
-              <Icon type="ios-paper"></Icon>Item 4
-            </MenuItem>
-          </div>
         </Menu>
       </Header>
       <Layout>
@@ -95,7 +117,7 @@ textarea {
             </MenuItem>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
+        <Layout :style="{padding: '0 24px 24px',overflow:'auto'}">
           <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
@@ -220,17 +242,19 @@ textarea {
                     <div
                       v-for="(item,key) in imgList"
                       :key="key"
-                      style="position:relative;height:100px;width:100px;margin-right:10px;"
+                      style="position:relative;height:100px;width:100px;margin-right:10px;background:#d7dde4;border-radius:5px;"
                     >
-                      <img
-                        v-bind:src="del_url"
-                        style="position:absolute;top:0px;right:0px;height:15px;height:15px;"
-                        @click="del_img(key)"
-                      />
-                      <img
-                        :src="item"
-                        style="position:absolute;height：85px;width:85px;top:10px;left:0px;"
-                      />
+                      <div style="border-radius:5px 5px 0px 0px ;height:75px;width:100px;display:flex;align-items:center;justify-content:center;align-items:center">
+                        <img
+                          :src="item"
+                          style="max-width:100px;max-height:75px;"
+                        />
+                      </div>
+                      <div 
+                        style="height:25px;width:100px;background:grey;border-radius: 0px 0px 5px 5px ;display:flex;align-items:center;justify-content:center;align-items:center;color:white"
+                        @click="del_img(key)">
+                        删除
+                      </div>
                     </div>
                     <Upload
                       ref="upload"
@@ -256,7 +280,11 @@ textarea {
                 </div>
                 <!-- <input type="file" @change="handleFileChange" ref="inputer" /> -->
                 <Button id="submit_button" type="primary" @click="upload()">完成</Button>
+                <Button style="margin-left:20px;" @click="hidden=true">预览富文本</Button>
                 <Button style="margin-left:20px;">取消</Button>
+              </div>
+              <div v-show="hidden" id="backend" class="hidden">
+                <div id="rich" class="rich_block Rich_text" v-html="des"></div>
               </div>
             </div>
           </Content>
@@ -294,7 +322,8 @@ export default {
       inPrice: 0,
       outPrice: 0,
       totalNumber: 0,
-      des: "",
+      des: "",  //富文本
+      hidden:false,  //决定富文本预览是否显示
       theChosenItem: 0, //用来定位当前要增加或者修改的是哪一个规格
       addItemValueIn: "", //增加某个规格内部分类其中一个选项的输入框的值
       addItemValueOut: "", //增加某个规格其中一个选项的输入框的值
@@ -376,9 +405,14 @@ export default {
     }
   },
   mounted() {
+    let that=this
     this.token = sessionStorage.getItem("Authorization");
     this.$refs.tabs.activeKey = 1;
     this.getClass();
+    let a=document.getElementById("backend")
+    let b=document.getElementById("rich")
+    a.addEventListener("click",function(){that.hidden=false})
+    b.addEventListener("click",function(e){e.stopPropagation()},true)
   },
   methods: {
     upload() {
@@ -388,7 +422,7 @@ export default {
       let imgArray = this.imgList; //图片url
       let des = this.des; //商品描述
       let cateId = this.model1[this.model1.length - 1]; //类别id
-      let ifType = false; //是否有分类规格
+      // let ifType = false; //是否有分类规格
       let spec = []; //商品规格名称
       let options = []; //每个规格的内部分类
       let sku = []; //具体商品细节内容（如定价等）
@@ -397,7 +431,7 @@ export default {
       var that = this;
       if (this.itemType.length > 0) {
         let specNum = this.itemType.length;
-        ifType = true;
+        // ifType = true;
         for (let item of this.itemType) {
           spec.push(item.typeName);
           options.push(item.type);

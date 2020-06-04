@@ -100,25 +100,10 @@ button {
     <Layout>
       <Header>
         <Menu mode="horizontal" theme="dark" active-name="1">
-          <div class="layout-logo"></div>
-          <div class="layout-nav">
-            <MenuItem name="1">
-              <Icon type="ios-navigate"></Icon>Item 1
-            </MenuItem>
-            <MenuItem name="2">
-              <Icon type="ios-keypad"></Icon>Item 2
-            </MenuItem>
-            <MenuItem name="3">
-              <Icon type="ios-analytics"></Icon>Item 3
-            </MenuItem>
-            <MenuItem name="4">
-              <Icon type="ios-paper"></Icon>Item 4
-            </MenuItem>
-          </div>
         </Menu>
       </Header>
-      <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
+      <Layout :style="{overflow:'auto'}">
+        <Sider hide-trigger :style="{position:'absolute',top:'65px',bottom:'0px', background: '#fff'}">
           <Menu active-name="2" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
@@ -131,7 +116,7 @@ button {
             </MenuItem>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
+        <Layout :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'65px',right:'0px', overflow:'auto',}">
           <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>

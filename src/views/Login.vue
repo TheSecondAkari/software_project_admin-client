@@ -1,8 +1,7 @@
 <template>
   <div style="height: 100%; width: 100%; background-color: #AFADAD;">
     <div
-      style="height: 550px; width: 1000px; background-color: white; position: relative; top: 15%; left: 20%;"
-    >
+      style="height: 550px; width: 1000px; background-color: white; position: relative; top: 15%; left: 20%;">
       <div style="display: flex; flex-direction: row; height: 100%;">
         <img :src="require('../assets/login.png')" style="height: 100%; width: 500px;" />
         <div style="width: 50%;">

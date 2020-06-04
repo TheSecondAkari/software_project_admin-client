@@ -38,7 +38,10 @@
       <Header></Header>
       <!-- 导航栏 -->
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff', position:'absolute',top:'65px', bottom:'0px'}">
+        <Sider
+          hide-trigger
+          :style="{background: '#fff', position:'absolute',top:'65px', bottom:'0px'}"
+        >
           <Menu active-name="3" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
@@ -52,7 +55,9 @@
           </Menu>
         </Sider>
       </Layout>
-      <Layout :style="{padding: '0 24px 24px', position: 'absolute', left:'200px', top:'65px', bottom:'0px', right:'0px'  }">
+      <Layout
+        :style="{padding: '0 24px 24px', position: 'absolute', left:'200px', top:'65px', bottom:'0px', right:'0px'  }"
+      >
         <Content style="padding: 24px; background-color: #fff; margin-top: 24px; overflow:auto">
           <div>
             <Input
@@ -150,7 +155,7 @@
         </Content>
       </Layout>
     </Layout>
-<!-- 订单详情 -->
+    <!-- 订单详情 -->
     <div v-if="info_show">
       <Modal v-model="info_show" title="订单详情">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -177,7 +182,7 @@
         </div>
       </Modal>
     </div>
-<!-- 输入订单号 -->
+    <!-- 输入订单号 -->
     <div>
       <Modal v-model="number_show" title="请输入订单号" @on-ok="Send()" @on-cancel="cancelSend()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -189,7 +194,7 @@
         </div>
       </Modal>
     </div>
-<!-- 退货确认框 -->
+    <!-- 退货确认框 -->
     <div>
       <Modal v-model="refund_show" title="确认退货吗？" @on-ok="Refund()" @on-cancel="cancelRefund()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -199,7 +204,7 @@
         </div>
       </Modal>
     </div>
-<!-- 搜索结果 -->
+    <!-- 搜索结果 -->
     <div>
       <Modal v-model="search_show" title="搜索结果" @on-ok="close()" @on-cancel="close()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
@@ -244,13 +249,13 @@ export default {
       number_show: false,
       refund_show: false,
       search_show: false,
-      info: {},//详细信息
-      number: "",//输入物流编号
-      id: "",//订单id
-      refund_remark: "",//退款备注
-      search_content: "",//搜索内容
-      search_status: "",//搜索出的订单状态
-      info_status: "",//查看详细信息时的的订单状态
+      info: {}, //详细信息
+      number: "", //输入物流编号
+      id: "", //订单id
+      refund_remark: "", //退款备注
+      search_content: "", //搜索内容
+      search_status: "", //搜索出的订单状态
+      info_status: "", //查看详细信息时的的订单状态
       columns_pre: [
         { title: "订单ID", key: "order_id", sortable: true },
         { title: "订单号", key: "order_number", sortable: true },
@@ -292,25 +297,24 @@ export default {
       search_list: [],
       goods: [],
 
-      refund_totalNumber:0,
-      refund_pageSize:9,
-      ref_showList:[],
+      refund_totalNumber: 0,
+      refund_pageSize: 9,
+      ref_showList: [],
 
-      pre_totalNumber:0,
-      pre_pageSize:9,
-      pre_showList:[],
+      pre_totalNumber: 0,
+      pre_pageSize: 9,
+      pre_showList: [],
 
-      snd_totalNumber:0,
-      snd_pageSize:9,
-      snd_showList:[],
+      snd_totalNumber: 0,
+      snd_pageSize: 9,
+      snd_showList: [],
 
-      com_totalNumber:0,
-      com_pageSize:9,
-      com_showList:[],
+      com_totalNumber: 0,
+      com_pageSize: 9,
+      com_showList: []
     };
   },
   mounted() {
-    console.log("1");
     this.token = sessionStorage.getItem("Authorization");
     this.getOrderList();
   },
@@ -338,7 +342,7 @@ export default {
       var that = this;
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders?type=1&page=1",//不会翻页，读取的page都写的是1
+        url: that.api + "/admin/orders?type=1&page=1", //不会翻页，读取的page都写的是1
         headers: {
           Authorization: that.token
         }
@@ -362,9 +366,8 @@ export default {
               user: res[i].user //用户
             });
           }
-          that.pre_totalNumber=res.length
-          that.pre_showList = that.orderlist_pre.slice(0,that.pre_pageSize);
-          
+          that.pre_totalNumber = res.length;
+          that.pre_showList = that.orderlist_pre.slice(0, that.pre_pageSize);
         })
         .catch(function() {});
       this.$axios({
@@ -393,8 +396,8 @@ export default {
               user: res[i].user //用户
             });
           }
-          that.snd_totalNumber=res.length
-          that.snd_showList = that.orderlist_snd.slice(0,that.snd_pageSize);
+          that.snd_totalNumber = res.length;
+          that.snd_showList = that.orderlist_snd.slice(0, that.snd_pageSize);
         })
         .catch(function() {});
       this.$axios({
@@ -423,8 +426,8 @@ export default {
               user: res[i].user //用户
             });
           }
-          that.com_totalNumber=res.length
-          that.com_showList = that.orderlist_com.slice(0,that.com_pageSize);
+          that.com_totalNumber = res.length;
+          that.com_showList = that.orderlist_com.slice(0, that.com_pageSize);
         })
         .catch(function() {});
       this.$axios({
@@ -453,8 +456,8 @@ export default {
               user: res[i].user //用户
             });
           }
-          that.refund_totalNumber=res.length
-          that.ref_showList = that.orderlist_ref.slice(0,that.refund_pageSize);
+          that.refund_totalNumber = res.length;
+          that.ref_showList = that.orderlist_ref.slice(0, that.refund_pageSize);
         })
         .catch(function() {});
     },
@@ -500,6 +503,7 @@ export default {
       })
         .then(function() {
           that.close();
+          that.$router.go(0);
           console.log("成功");
         })
         .catch(function() {
@@ -529,6 +533,8 @@ export default {
       })
         .then(function() {
           that.close();
+          that.$router.go(0);
+
           console.log("成功");
         })
         .catch(function() {
@@ -593,22 +599,22 @@ export default {
         });
     },
     refund_changePage(c) {
-      var temp = this.orderlist_ref
+      var temp = this.orderlist_ref;
       var size = this.refund_pageSize;
       this.ref_showList = temp.slice((c - 1) * size, c * size);
     },
     snd_changePage(c) {
-      var temp = this.orderlist_snd
+      var temp = this.orderlist_snd;
       var size = this.snd_pageSize;
       this.snd_showList = temp.slice((c - 1) * size, c * size);
     },
     com_changePage(c) {
-      var temp = this.orderlist_com
+      var temp = this.orderlist_com;
       var size = this.com_pageSize;
       this.com_showList = temp.slice((c - 1) * size, c * size);
     },
     pre_changePage(c) {
-      var temp = this.orderlist_pre
+      var temp = this.orderlist_pre;
       var size = this.pre_pageSize;
       this.pre_showList = temp.slice((c - 1) * size, c * size);
     },

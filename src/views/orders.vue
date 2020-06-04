@@ -59,26 +59,37 @@
         :style="{padding: '0 24px 24px', position: 'absolute', left:'200px', top:'65px', bottom:'0px', right:'0px'  }"
       >
         <Content style="padding: 24px; background-color: #fff; margin-top: 24px; overflow:auto">
-          <div>
-            <Input
-              search
-              enter-button
-              placeholder="请输入订单号查询"
-              v-model="search_content"
-              @on-search="search()"
-            />
-          </div>
+          <Row>
+            <i-col span="12" offset="6">
+              <div>
+                <Input
+                  search
+                  enter-button
+                  type="number"
+                  placeholder="请输入订单号查询"
+                  v-model="search_content"
+                  @on-search="search()"
+                />
+              </div>
+            </i-col>
+          </Row>
           <Tabs>
             <Tab-pane label="待发货" key="1">
               <Table :columns="columns_pre" :data="pre_showList">
                 <template slot-scope="row" slot="action">
-                  <Button
-                    type="primary"
-                    size="small"
-                    style="margin-right: 5px"
-                    @click="getInfo(row)"
-                  >详情</Button>
-                  <Button type="error" size="small" @click="checkSend(row)">确认发货</Button>
+                  <Row>
+                    <i-col span="12">
+                      <Button
+                        type="primary"
+                        size="small"
+                        style="margin-right: 5px"
+                        @click="getInfo(row)"
+                      >详情</Button>
+                    </i-col>
+                    <i-col span="12">
+                      <Button type="error" size="small" @click="checkSend(row)">确认发货</Button>
+                    </i-col>
+                  </Row>
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
@@ -133,13 +144,19 @@
             <Tab-pane label="退款中" key="4">
               <Table :columns="columns_ref" :data="ref_showList">
                 <template slot-scope="row" slot="action">
-                  <Button
-                    type="primary"
-                    size="small"
-                    style="margin-right: 5px"
-                    @click="getInfo(row)"
-                  >详情</Button>
-                  <Button type="error" size="small" @click="checkRefund(row)">通过申请</Button>
+                  <Row>
+                    <i-col span="12">
+                      <Button
+                        type="primary"
+                        size="small"
+                        style="margin-right: 5px"
+                        @click="getInfo(row)"
+                      >详情</Button>
+                    </i-col>
+                    <i-col span="12">
+                      <Button type="error" size="small" @click="checkRefund(row)">通过申请</Button>
+                    </i-col>
+                  </Row>
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
@@ -158,9 +175,9 @@
     <!-- 订单详情 -->
     <div v-if="info_show">
       <Modal v-model="info_show" title="订单详情">
-        <div style="width: 90%; margin: 10px 0 25px 0;">
+        <div style="width: 100%; margin: 10px 0 25px 0;">
           <i-Form :label-width="90">
-            <FormItem label="分类名称：">
+           
               <p>订单ID：{{info.order_id}}</p>
               <p>订单号：{{info.order_number}}</p>
               <p v-if="info_status==2||info_status==3">物流号：{{info.number}}</p>
@@ -177,7 +194,7 @@
               <template style="width:100%">
                 <i-table stripe :columns="columns_good" :data="goods"></i-table>
               </template>
-            </FormItem>
+            
           </i-Form>
         </div>
       </Modal>
@@ -188,7 +205,7 @@
         <div style="width: 90%; margin: 10px 0 25px 0;">
           <i-Form :label-width="90">
             <FormItem label="订单号：">
-              <Input v-model="number" placeholder="请输入8位数字号码" style="width: 300px" />
+              <Input v-model="number" type="number" placeholder="请输入8位数字号码" style="width: 300px" />
             </FormItem>
           </i-Form>
         </div>
@@ -207,31 +224,37 @@
     <!-- 搜索结果 -->
     <div>
       <Modal v-model="search_show" title="搜索结果" @on-ok="close()" @on-cancel="close()">
-        <div style="width: 90%; margin: 10px 0 25px 0;">
+        <div style="width: 100%; margin: 10px 0 25px 0;">
           <i-Form :label-width="90">
             <p>当前状态为：{{info_status}}</p>
             <Table :columns="search_columns" :data="search_list">
               <template slot-scope="row" slot="action">
-                <Button
-                  type="primary"
-                  size="small"
-                  style="margin-right: 5px"
-                  @click="getInfo(row)"
-                >详情</Button>
-
-                <Button
-                  v-if="search_status==1"
-                  type="error"
-                  size="small"
-                  @click="checkSend(row)"
-                >确认发货</Button>
-
-                <Button
-                  v-if="search_status==4"
-                  type="error"
-                  size="small"
-                  @click="checkRefund(row)"
-                >通过申请</Button>
+                <Row>
+                  <i-col span="12">
+                    <Button
+                      type="primary"
+                      size="small"
+                      style="margin-right: 5px"
+                      @click="getInfo(row)"
+                    >详情</Button>
+                  </i-col>
+                  <i-col span="12">
+                    <Button
+                      v-if="search_status==1"
+                      type="error"
+                      size="small"
+                      @click="checkSend(row)"
+                    >确认发货</Button>
+                  </i-col>
+                  <i-col span="12">
+                    <Button
+                      v-if="search_status==4"
+                      type="error"
+                      size="small"
+                      @click="checkRefund(row)"
+                    >通过申请</Button>
+                  </i-col>
+                </Row>
               </template>
             </Table>
           </i-Form>
@@ -340,6 +363,7 @@ export default {
     async getOrderList() {
       var i = 0;
       var that = this;
+      var templist = [];
       this.$axios({
         method: "GET",
         url: that.api + "/admin/orders?type=1&page=1", //不会翻页，读取的page都写的是1
@@ -351,7 +375,7 @@ export default {
           res = res.data.data.items;
           console.log(res);
           for (i = 0; i < res.length; i++) {
-            that.orderlist_pre.push({
+            templist.push({
               order_id: res[i].id, //id
               order_number: res[i].order_number, //订单号
               number: res[i].number, //物流号
@@ -366,6 +390,8 @@ export default {
               user: res[i].user //用户
             });
           }
+          that.orderlist_pre = templist;
+          templist = [];
           that.pre_totalNumber = res.length;
           that.pre_showList = that.orderlist_pre.slice(0, that.pre_pageSize);
         })
@@ -380,7 +406,7 @@ export default {
         .then(function(res) {
           res = res.data.data.items;
           for (i = 0; i < res.length; i++) {
-            that.orderlist_snd.push({
+            templist.push({
               order_id: res[i].id, //id
               order_number: res[i].order_number, //订单号
               number: res[i].number, //物流号
@@ -396,6 +422,8 @@ export default {
               user: res[i].user //用户
             });
           }
+          that.orderlist_snd = templist;
+          templist = [];
           that.snd_totalNumber = res.length;
           that.snd_showList = that.orderlist_snd.slice(0, that.snd_pageSize);
         })
@@ -410,7 +438,7 @@ export default {
         .then(function(res) {
           res = res.data.data.items;
           for (i = 0; i < res.length; i++) {
-            that.orderlist_com.push({
+            templist.push({
               order_id: res[i].id, //id
               order_number: res[i].order_number, //订单号
               number: res[i].number, //物流号
@@ -426,6 +454,8 @@ export default {
               user: res[i].user //用户
             });
           }
+          that.orderlist_com = templist;
+          templist = [];
           that.com_totalNumber = res.length;
           that.com_showList = that.orderlist_com.slice(0, that.com_pageSize);
         })
@@ -441,7 +471,7 @@ export default {
           res = res.data.data.items;
           console.log(res);
           for (i = 0; i < res.length; i++) {
-            that.orderlist_ref.push({
+            templist.push({
               order_id: res[i].id, //id
               order_number: res[i].order_number, //订单号
               number: res[i].number, //物流号
@@ -456,6 +486,8 @@ export default {
               user: res[i].user //用户
             });
           }
+          that.orderlist_ref = templist;
+          templist = [];
           that.refund_totalNumber = res.length;
           that.ref_showList = that.orderlist_ref.slice(0, that.refund_pageSize);
         })
@@ -489,26 +521,32 @@ export default {
       this.number_show = true;
     },
     Send() {
-      this.number_show = false;
-      var that = this;
-      this.$axios({
-        method: "PUT",
-        url: that.api + "/admin/order/" + this.id + "/deliver",
-        headers: {
-          Authorization: that.token
-        },
-        data: {
-          number: that.number
-        }
-      })
-        .then(function() {
-          that.close();
-          that.$router.go(0);
-          console.log("成功");
+      if (this.number % 8 != 0) {
+        this.$Message.error("请输入正确格式");
+      } else {
+        this.number_show = false;
+        var that = this;
+        this.$axios({
+          method: "PUT",
+          url: that.api + "/admin/order/" + this.id + "/deliver",
+          headers: {
+            Authorization: that.token
+          },
+          data: {
+            number: that.number
+          }
         })
-        .catch(function() {
-          console.log("失败");
-        });
+          .then(function() {
+            that.close();
+            that.getOrderList();
+            that.$Message.success("成功发货");
+            console.log("成功");
+          })
+          .catch(function() {
+            console.log("失败");
+            that.$Message.error("发货异常");
+          });
+      }
     },
     cancelSend() {
       this.number_show = false;
@@ -533,11 +571,12 @@ export default {
       })
         .then(function() {
           that.close();
-          that.$router.go(0);
-
+          that.getOrderList();
+          that.$Message.success("退款成功");
           console.log("成功");
         })
         .catch(function() {
+          that.$Message.error("退款失败");
           console.log("失败");
         });
     },
@@ -545,58 +584,64 @@ export default {
       this.refund_show = false;
     },
     search() {
-      this.search_show = true;
-      var that = this;
-      this.$axios({
-        method: "GET",
-        url: that.api + "/admin/orders/search?key=" + that.search_content,
-        headers: {
-          Authorization: that.token
-        }
-      })
-        .then(function(res) {
-          res = res.data.data.items[0];
-          console.log(res);
-
-          that.search_list.push({
-            order_id: res.id, //id
-            order_number: res.order_number, //订单号
-            number: res.number, //物流号
-            price: res.price, //总价
-            created_at: res.created_at, //创建时间
-            updated_at: res.updated_at, //更新时间
-            remark: res.remark, //备注
-            refund_remark: res.refund_remark, //退款备注
-
-            items: res.items, //物品
-            address: res.address, //地址
-            user: res.user //用户
-          });
-          that.search_status = res.status;
-          console.log(that.search_status);
-
-          if (res.status == "1") {
-            that.search_columns = that.columns_pre;
-            that.info_status = "待发货";
-          } else if (res.status == "2") {
-            that.search_columns = that.columns_snd;
-            that.info_status = "已发货";
-          } else if (res.status == "3") {
-            that.search_columns = that.columns_com;
-            that.info_status = "已收货";
-          } else if (res.status == "4") {
-            that.search_columns = that.columns_ref;
-            that.info_status = "退款中";
+      if (this.search_content == "") {
+        this.$Message.error("请输入内容");
+      } else {
+        var that = this;
+        this.$axios({
+          method: "GET",
+          url: that.api + "/admin/orders/search?key=" + that.search_content,
+          headers: {
+            Authorization: that.token
           }
-
-          console.log(that.search_columns);
-          that.search_show = true;
-
-          console.log("成功");
         })
-        .catch(function() {
-          console.log("失败");
-        });
+          .then(function(res) {
+            res = res.data.data.items[0];
+            console.log(res);
+            if (res == undefined) {
+              that.$Message.error("搜索失败");
+            } else {
+              that.search_show = true;
+              that.search_list.push({
+                order_id: res.id, //id
+                order_number: res.order_number, //订单号
+                number: res.number, //物流号
+                price: res.price, //总价
+                created_at: res.created_at, //创建时间
+                updated_at: res.updated_at, //更新时间
+                remark: res.remark, //备注
+                refund_remark: res.refund_remark, //退款备注
+
+                items: res.items, //物品
+                address: res.address, //地址
+                user: res.user //用户
+              });
+              that.search_status = res.status;
+              console.log(that.search_status);
+
+              if (res.status == "1") {
+                that.search_columns = that.columns_pre;
+                that.info_status = "待发货";
+              } else if (res.status == "2") {
+                that.search_columns = that.columns_snd;
+                that.info_status = "已发货";
+              } else if (res.status == "3") {
+                that.search_columns = that.columns_com;
+                that.info_status = "已收货";
+              } else if (res.status == "4") {
+                that.search_columns = that.columns_ref;
+                that.info_status = "退款中";
+              }
+
+              console.log(that.search_columns);
+
+              console.log("成功");
+            }
+          })
+          .catch(function() {
+            that.$Message.error("未找到相关结果");
+          });
+      }
     },
     refund_changePage(c) {
       var temp = this.orderlist_ref;

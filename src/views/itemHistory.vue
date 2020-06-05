@@ -17,6 +17,9 @@
   top: 15px;
   left: 20px;
 }
+.ivu-table-overflowX{
+  overflow-x: hidden;
+}
 .layout-nav {
   width: 420px;
   margin: 0 auto;

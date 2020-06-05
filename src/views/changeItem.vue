@@ -100,7 +100,7 @@ textarea {
 <template>
   <div class="layout">
     <Layout>
-      <Header>
+      <Header :style="{height: '65px'}">
         <Menu mode="horizontal" theme="dark" active-name="1">
         </Menu>
       </Header>

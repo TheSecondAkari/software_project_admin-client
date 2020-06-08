@@ -73,7 +73,7 @@
               </div>
             </i-col>
           </Row>
-          <Tabs>
+          <Tabs @on-click="getOrderList()">
             <Tab-pane label="待发货" key="1">
               <Table :columns="columns_pre" :data="pre_showList">
                 <template slot-scope="row" slot="action">
@@ -362,6 +362,7 @@ export default {
     },
     async getOrderList() {
       var i = 0;
+      // console.log("xx");
       var that = this;
       var templist = [];
       this.$axios({
@@ -521,7 +522,7 @@ export default {
       this.number_show = true;
     },
     Send() {
-      if (this.number % 8 != 0) {
+      if (this.number.toString().length!=8) {
         this.$Message.error("请输入正确格式");
       } else {
         this.number_show = false;
@@ -541,10 +542,13 @@ export default {
             that.getOrderList();
             that.$Message.success("成功发货");
             console.log("成功");
+            that.number="";
           })
           .catch(function() {
             console.log("失败");
             that.$Message.error("发货异常");
+            that.number="";
+
           });
       }
     },

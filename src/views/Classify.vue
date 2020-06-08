@@ -291,7 +291,7 @@
 export default {
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       token: "",
       second: false,
       edit_first: false, // 一级分类编辑页面显示

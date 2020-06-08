@@ -312,7 +312,7 @@ export default {
   },
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       token: "",
       del_url: require("../assets/delete.png"),
       headers: {},

@@ -203,7 +203,7 @@ export default {
   },
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       sort:[{
         value:0,
         label:"时间排序"

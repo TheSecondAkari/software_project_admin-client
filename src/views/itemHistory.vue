@@ -112,7 +112,7 @@ button {
 export default {
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       token: "",
       currentPage: 1,
       totalNumber: 10,

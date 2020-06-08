@@ -292,7 +292,7 @@ export default {
   },
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       token: "",
       name: "",
       des: "",  //富文本

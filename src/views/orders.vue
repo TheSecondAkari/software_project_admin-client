@@ -267,7 +267,7 @@
 export default {
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       info_show: false,
       number_show: false,
       refund_show: false,

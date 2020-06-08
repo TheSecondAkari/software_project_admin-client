@@ -1,7 +1,8 @@
 <template>
   <div style="height: 100%; width: 100%; background-color: #AFADAD;">
     <div
-      style="height: 550px; width: 1000px; background-color: white; position: relative; top: 15%; left: 20%;">
+      style="height: 550px; width: 1000px; background-color: white; position: relative; top: 15%; left: 20%;"
+    >
       <div style="display: flex; flex-direction: row; height: 100%;">
         <img :src="require('../assets/login.png')" style="height: 100%; width: 500px;" />
         <div style="width: 50%;">
@@ -46,7 +47,7 @@ export default {
   data() {
     return {
       show: false,
-
+      api: process.env.NODE_ENV === "production" ? "/ruangong" : "/api",
       formInline: {
         user: "",
         password: ""
@@ -75,7 +76,7 @@ export default {
       var name = this.formInline.user;
       var password = this.formInline.password;
       this.$axios
-        .post("/api/admin/auth", {
+        .post(that.api + "/admin/auth", {
           name: name,
           password: password
         })

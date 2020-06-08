@@ -31,6 +31,7 @@
   display: inline-block;
   margin: -10% 0 0 20%;
 }
+
 </style>
 <template>
   <div class="layout">
@@ -53,10 +54,10 @@
         <Layout :style="{padding: '0 24px 24px'}">
           <!-- 一级分类 -->
           <Content
-            style="padding: 24px; minHeight: 500px; background-color: #fff; margin-top: 24px;"
+            style="padding: 24px; height: 45em; background-color: #fff; margin-top: 24px;"
           >
             <Tabs>
-              <Tab-pane label="查看分类" key="key1">
+              <Tab-pane label="查看分类" key="key1" style=" overflow-y: auto; height: 37.5em">
                 <Table :columns="columns" :data="data" @on-row-dblclick="show">
                   <template slot-scope="{ row, index }" slot="action">
                     <Button
@@ -85,7 +86,7 @@
                   </i-Form>
                 </div>
                 <Divider style="margin-top: 30px;" />
-                <div style="margin-bottom: 24px; height: 375px; overflow-y: scroll;">
+                <div style="margin-bottom: 24px; height: 375px; overflow-y: auto;">
                   <i-Form :label-width="150" label-position="left">
                     <FormItem label="从属分类：">
                       <Row>
@@ -572,6 +573,7 @@ export default {
     firstDel() {
       var that = this;
       var id = this.data[this.index].id;
+      console.log(that.token)
       this.$axios({
         method: "DELETE",
         url: that.api + "/admin/category/" + id,

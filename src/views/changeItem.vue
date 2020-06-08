@@ -173,7 +173,7 @@ textarea {
                       :before-upload="handleBeforeUpload"
                       multiple
                       type="drag"
-                      action="/api/pictures"
+                      :action="api + '/pictures'"
                       :headers="headers"
                       style="display:none;"
                     >
@@ -235,7 +235,7 @@ textarea {
                       :before-upload="handleBeforeUpload"
                       multiple
                       type="drag"
-                      action="/api/pictures"
+                      :action="api + '/pictures'"
                       :headers="headers"
                       style="display: inline-block;width:100px;"
                     >

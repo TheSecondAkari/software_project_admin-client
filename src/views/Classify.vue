@@ -125,7 +125,7 @@
                             :on-format-error="handleFormatError"
                             :on-exceeded-size="handleMaxSize"
                             type="drag"
-                            action="/api/pictures"
+                            :action="api + '/pictures'"
                             class="addSecond"
                           >
                             <img
@@ -216,7 +216,7 @@
                 :on-format-error="handleFormatError"
                 :on-exceeded-size="handleMaxSize"
                 type="drag"
-                action="/api/pictures"
+                :action="api + '/pictures'"
                 style="display: inline-block;"
               >
                 <img :src="imgURL" style="height:100px;width:100px;" />

@@ -59,13 +59,13 @@ textarea {
   display: flex;
   flex-wrap: wrap;
 }
-.hidden{
+.hidden {
   position: absolute;
-  right:0px;
-  top:0px;
-  bottom:0px;
-  left:0px;
-  background:rgba(192,192,192,0.5);
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  background: rgba(192, 192, 192, 0.5);
   z-index: 1;
   display: flex;
 }
@@ -76,16 +76,15 @@ textarea {
   table-layout: fixed;
   word-break: break-all;
   text-align: center;
-  
 }
 
-.rich_block{
-  z-index:4;
-  margin:auto;
+.rich_block {
+  z-index: 4;
+  margin: auto;
   height: 600px;
   overflow: auto;
-  width:375px;
-  background:white;
+  width: 375px;
+  background: white;
   padding: 10px;
 }
 
@@ -100,8 +99,7 @@ textarea {
   <div class="layout">
     <Layout>
       <Header :style="{height: '65px'}">
-        <Menu mode="horizontal" theme="dark" active-name="1">
-        </Menu>
+        <Menu mode="horizontal" theme="dark" active-name="1"></Menu>
       </Header>
       <Layout>
         <Sider hide-trigger :style="{background: '#fff'}">
@@ -122,8 +120,10 @@ textarea {
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb> -->
-          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff', marginTop: '20px'}">
+          </Breadcrumb>-->
+          <Content
+            :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff', marginTop: '20px'}"
+          >
             <Tabs active-key="key3" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
@@ -221,7 +221,7 @@ textarea {
                     :before-upload="handleBeforeUpload"
                     multiple
                     type="drag"
-                    action="/api/pictures"
+                    :action="api + '/pictures'"
                     :headers="headers"
                     style="display:none;"
                   >
@@ -244,17 +244,15 @@ textarea {
                       :key="key"
                       style="position:relative;height:100px;width:100px;margin-right:10px;background:#d7dde4;border-radius:5px;"
                     >
-                      <div style="border-radius:5px 5px 0px 0px ;height:75px;width:100px;display:flex;align-items:center;justify-content:center;align-items:center">
-                        <img
-                          :src="item"
-                          style="max-width:100px;max-height:75px;"
-                        />
+                      <div
+                        style="border-radius:5px 5px 0px 0px ;height:75px;width:100px;display:flex;align-items:center;justify-content:center;align-items:center"
+                      >
+                        <img :src="item" style="max-width:100px;max-height:75px;" />
                       </div>
-                      <div 
+                      <div
                         style="height:25px;width:100px;background:grey;border-radius: 0px 0px 5px 5px ;display:flex;align-items:center;justify-content:center;align-items:center;color:white"
-                        @click="del_img(key)">
-                        删除
-                      </div>
+                        @click="del_img(key)"
+                      >删除</div>
                     </div>
                     <Upload
                       ref="upload"
@@ -267,7 +265,7 @@ textarea {
                       :before-upload="handleBeforeUpload"
                       multiple
                       type="drag"
-                      action="/api/pictures"
+                      :action="api + '/pictures'"
                       :headers="headers"
                       style="display: inline-block;width:58px;"
                     >
@@ -312,7 +310,7 @@ export default {
   },
   data() {
     return {
-      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
+      api: process.env.NODE_ENV === "production" ? "/ruangong" : "/api",
       token: "",
       del_url: require("../assets/delete.png"),
       headers: {},
@@ -322,8 +320,8 @@ export default {
       inPrice: 0,
       outPrice: 0,
       totalNumber: 0,
-      des: "",  //富文本
-      hidden:false,  //决定富文本预览是否显示
+      des: "", //富文本
+      hidden: false, //决定富文本预览是否显示
       theChosenItem: 0, //用来定位当前要增加或者修改的是哪一个规格
       addItemValueIn: "", //增加某个规格内部分类其中一个选项的输入框的值
       addItemValueOut: "", //增加某个规格其中一个选项的输入框的值
@@ -405,19 +403,27 @@ export default {
     }
   },
   mounted() {
-    let that=this
+    let that = this;
     this.token = sessionStorage.getItem("Authorization");
     this.$refs.tabs.activeKey = 1;
     this.getClass();
-    let a=document.getElementById("backend")
-    let b=document.getElementById("rich")
-    a.addEventListener("click",function(){that.hidden=false})
-    b.addEventListener("click",function(e){e.stopPropagation()},true)
+    let a = document.getElementById("backend");
+    let b = document.getElementById("rich");
+    a.addEventListener("click", function() {
+      that.hidden = false;
+    });
+    b.addEventListener(
+      "click",
+      function(e) {
+        e.stopPropagation();
+      },
+      true
+    );
   },
   methods: {
     upload() {
-      let button=document.getElementById("submit_button")
-      button.disabled=true;
+      let button = document.getElementById("submit_button");
+      button.disabled = true;
       let name = this.name; //商品名
       let imgArray = this.imgList; //图片url
       let des = this.des; //商品描述
@@ -485,9 +491,9 @@ export default {
           )
           .then(function(e) {
             console.log(e);
-            button.disabled=false;
+            button.disabled = false;
             that.$Message.info("商品新增成功");
-            location.reload()
+            location.reload();
           })
           .catch(function(err) {
             that.$Message.info("新增失败");
@@ -525,9 +531,9 @@ export default {
           )
           .then(function(e) {
             console.log(e);
-            button.disabled=false;
+            button.disabled = false;
             that.$Message.info("商品新增成功");
-            location.reload()
+            location.reload();
           })
           .catch(function(err) {
             console.log(err);
@@ -732,7 +738,7 @@ export default {
       temp.splice(e, 1);
       this.imgList = temp;
     },
-    
+
     // 侧边栏页面跳转
     redirect(name) {
       console.log("");

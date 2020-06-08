@@ -31,7 +31,6 @@
   display: inline-block;
   margin: -10% 0 0 20%;
 }
-
 </style>
 <template>
   <div class="layout">
@@ -53,9 +52,7 @@
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <!-- 一级分类 -->
-          <Content
-            style="padding: 24px; height: 45em; background-color: #fff; margin-top: 24px;"
-          >
+          <Content style="padding: 24px; height: 45em; background-color: #fff; margin-top: 24px;">
             <Tabs>
               <Tab-pane label="查看分类" key="key1" style=" overflow-y: auto; height: 37.5em">
                 <Table :columns="columns" :data="data" @on-row-dblclick="show">
@@ -267,10 +264,10 @@
     <Modal v-model="translate" width="360">
       <p slot="header" style="color: #f60; text-align: center">
         <Icon type="ios-information-circle"></Icon>
-        <span>是否转移该分类下的商品</span>
+        <span>转移该分类下的商品</span>
       </p>
       <div style="text-align:center">
-        <p>是否将该分类下的商品转移至其他分类当中？</p>
+        <p>将该分类下的商品转移至其他分类当中？</p>
         <Select v-model="tran" style="width:200px">
           <OptionGroup v-for="item in data" :key="item.id" :label="item.name">
             <Option
@@ -282,7 +279,7 @@
         </Select>
       </div>
       <div slot="footer">
-        <Button style="margin-right: 30px;" @click="onlyDel">取消</Button>
+        <Button style="margin-right: 30px;" @click="translate = false">取消</Button>
         <Button type="primary" style="margin-right: 80px;" @click="delAndTra">确认</Button>
       </div>
     </Modal>
@@ -573,7 +570,7 @@ export default {
     firstDel() {
       var that = this;
       var id = this.data[this.index].id;
-      console.log(that.token)
+      console.log(that.token);
       this.$axios({
         method: "DELETE",
         url: that.api + "/admin/category/" + id,
@@ -592,44 +589,61 @@ export default {
         })
         .catch(function() {
           that.$Message.error({
-            content: "分类删除失败！",
-            duration: 1,
+            content: "分类删除失败，请检查该分类下商品是否全部转移！",
+            duration: 3,
             closable: true
           });
         });
     },
 
-    onlyDel() {
-      var that = this;
-      var id = this.second_data[this.index].id;
-      this.$axios({
-        method: "DELETE",
-        url: that.api + "/admin/category/" + id,
-        headers: {
-          Authorization: that.token
-        }
-      })
-        .then(function() {
-          that.translate = false;
-          that.second_data.splice(that.index, 1);
-          that.$Message.success({
-            content: "分类删除成功！",
-            duration: 1,
-            closable: true
-          });
-        })
-        .catch(function() {
-          that.$Message.error({
-            content: "分类删除失败！",
-            duration: 1,
-            closable: true
-          });
-        });
-    },
+    // onlyDel() {
+    //   var that = this;
+    //   var id = this.second_data[this.index].id;
+    //   this.$axios({
+    //     method: "DELETE",
+    //     url: that.api + "/admin/category/" + id,
+    //     headers: {
+    //       Authorization: that.token
+    //     }
+    //   })
+    //     .then(function() {
+    //       that.translate = false;
+    //       that.second_data.splice(that.index, 1);
+    //       that.$Message.success({
+    //         content: "分类删除成功！",
+    //         duration: 1,
+    //         closable: true
+    //       });
+    //     })
+    //     .catch(function() {
+    //       that.$Message.error({
+    //         content: "分类删除失败！",
+    //         duration: 1,
+    //         closable: true
+    //       });
+    //     });
+    // },
 
     delAndTra() {
       var that = this;
+      if (that.tran == -1) {
+        that.$Message.error({
+          content: "请选择所要转移的分类！",
+          duration: 1,
+          closable: true
+        });
+        return;
+      }
+
       var id = this.second_data[this.index].id;
+      if (that.tran == id) {
+        that.$Message.error({
+          content: "不能选择当前分类！",
+          duration: 1,
+          closable: true
+        });
+        return;
+      }
       this.$axios({
         method: "DELETE",
         url: that.api + "/admin/category/" + id,
@@ -749,7 +763,7 @@ export default {
           that.$router.push({ path: "/itemManage" });
           break;
         case 3:
-           that.$router.push({ path:'/orders'});
+          that.$router.push({ path: "/orders" });
           break;
         default:
           break;

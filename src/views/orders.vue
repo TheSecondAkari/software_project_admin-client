@@ -40,7 +40,7 @@
       <Layout>
         <Sider
           hide-trigger
-          :style="{background: '#fff', position:'absolute',top:'64px', bottom:'0px'}"
+          :style="{position:'absolute',overflow:'auto' ,top:'64px',bottom:'0px', background: '#fff'}"
         >
           <Menu active-name="3" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
@@ -55,9 +55,9 @@
           </Menu>
         </Sider>
       </Layout>
-      <Layout
-        :style="{padding: '0 24px 24px', position: 'absolute', left:'200px', top:'64px', bottom:'0px', right:'0px'  }"
-      >
+        <Layout
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto',}"
+        >
         <Content style="padding: 24px; background-color: #fff; margin-top: 20px; overflow:auto">
           <Row>
             <i-col span="12" offset="6">

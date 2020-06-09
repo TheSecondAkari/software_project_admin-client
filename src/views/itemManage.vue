@@ -387,16 +387,21 @@ export default {
     },
     search() {
       let that = this;
-      let sortVal=1;
+      let sortVal=0;
       if (this.sortVal!="正序")
-        sortVal=0;
+        sortVal=1;
+      let overdue=0;
+      if(this.overdue!="未下架")
+        overdue=1;
       this.$axios
         .get(that.api + "/admin/goods/search", {
           params: {
             key: that.input_item_name,
             category_id: that.model1[that.model1.length-1],
             sort:that.sort_type[0],
-            desc:sortVal
+            desc:sortVal,
+            overdue:overdue,
+            page:that.now_page
           },
           headers: {
             Authorization: that.token
@@ -409,6 +414,10 @@ export default {
           //let item=res.data.data.items[0];
           for (var item of res.data.data.items) {
             temp = {};
+            if(that.overdue=="未下架")
+              temp.over=0
+            else
+              temp.over=1
             temp.item_name = item.name;
             temp.item_obj = item.category.name;
             temp.item_id = item.id;

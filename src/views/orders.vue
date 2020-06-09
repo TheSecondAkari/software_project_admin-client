@@ -545,8 +545,8 @@ export default {
             that.number="";
           })
           .catch(function() {
-            console.log("失败");
-            that.$Message.error("发货异常");
+            console.log(that.number);
+            that.$Message.error("发货异常/请输如正确的物流单号");
             that.number="";
 
           });

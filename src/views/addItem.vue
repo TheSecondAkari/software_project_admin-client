@@ -5,8 +5,6 @@
   background: #f5f7f9;
   position: relative;
   border-radius: 4px;
-  overflow: hidden;
-  overflow-y: scroll;
   height: 100%;
 }
 .layout-logo {
@@ -127,7 +125,7 @@ textarea {
             <BreadcrumbItem>Layout</BreadcrumbItem>
           </Breadcrumb>-->
           <Content
-            :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff', marginTop: '20px'}"
+            :style="{padding: '24px',  minWidth: '1100px',  background: '#fff', marginTop: '20px'}"
           >
             <Tabs active-key="key3" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>

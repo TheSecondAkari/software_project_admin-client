@@ -86,7 +86,7 @@ button {
         <Layout 
           :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto'}"
           >
-          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px'}">
+          <Content :style="{padding: '24px',  minWidth: '1100px', background: '#fff' , position: 'relative', marginTop: '20px'}">
             <Tabs active-key="key3" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>

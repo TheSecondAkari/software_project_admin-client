@@ -127,7 +127,7 @@ button {
             <BreadcrumbItem>Layout</BreadcrumbItem>
           </Breadcrumb>-->
           <Content
-            :style="{padding: '24px', minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px'}"
+            :style="{overflow:'auto',padding: '24px', minWidth: '1100px', background: '#fff' , position: 'relative', marginTop: '20px'}"
           >
             <Tabs active-key="4" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>

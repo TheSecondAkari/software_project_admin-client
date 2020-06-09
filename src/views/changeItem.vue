@@ -6,7 +6,6 @@
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-  overflow-y: scroll;
   height: 100%;
 }
 .layout-logo {
@@ -129,7 +128,7 @@ textarea {
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
           </Breadcrumb> -->
-          <Content :style="{padding: '20px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , marginTop: '20px'}">
+          <Content :style="{padding: '20px',  minWidth: '1100px',  background: '#fff' , marginTop: '20px'}">
             <div class="main_block">
               <div class="special">
                 <div style="padding-bottom:20px;">

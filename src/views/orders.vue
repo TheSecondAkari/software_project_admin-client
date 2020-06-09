@@ -93,7 +93,14 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page :total="pre_pagenumber" @on-change="changePage" />
+                <Row>
+                  <i-col span="4">
+                    <Button type="primary" @click="lastPage">上一页</Button>
+                  </i-col>
+                  <i-col span="4" offset="10">
+                    <Button type="primary" @click="nextPage">下一页</Button>
+                  </i-col>
+                </Row>
               </div>
             </Tab-pane>
             <Tab-pane label="已发货" name="2">
@@ -108,7 +115,14 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page :total="snd_pagenumber" @on-change="changePage" />
+                <Row>
+                  <i-col span="4">
+                    <Button type="primary" @click="lastPage">上一页</Button>
+                  </i-col>
+                  <i-col span="4" offset="10">
+                    <Button type="primary" @click="nextPage">下一页</Button>
+                  </i-col>
+                </Row>
               </div>
             </Tab-pane>
             <Tab-pane label="已收货" name="3">
@@ -123,7 +137,14 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page :total="com_pagenumber" @on-change="changePage" />
+                <Row>
+                  <i-col span="4">
+                    <Button type="primary" @click="lastPage">上一页</Button>
+                  </i-col>
+                  <i-col span="4" offset="10">
+                    <Button type="primary" @click="nextPage">下一页</Button>
+                  </i-col>
+                </Row>
               </div>
             </Tab-pane>
             <Tab-pane label="退款中" name="4">
@@ -145,7 +166,14 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page :total="ref_pagenumber" @on-change="changePage" />
+                <Row>
+                  <i-col span="4">
+                    <Button type="primary" @click="lastPage">上一页</Button>
+                  </i-col>
+                  <i-col span="4" offset="10">
+                    <Button type="primary" @click="nextPage">下一页</Button>
+                  </i-col>
+                </Row>
               </div>
             </Tab-pane>
           </Tabs>
@@ -366,7 +394,7 @@ export default {
           }
           that.orderlist_pre = templist;
           templist = [];
-          that.pre_pagenumber = Math.ceil(res.count / 25);
+          that.pre_pagenumber = Math.ceil(res.count / 20);
         })
         .catch(function() {});
     },
@@ -408,7 +436,7 @@ export default {
           }
           that.orderlist_snd = templist;
           templist = [];
-          that.snd_pagenumber = Math.ceil(res.count / 25);
+          that.snd_pagenumber = Math.ceil(res.count / 20);
         })
         .catch(function() {});
     },
@@ -449,7 +477,7 @@ export default {
           }
           that.orderlist_com = templist;
           templist = [];
-          that.com_pagenumber = Math.ceil(res.count / 25);
+          that.com_pagenumber = Math.ceil(res.count / 20);
         })
         .catch(function() {});
     },
@@ -490,19 +518,20 @@ export default {
           }
           that.orderlist_ref = templist;
           templist = [];
-          that.ref_pagenumber = Math.ceil(res.count / 25);
+          that.ref_pagenumber = Math.ceil(res.count / 20);
         })
         .catch(function() {});
     },
 
     async getOrderList() {
+      this.page = 1;
       await this.getOrderListPre();
       await this.getOrderListSnd();
 
       await this.getOrderListCom();
 
       await this.getOrderListRef();
-      this.page=1;
+      
       console.log(this.status);
       console.log(this.pre_pagenumber);
     },
@@ -658,17 +687,48 @@ export default {
           });
       }
     },
-
-    changePage(c) {
-        this.page=c;
+    lastPage() {
+      if (this.page == 1) this.$Message.error("已经是第一页");
+      else {
+        this.page -= 1;
         if (this.status == 1) this.getOrderListPre();
         else if (this.status == 2) this.getOrderListSnd();
         else if (this.status == 3) this.getOrderListCom();
         else if (this.status == 4) this.getOrderListRef();
         console.log(this.page);
+      }
     },
-
-    
+    nextPage() {
+      if (this.status == 1) {
+        if (this.page == this.pre_pagenumber)
+          this.$Message.error("已经是最后一页");
+        else {
+          this.page += 1;
+          this.getOrderListPre();
+        }
+      } else if (this.status == 2) {
+        if (this.page == this.snd_pagenumber)
+          this.$Message.error("已经是最后一页");
+        else {
+          this.page += 1;
+          this.getOrderListSnd();
+        }
+      } else if (this.status == 3) {
+        if (this.page == this.com_pagenumber)
+          this.$Message.error("已经是最后一页");
+        else {
+          this.page += 1;
+          this.getOrderListCom();
+        }
+      } else if (this.status == 4) {
+        if (this.page == this.ref_pagenumber)
+          this.$Message.error("已经是最后一页");
+        else {
+          this.page += 1;
+          this.getOrderListRef();
+        }
+      }
+    },
     close() {
       this.search_show = false;
       this.search_status = 0;

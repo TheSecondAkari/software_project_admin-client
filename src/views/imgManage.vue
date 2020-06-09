@@ -278,7 +278,7 @@ export default {
     getItem() {
       var that = this;
       this.$axios
-        .get(that.api + "admin/goods", {
+        .get(that.api + "/admin/goods", {
           headers: {
             Authorization: that.token
           }

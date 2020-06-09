@@ -376,7 +376,7 @@ export default {
       let id = this.$route.params.id;
       this.id = id;
       this.$axios
-        .get(that.api + "admin/goods/" + id, {
+        .get(that.api + "/admin/goods/" + id, {
           headers: {
             Authorization: that.token
           }
@@ -635,7 +635,7 @@ export default {
           that.$router.push({ path: "/itemManage" });
           break;
         case 3:
-          //  that.$router.push({ path:'/item_manage'});
+           that.$router.push({ path:'/orders'});
           break;
         default:
           break;

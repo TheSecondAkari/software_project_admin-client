@@ -304,7 +304,7 @@ export default {
       if(this.overdue!="未下架")
         overdue=1;
       this.$axios
-        .get(that.api + "admin/goods", {
+        .get(that.api + "/admin/goods", {
           params: {
             category_id: that.model1[that.model1.length-1],
             sort:that.sort_type[0],

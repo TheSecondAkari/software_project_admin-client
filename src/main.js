@@ -21,6 +21,7 @@ Vue.component('Layout', Layout);
 Vue.component('Button', Button);
 Vue.component('i-Button', Button);
 Vue.component('Table', Table);
+Vue.component('i-table', Table);
 Vue.component('Icon', Icon);
 Vue.component('Row', Row);
 Vue.component('Col', Col);

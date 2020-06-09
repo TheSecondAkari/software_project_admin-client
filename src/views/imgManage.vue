@@ -98,13 +98,13 @@ button {
 <template>
   <div class="layout">
     <Layout>
-      <Header :style="{height: '65px'}">
+      <Header :style="{height: '64px'}">
         <Menu mode="horizontal" theme="dark" active-name="1"></Menu>
       </Header>
       <Layout :style="{overflow:'auto'}">
         <Sider
           hide-trigger
-          :style="{position:'absolute',top:'65px',bottom:'0px', background: '#fff'}"
+          :style="{position:'absolute',top:'64px',bottom:'0px', background: '#fff'}"
         >
           <Menu active-name="2" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
@@ -119,7 +119,7 @@ button {
           </Menu>
         </Sider>
         <Layout
-          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'65px',right:'0px', overflow:'auto',}"
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px', overflow:'auto',}"
         >
           <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>

@@ -52,7 +52,7 @@
         </Sider>
         <Layout :style="{padding: '0 24px 24px'}">
           <!-- 一级分类 -->
-          <Content style="padding: 24px; height: 45em; background-color: #fff; margin-top: 24px;">
+          <Content style="padding: 24px; height: 45em; background-color: #fff; margin-top: 20px;">
             <Tabs>
               <Tab-pane label="查看分类" key="key1" style=" overflow-y: auto; height: 37.5em">
                 <Table :columns="columns" :data="data" @on-row-dblclick="show">

@@ -408,6 +408,13 @@ export default {
           }
         })
         .then(function(res) {
+          console.log(res)
+          if(res.data.data.count<=20)
+            document.getElementById("nextbutton").disabled=true
+          if(res.data.data.count%20==0)
+            that.total_page=res.data.data.count/20
+          else
+            that.total_page=Math.floor(res.data.data.count/20)+1
           that.totalNumber = res.data.data.rows;
           var arr = [];
           var temp = {};

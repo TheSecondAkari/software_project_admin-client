@@ -37,7 +37,10 @@
     <Layout>
       <Header></Header>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
+        <Sider
+          hide-trigger
+          :style="{position:'absolute',overflow:'auto' ,top:'64px',bottom:'0px', background: '#fff'}"
+        >
           <Menu active-name="1" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
@@ -50,7 +53,9 @@
             </MenuItem>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
+        <Layout 
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto'}"
+          >
           <!-- 一级分类 -->
           <Content style="padding: 24px; height: 45em; background-color: #fff; margin-top: 20px;">
             <Tabs>

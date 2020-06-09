@@ -55,9 +55,9 @@
           </Menu>
         </Sider>
       </Layout>
-        <Layout
-          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto',}"
-        >
+      <Layout
+        :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto',}"
+      >
         <Content style="padding: 24px; background-color: #fff; margin-top: 20px; overflow:auto">
           <Row>
             <i-col span="12" offset="6">
@@ -73,9 +73,9 @@
               </div>
             </i-col>
           </Row>
-          <Tabs @on-click="getOrderList()">
-            <Tab-pane label="待发货" key="1">
-              <Table :columns="columns_pre" :data="pre_showList">
+          <Tabs v-model="status" @on-click="getOrderList()">
+            <Tab-pane label="待发货" name="1">
+              <Table :columns="columns_pre" :data="orderlist_pre">
                 <template slot-scope="row" slot="action">
                   <Row>
                     <i-col span="12">
@@ -93,16 +93,11 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page
-                  :total="pre_totalNumber"
-                  :page-size="pre_pageSize"
-                  @on-change="pre_changePage"
-                  show-total
-                />
+                <Page :total="pre_pagenumber" @on-change="changePage" />
               </div>
             </Tab-pane>
-            <Tab-pane label="已发货" key="2">
-              <Table :columns="columns_snd" :data="snd_showList">
+            <Tab-pane label="已发货" name="2">
+              <Table :columns="columns_snd" :data="orderlist_snd">
                 <template slot-scope="row" slot="action">
                   <Button
                     type="primary"
@@ -113,16 +108,11 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page
-                  :total="snd_totalNumber"
-                  :page-size="snd_pageSize"
-                  @on-change="snd_changePage"
-                  show-total
-                />
+                <Page :total="snd_pagenumber" @on-change="changePage" />
               </div>
             </Tab-pane>
-            <Tab-pane label="已收货" key="3">
-              <Table :columns="columns_com" :data="com_showList">
+            <Tab-pane label="已收货" name="3">
+              <Table :columns="columns_com" :data="orderlist_com">
                 <template slot-scope="row" slot="action">
                   <Button
                     type="primary"
@@ -133,16 +123,11 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page
-                  :total="com_totalNumber"
-                  :page-size="com_pageSize"
-                  @on-change="com_changePage"
-                  show-total
-                />
+                <Page :total="com_pagenumber" @on-change="changePage" />
               </div>
             </Tab-pane>
-            <Tab-pane label="退款中" key="4">
-              <Table :columns="columns_ref" :data="ref_showList">
+            <Tab-pane label="退款中" name="4">
+              <Table :columns="columns_ref" :data="orderlist_ref">
                 <template slot-scope="row" slot="action">
                   <Row>
                     <i-col span="12">
@@ -160,12 +145,7 @@
                 </template>
               </Table>
               <div style="margin-top:20px;display:flex;justify-content:center;">
-                <Page
-                  :total="refund_totalNumber"
-                  :page-size="refund_pageSize"
-                  @on-change="refund_changePage"
-                  show-total
-                />
+                <Page :total="ref_pagenumber" @on-change="changePage" />
               </div>
             </Tab-pane>
           </Tabs>
@@ -177,24 +157,22 @@
       <Modal v-model="info_show" title="订单详情">
         <div style="width: 100%; margin: 10px 0 25px 0;">
           <i-Form :label-width="90">
-           
-              <p>订单ID：{{info.order_id}}</p>
-              <p>订单号：{{info.order_number}}</p>
-              <p v-if="info_status==2||info_status==3">物流号：{{info.number}}</p>
-              <p>创建时间：{{info.created_at}}</p>
-              <p>更新时间：{{info.updated_at}}</p>
-              <p>用户名：{{info.user.name}}</p>
-              <p>用户ID：{{info.user.id}}</p>
-              <p v-if="info_status==4">退款原因：{{info.refund_remark}}</p>
-              <p>收件人：{{info.address.name}}</p>
-              <p>手机号：{{info.address.phone}}</p>
-              <p>地址：{{info.address.province}}/{{info.address.city}}/{{info.address.county}}/{{info.address.detail}}</p>
-              <p>备注：{{info.remark}}</p>
-              <p>订单商品：</p>
-              <template style="width:100%">
-                <i-table stripe :columns="columns_good" :data="goods"></i-table>
-              </template>
-            
+            <p>订单ID：{{info.order_id}}</p>
+            <p>订单号：{{info.order_number}}</p>
+            <p v-if="info_status==2||info_status==3">物流号：{{info.number}}</p>
+            <p>创建时间：{{info.created_at}}</p>
+            <p>更新时间：{{info.updated_at}}</p>
+            <p>用户名：{{info.user.name}}</p>
+            <p>用户ID：{{info.user.id}}</p>
+            <p v-if="info_status==4">退款原因：{{info.refund_remark}}</p>
+            <p>收件人：{{info.address.name}}</p>
+            <p>手机号：{{info.address.phone}}</p>
+            <p>地址：{{info.address.province}}/{{info.address.city}}/{{info.address.county}}/{{info.address.detail}}</p>
+            <p>备注：{{info.remark}}</p>
+            <p>订单商品：</p>
+            <template style="width:100%">
+              <i-table stripe :columns="columns_good" :data="goods"></i-table>
+            </template>
           </i-Form>
         </div>
       </Modal>
@@ -267,11 +245,18 @@
 export default {
   data() {
     return {
-      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
+      api: process.env.NODE_ENV === "production" ? "/ruangong" : "/api",
       info_show: false,
       number_show: false,
       refund_show: false,
       search_show: false,
+      pre_pagenumber: 1,
+      snd_pagenumber: 1,
+      com_pagenumber: 1,
+      ref_pagenumber: 1,
+
+      status: "1",
+      page: 1, //页码
       info: {}, //详细信息
       number: "", //输入物流编号
       id: "", //订单id
@@ -318,23 +303,7 @@ export default {
       orderlist_com: [],
       orderlist_ref: [],
       search_list: [],
-      goods: [],
-
-      refund_totalNumber: 0,
-      refund_pageSize: 9,
-      ref_showList: [],
-
-      pre_totalNumber: 0,
-      pre_pageSize: 9,
-      pre_showList: [],
-
-      snd_totalNumber: 0,
-      snd_pageSize: 9,
-      snd_showList: [],
-
-      com_totalNumber: 0,
-      com_pageSize: 9,
-      com_showList: []
+      goods: []
     };
   },
   mounted() {
@@ -360,139 +329,182 @@ export default {
           break;
       }
     },
-    async getOrderList() {
+    async getOrderListPre() {
       var i = 0;
       // console.log("xx");
       var that = this;
       var templist = [];
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders?type=1&page=1", //不会翻页，读取的page都写的是1
+        url: that.api + "/admin/orders?type=1&page=" + that.page, //不会翻页，读取的page都写的是1
         headers: {
           Authorization: that.token
         }
       })
         .then(function(res) {
-          res = res.data.data.items;
+          res = res.data.data;
           console.log(res);
-          for (i = 0; i < res.length; i++) {
+          for (i = 0; i < res.items.length; i++) {
             templist.push({
-              order_id: res[i].id, //id
-              order_number: res[i].order_number, //订单号
-              number: res[i].number, //物流号
-              price: res[i].price, //总价
-              created_at: res[i].created_at, //创建时间
-              updated_at: res[i].updated_at, //更新时间
-              remark: res[i].remark, //备注
-              refund_remark: res[i].refund_remark, //退款备注
-              status: res[i].status,
-              items: res[i].items, //物品
-              address: res[i].address, //地址
-              user: res[i].user //用户
+              order_id: res.items[i].id, //id
+              order_number: res.items[i].order_number, //订单号
+              number: res.items[i].number, //物流号
+              price: res.items[i].price, //总价
+              created_at: res.items[i].created_at, //创建时间
+              updated_at: res.items[i].updated_at, //更新时间
+              remark: res.items[i].remark, //备注
+              refund_remark: res.items[i].refund_remark, //退款备注
+              status: res.items[i].status,
+              items: res.items[i].items, //物品
+              address: res.items[i].address, //地址
+              user: res.items[i].user, //用户
+
+              rows: res.row,
+              count: res.count,
+              page: res.page
             });
           }
           that.orderlist_pre = templist;
           templist = [];
-          that.pre_totalNumber = res.length;
-          that.pre_showList = that.orderlist_pre.slice(0, that.pre_pageSize);
+          that.pre_pagenumber = Math.ceil(res.count / 25);
         })
         .catch(function() {});
+    },
+    async getOrderListSnd() {
+      var i = 0;
+      // console.log("xx");
+      var that = this;
+      var templist = [];
+
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders?type=2&page=1",
+        url: that.api + "/admin/orders?type=2&page=" + that.page,
         headers: {
           Authorization: that.token
         }
       })
         .then(function(res) {
-          res = res.data.data.items;
-          for (i = 0; i < res.length; i++) {
+          res = res.data.data;
+          console.log(res);
+          for (i = 0; i < res.items.length; i++) {
             templist.push({
-              order_id: res[i].id, //id
-              order_number: res[i].order_number, //订单号
-              number: res[i].number, //物流号
-              price: res[i].price, //总价
-              created_at: res[i].created_at, //创建时间
-              updated_at: res[i].updated_at, //更新时间
-              remark: res[i].remark, //备注
-              refund_remark: res[i].refund_remark, //退款备注
-              status: res[i].status,
+              order_id: res.items[i].id, //id
+              order_number: res.items[i].order_number, //订单号
+              number: res.items[i].number, //物流号
+              price: res.items[i].price, //总价
+              created_at: res.items[i].created_at, //创建时间
+              updated_at: res.items[i].updated_at, //更新时间
+              remark: res.items[i].remark, //备注
+              refund_remark: res.items[i].refund_remark, //退款备注
+              status: res.items[i].status,
+              items: res.items[i].items, //物品
+              address: res.items[i].address, //地址
+              user: res.items[i].user, //用户
 
-              items: res[i].items, //物品
-              address: res[i].address, //地址
-              user: res[i].user //用户
+              rows: res.row,
+              count: res.count,
+              page: res.page
             });
           }
           that.orderlist_snd = templist;
           templist = [];
-          that.snd_totalNumber = res.length;
-          that.snd_showList = that.orderlist_snd.slice(0, that.snd_pageSize);
+          that.snd_pagenumber = Math.ceil(res.count / 25);
         })
         .catch(function() {});
+    },
+    async getOrderListCom() {
+      var i = 0;
+      // console.log("xx");
+      var that = this;
+      var templist = [];
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders?type=3&page=1",
+        url: that.api + "/admin/orders?type=3&page=" + that.page,
         headers: {
           Authorization: that.token
         }
       })
         .then(function(res) {
-          res = res.data.data.items;
-          for (i = 0; i < res.length; i++) {
+          res = res.data.data;
+          console.log(res);
+          for (i = 0; i < res.items.length; i++) {
             templist.push({
-              order_id: res[i].id, //id
-              order_number: res[i].order_number, //订单号
-              number: res[i].number, //物流号
-              price: res[i].price, //总价
-              created_at: res[i].created_at, //创建时间
-              updated_at: res[i].updated_at, //更新时间
-              remark: res[i].remark, //备注
-              refund_remark: res[i].refund_remark, //退款备注
-              status: res[i].status,
+              order_id: res.items[i].id, //id
+              order_number: res.items[i].order_number, //订单号
+              number: res.items[i].number, //物流号
+              price: res.items[i].price, //总价
+              created_at: res.items[i].created_at, //创建时间
+              updated_at: res.items[i].updated_at, //更新时间
+              remark: res.items[i].remark, //备注
+              refund_remark: res.items[i].refund_remark, //退款备注
+              status: res.items[i].status,
+              items: res.items[i].items, //物品
+              address: res.items[i].address, //地址
+              user: res.items[i].user, //用户
 
-              items: res[i].items, //物品
-              address: res[i].address, //地址
-              user: res[i].user //用户
+              rows: res.row,
+              count: res.count,
+              page: res.page
             });
           }
           that.orderlist_com = templist;
           templist = [];
-          that.com_totalNumber = res.length;
-          that.com_showList = that.orderlist_com.slice(0, that.com_pageSize);
+          that.com_pagenumber = Math.ceil(res.count / 25);
         })
         .catch(function() {});
+    },
+    async getOrderListRef() {
+      var i = 0;
+      // console.log("xx");
+      var that = this;
+      var templist = [];
       this.$axios({
         method: "GET",
-        url: that.api + "/admin/orders?type=4&page=1",
+        url: that.api + "/admin/orders?type=4&page=" + that.page,
         headers: {
           Authorization: that.token
         }
       })
         .then(function(res) {
-          res = res.data.data.items;
+          res = res.data.data;
           console.log(res);
-          for (i = 0; i < res.length; i++) {
+          for (i = 0; i < res.items.length; i++) {
             templist.push({
-              order_id: res[i].id, //id
-              order_number: res[i].order_number, //订单号
-              number: res[i].number, //物流号
-              price: res[i].price, //总价
-              created_at: res[i].created_at, //创建时间
-              updated_at: res[i].updated_at, //更新时间
-              remark: res[i].remark, //备注
-              refund_remark: res[i].refund_remark, //退款备注
-              status: res[i].status,
-              items: res[i].items, //物品
-              address: res[i].address, //地址
-              user: res[i].user //用户
+              order_id: res.items[i].id, //id
+              order_number: res.items[i].order_number, //订单号
+              number: res.items[i].number, //物流号
+              price: res.items[i].price, //总价
+              created_at: res.items[i].created_at, //创建时间
+              updated_at: res.items[i].updated_at, //更新时间
+              remark: res.items[i].remark, //备注
+              refund_remark: res.items[i].refund_remark, //退款备注
+              status: res.items[i].status,
+              items: res.items[i].items, //物品
+              address: res.items[i].address, //地址
+              user: res.items[i].user, //用户
+
+              rows: res.row,
+              count: res.count,
+              page: res.page
             });
           }
           that.orderlist_ref = templist;
           templist = [];
-          that.refund_totalNumber = res.length;
-          that.ref_showList = that.orderlist_ref.slice(0, that.refund_pageSize);
+          that.ref_pagenumber = Math.ceil(res.count / 25);
         })
         .catch(function() {});
+    },
+
+    async getOrderList() {
+      await this.getOrderListPre();
+      await this.getOrderListSnd();
+
+      await this.getOrderListCom();
+
+      await this.getOrderListRef();
+      this.page=1;
+      console.log(this.status);
+      console.log(this.pre_pagenumber);
     },
     getInfo(row) {
       this.info = [];
@@ -522,7 +534,7 @@ export default {
       this.number_show = true;
     },
     Send() {
-      if (this.number.toString().length!=8) {
+      if (this.number.toString().length != 8) {
         this.$Message.error("请输入正确格式");
       } else {
         this.number_show = false;
@@ -542,13 +554,12 @@ export default {
             that.getOrderList();
             that.$Message.success("成功发货");
             console.log("成功");
-            that.number="";
+            that.number = "";
           })
           .catch(function() {
             console.log(that.number);
             that.$Message.error("发货异常/请输如正确的物流单号");
-            that.number="";
-
+            that.number = "";
           });
       }
     },
@@ -647,27 +658,17 @@ export default {
           });
       }
     },
-    refund_changePage(c) {
-      var temp = this.orderlist_ref;
-      var size = this.refund_pageSize;
-      this.ref_showList = temp.slice((c - 1) * size, c * size);
-    },
-    snd_changePage(c) {
-      var temp = this.orderlist_snd;
-      var size = this.snd_pageSize;
-      this.snd_showList = temp.slice((c - 1) * size, c * size);
-    },
-    com_changePage(c) {
-      var temp = this.orderlist_com;
-      var size = this.com_pageSize;
-      this.com_showList = temp.slice((c - 1) * size, c * size);
-    },
-    pre_changePage(c) {
-      var temp = this.orderlist_pre;
-      var size = this.pre_pageSize;
-      this.pre_showList = temp.slice((c - 1) * size, c * size);
+
+    changePage(c) {
+        this.page=c;
+        if (this.status == 1) this.getOrderListPre();
+        else if (this.status == 2) this.getOrderListSnd();
+        else if (this.status == 3) this.getOrderListCom();
+        else if (this.status == 4) this.getOrderListRef();
+        console.log(this.page);
     },
 
+    
     close() {
       this.search_show = false;
       this.search_status = 0;

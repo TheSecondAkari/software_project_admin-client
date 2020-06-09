@@ -76,7 +76,7 @@ button {
           <b>商品类别：</b>
           {{item.item_obj}}
         </div>
-        <div class="item_info">
+        <div class="item_info" style="height:20px;width:300px;overflow:hidden;">
           <b>商品名称：</b>
           {{item.item_name}}
         </div>

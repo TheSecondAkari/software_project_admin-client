@@ -198,6 +198,7 @@ button {
                   show-total
                 />
               </div>
+              <div>{{img_number}}</div>
             </div>
           </Content>
         </Layout>
@@ -272,7 +273,9 @@ export default {
           temp_obj.name = item.name;
           temp_arr.push(temp_obj);
         }
+        
         that.selectedList = temp_arr;
+        that.img_number=that.selectedList.length
       });
     },
     getItem() {
@@ -402,7 +405,7 @@ export default {
         name: _name
       };
       if (this.img_number > 4) {
-        alert("最多选择五个商品展示");
+        this.$Message.error("最多选择五个商品展示");
       } else {
         this.selectedList.push(newObj);
         this.img_number = this.img_number + 1;
@@ -420,7 +423,7 @@ export default {
           that.selectedList[index]
         )[0];
       } else {
-        alert("已经是第一个了");
+        this.$Message.error("已经是第一个了");
       }
     },
     moveDown(index) {
@@ -432,7 +435,7 @@ export default {
           that.selectedList[index]
         )[0];
       } else {
-        alert("已经是最后一个了");
+        this.$Message.error("已经是最后一个了");
       }
     },
 

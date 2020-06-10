@@ -11,11 +11,11 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import {
-  Layout,Header,Sider,Content, Button, Table, Icon, Row, Col, Menu, MenuItem, Tabs, TabPane, Page, Input, RadioGroup, Radio, Select, Option, Cascader, Upload, Divider, Form, FormItem, Message, Notice, Modal, Drawer
+  Layout, Header, Sider, Content, Button, Table, Icon, Row, Col, Menu, MenuItem, Tabs, TabPane, Page, Input, RadioGroup, Radio, Select, Option, Cascader, Upload, Divider, Form, FormItem, Message, Notice, Modal, Drawer
 } from 'view-design';
-Vue.component("Header",Header);
-Vue.component("Content",Content);
-Vue.component("Sider",Sider);
+Vue.component("Header", Header);
+Vue.component("Content", Content);
+Vue.component("Sider", Sider);
 Vue.component('Layout', Layout);
 Vue.component('Button', Button);
 Vue.component('i-Button', Button);
@@ -42,10 +42,11 @@ Vue.component('Upload', Upload);
 Vue.component('Divider', Divider);
 Vue.component('i-Form', Form);
 Vue.component('FormItem', FormItem);
-Vue.component('Message', Message);
-Vue.component('Notice', Notice);
 Vue.component('Modal', Modal);
 Vue.component('Drawer', Drawer);
+
+Vue.prototype.$Message = Message;
+Vue.prototype.$Notice = Notice;
 
 Vue.prototype.$axios = axios
 Vue.use(VueRouter);

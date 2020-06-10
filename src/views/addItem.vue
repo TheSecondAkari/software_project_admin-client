@@ -221,7 +221,7 @@ textarea {
                     :max-size="2048"
                     :on-format-error="handleFormatError"
                     :on-exceeded-size="handleMaxSize"
-                    :before-upload="handleBeforeUpload"
+                    :before-upload="handleBeforeUpload2"
                     multiple
                     type="drag"
                     :action="api + '/pictures'"
@@ -319,6 +319,7 @@ export default {
       headers: {},
       uploadList: [],
       imgList: [],
+      richImgList:[],
       name: "",
       inPrice: 0,
       outPrice: 0,
@@ -694,11 +695,17 @@ export default {
     },
     handleBeforeUpload() {
       //上传之前的函数
-      const check = this.uploadList.length < 5;
+      const check = this.imgList.length < 5;
       if (!check) {
-        this.$Notice.warning({
-          title: "Up to five pictures can be uploaded."
-        });
+        alert("图片最多上传五张")
+      }
+      return check;
+    },
+    handleBeforeUpload2() {
+      //上传之前的函数
+      const check = this.richImgList.length < 5;
+      if (!check) {
+        alert("图片最多上传五张")
       }
       return check;
     },

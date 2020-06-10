@@ -135,7 +135,7 @@ button {
               id="itemTable"
               style="position:absolute;top:120px;left:20px;right:20px;bottom:0px;overflow:auto;"
             >
-              <ItemBlock @showModal="parentFn" @showModalDel="del_item" @showModalRe="restock" :itemList="itemList_father"></ItemBlock>
+              <ItemBlock @showModal="parentFn" @showModalDel="del_item" @showModalRe="restock" :itemList="itemList_father" :token="token"></ItemBlock>
               <div style="height:60px;line-height:60px;display:flex;justify-content: center;">
                 <Page
                   :total="totalNumber"
@@ -158,7 +158,7 @@ button {
                 <Input v-model="add_num" style="width:200px" />
               </div>
             </Modal>
-            <Modal v-model="del" title="下架商品" @on-ok="del_ok()" @on-cancel="del_cancel()">
+            <!-- <Modal v-model="del" title="下架商品" @on-ok="del_ok()" @on-cancel="del_cancel()">
               <div style="margin-top:10px;">
                 <p>确定要下架 <a>{{del_name}}</a> 吗</p>
               </div>
@@ -167,7 +167,7 @@ button {
               <div style="margin-top:10px;">
                 <p>确定要重新上架 <a>{{re_name}}</a> 吗</p>
               </div>
-            </Modal>
+            </Modal> -->
           </Content>
         </Layout>
       </Layout>

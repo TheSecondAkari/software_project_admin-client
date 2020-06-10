@@ -174,7 +174,7 @@ textarea {
                       :max-size="2048"
                       :on-format-error="handleFormatError"
                       :on-exceeded-size="handleMaxSize"
-                      :before-upload="handleBeforeUpload"
+                      :before-upload="handleBeforeUpload2"
                       multiple
                       type="drag"
                       :action="api + '/pictures'"
@@ -313,6 +313,7 @@ export default {
       target: "",
       disabledGroup: true,
       imgList: [],
+      richImgList: [],
       typeList: [
         {
           value: "elect",
@@ -516,7 +517,7 @@ export default {
         .then(function(e) {
           a.disabled=false;
           console.log(e);
-          that.$Message.info("修改成功");
+          alert("修改成功");
           location.reload();
         })
         .catch(function(err) {
@@ -552,18 +553,15 @@ export default {
         )
         .then(function(e) {
           console.log(e);
-          that.$Message.info("修改成功");
-          location.reload();
+          alert("修改成功");
+          // location.reload();
+          that.onload()
         })
         .catch(function(err) {
           console.log(err);
         });
     },
     cancelIn() {
-      this.$Message.info("取消更改");
-    },
-    cancelOut() {
-      this.$Message.info("Clicked cancel");
     },
     change(rows) {
       this.now_in = rows.进货价;
@@ -611,13 +609,19 @@ export default {
         desc: "File  " + file.name + " is too large, no more than 2M."
       });
     },
+    handleBeforeUpload2() {
+      //上传之前的函数
+      const check = this.richImgList.length < 5;
+      if (!check) {
+        alert("图片最多上传五张")
+      }
+      return check;
+    },
     handleBeforeUpload() {
       //上传之前的函数
-      const check = this.uploadList.length < 5;
+      const check = this.imgList.length < 5;
       if (!check) {
-        this.$Notice.warning({
-          title: "Up to five pictures can be uploaded."
-        });
+        alert("图片最多上传五张")
       }
       return check;
     },

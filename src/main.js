@@ -10,7 +10,6 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
-
 import {
   Layout,Header,Sider,Content, Button, Table, Icon, Row, Col, Menu, MenuItem, Tabs, TabPane, Page, Input, RadioGroup, Radio, Select, Option, Cascader, Upload, Divider, Form, FormItem, Message, Notice, Modal, Drawer
 } from 'view-design';

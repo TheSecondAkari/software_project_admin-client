@@ -517,8 +517,9 @@ export default {
         .then(function(e) {
           a.disabled=false;
           console.log(e);
-          alert("修改成功");
-          location.reload();
+          that.$Message.info("修改成功");
+          // location.reload();
+          that.onload()
         })
         .catch(function(err) {
           console.log(err);
@@ -553,7 +554,7 @@ export default {
         )
         .then(function(e) {
           console.log(e);
-          alert("修改成功");
+          that.$Message.info("修改成功");
           // location.reload();
           that.onload()
         })
@@ -613,7 +614,7 @@ export default {
       //上传之前的函数
       const check = this.richImgList.length < 5;
       if (!check) {
-        alert("图片最多上传五张")
+        this.$Message.info("图片最多上传五张")
       }
       return check;
     },
@@ -621,7 +622,7 @@ export default {
       //上传之前的函数
       const check = this.imgList.length < 5;
       if (!check) {
-        alert("图片最多上传五张")
+        this.$Message.info("图片最多上传五张")
       }
       return check;
     },

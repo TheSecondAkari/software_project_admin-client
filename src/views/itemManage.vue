@@ -631,7 +631,8 @@ export default {
         )
         .then(function(e) {
           console.log(e);
-          location.reload();
+          // location.reload();
+          that.search()
         })
         .catch(function(err) {
           console.log(err);

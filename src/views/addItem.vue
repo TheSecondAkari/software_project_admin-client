@@ -639,7 +639,7 @@ export default {
           }
         }
         this.numDes.push(numArray);
-        console.log("this.numDes");
+        // console.log("this.numDes");
         let count = 0;
         var that = this;
         for (let item of this.chosenType) {
@@ -656,18 +656,18 @@ export default {
 
     handleSuccess(res, file) {
       //上传成功的时候调用的函数
-      console.log("成功");
-      console.log(res);
-      console.log(file);
+      // console.log("成功");
+      // console.log(res);
+      // console.log(file);
       for (var i = 0; i < res.url.length; i++) {
         this.imgList.push(res.url[i]);
       }
     },
     handleSuccess2(res, file) {
       //富文本上传成功的时候调用的函数
-      console.log("成功");
-      console.log(res);
-      console.log(file);
+      // console.log("成功");
+      // console.log(res);
+      // console.log(file);
       this.quillImgSuccess(res.url[0]);
     },
     quillImgSuccess(res) {
@@ -675,7 +675,6 @@ export default {
       let length = quill.getSelection().index;
       quill.insertEmbed(length, "image", res);
       quill.setSelection(length + 1);
-      console.log("现在是：" + this.des);
     },
     handleFormatError(file) {
       //文件格式验证失败的时候调用的函数
@@ -697,7 +696,7 @@ export default {
       //上传之前的函数
       const check = this.imgList.length < 5;
       if (!check) {
-        alert("图片最多上传五张")
+        this.$Message.error("图片最多上传五张")
       }
       return check;
     },
@@ -705,7 +704,7 @@ export default {
       //上传之前的函数
       const check = this.richImgList.length < 5;
       if (!check) {
-        alert("图片最多上传五张")
+        this.$Message.error("图片最多上传五张")
       }
       return check;
     },

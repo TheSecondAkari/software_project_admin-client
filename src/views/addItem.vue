@@ -161,6 +161,8 @@ textarea {
                           <input v-model="addItemValueIn" />
                         </Modal>
                       </RadioGroup>
+                      <!-- <div>chosenType:{{chosenType}}</div>
+                      <div>itemType:{{itemType}}</div> -->
                     </div>
                   </div>
                   <Button
@@ -580,8 +582,8 @@ export default {
         that.modal3 = true;
         that.theChosenItem = e;
       } else {
-        console.log(that.chosenType[e]);
-        console.log(that.itemType[e].type);
+        // console.log(that.chosenType[e]);
+        // console.log(that.itemType[e].type);
         let a = that.itemType[e].type;
         let number = 0;
         for (let key in a) {
@@ -590,8 +592,11 @@ export default {
           }
           number++;
         }
-        console.log(number);
         that.itemType[e].type.splice(number, 1);
+        console.log(that.itemType[e].type.length)
+        if(that.itemType[e].type.length==0){
+          this.chosenType.splice(e,1)
+        }
       }
     },
     deleteAll() {
@@ -654,7 +659,7 @@ export default {
       this.item_details.push(a);
     },
 
-    handleSuccess(res, file) {
+    handleSuccess(res) {
       //上传成功的时候调用的函数
       // console.log("成功");
       // console.log(res);
@@ -663,7 +668,7 @@ export default {
         this.imgList.push(res.url[i]);
       }
     },
-    handleSuccess2(res, file) {
+    handleSuccess2(res) {
       //富文本上传成功的时候调用的函数
       // console.log("成功");
       // console.log(res);

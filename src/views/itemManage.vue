@@ -437,13 +437,14 @@ export default {
               temp.item_colums = [];
               let tempOut = {};
               let count = 0;
+              temp.item_colums.push({ title: "id", key: "id" });
               for (let item of item.specifications) {
                 tempOut = {};
                 tempOut.title = item.name;
                 tempOut.key = item.name;
                 temp.item_colums.push(tempOut);
               }
-              temp.item_colums.push({ title: "id", key: "id" });
+              
               temp.item_colums.push({ title: "库存", key: "库存" });
               let tempIn = {};
               for (let item of item.sku) {
@@ -452,7 +453,7 @@ export default {
                 tempIn.id = item.id;
                 tempIn.库存 = item.stock_num;
                 for (let item2 of item.options) {
-                  tempIn[temp.item_colums[count].title] = item2.name;
+                  tempIn[temp.item_colums[count+1].title] = item2.name;
                   count++;
                 }
                 temp.item_details.push(tempIn);
@@ -528,13 +529,14 @@ export default {
               temp.item_colums = [];
               let tempOut = {};
               let count = 0;
+              temp.item_colums.push({ title: "id", key: "id" });
               for (let item of item.specifications) {
                 tempOut = {};
                 tempOut.title = item.name;
                 tempOut.key = item.name;
                 temp.item_colums.push(tempOut);
               }
-              temp.item_colums.push({ title: "id", key: "id" });
+              
               temp.item_colums.push({ title: "库存", key: "库存" });
               let tempIn = {};
               for (let item of item.sku) {
@@ -543,7 +545,7 @@ export default {
                 tempIn.id = item.id;
                 tempIn.库存 = item.stock_num;
                 for (let item2 of item.options) {
-                  tempIn[temp.item_colums[count].title] = item2.name;
+                  tempIn[temp.item_colums[count+1].title] = item2.name;
                   count++;
                 }
                 temp.item_details.push(tempIn);

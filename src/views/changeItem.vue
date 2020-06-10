@@ -257,7 +257,7 @@ textarea {
 
                 <Modal v-model="modal1" title="修改规格" @on-ok="okIn" @on-cancel="cancelIn">
                   <div style="margin-top:10px;">
-                    <a>商品总数：</a>
+                    <a>商品id：</a>
                     <p style="display:inline-block;">{{now_id}}</p>
                   </div>
                   <div style="margin-top:10px;">

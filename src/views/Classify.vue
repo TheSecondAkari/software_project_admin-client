@@ -359,64 +359,7 @@ export default {
           align: "center"
         }
       ],
-      data: [
-        // {
-        //   created_at: "2020-04-22 18:31:10",
-        //   updated_at: "2020-04-22 18:31:10",
-        //   id: 1,
-        //   name: "西八罗马",
-        //   parent_id: 0,
-        //   picture: null,
-        //   childrens: [
-        //     {
-        //       created_at: "2020-04-22 18:31:10",
-        //       updated_at: "2020-04-22 18:31:10",
-        //       id: 2,
-        //       name: "手机啊",
-        //       parent_id: 1,
-        //       picture:
-        //         "https://www.cbfgo.cn/tdyb/20200417/182bfc55-88aa-492c-92e2-1307382556ad.jpg"
-        //     },
-        //     {
-        //       created_at: "2020-04-22 18:31:10",
-        //       updated_at: "2020-04-22 18:31:10",
-        //       id: 3,
-        //       name: "笔记本",
-        //       parent_id: 1,
-        //       picture:
-        //         "https://www.cbfgo.cn/tdyb/20200417/d6519f71-c455-4326-b8ff-980d9c99f3bf.jpg"
-        //     }
-        //   ]
-        // },
-        // {
-        //   created_at: "2020-04-22 18:31:10",
-        //   updated_at: "2020-04-22 18:31:10",
-        //   id: 4,
-        //   name: "鸡巴罗马",
-        //   parent_id: 0,
-        //   picture: null,
-        //   childrens: [
-        //     {
-        //       created_at: "2020-04-22 18:31:10",
-        //       updated_at: "2020-04-22 18:31:10",
-        //       id: 5,
-        //       name: "手机啊",
-        //       parent_id: 4,
-        //       picture:
-        //         "https://www.cbfgo.cn/tdyb/20200417/182bfc55-88aa-492c-92e2-1307382556ad.jpg"
-        //     },
-        //     {
-        //       created_at: "2020-04-22 18:31:10",
-        //       updated_at: "2020-04-22 18:31:10",
-        //       id: 6,
-        //       name: "笔记本",
-        //       parent_id: 4,
-        //       picture:
-        //         "https://www.cbfgo.cn/tdyb/20200417/d6519f71-c455-4326-b8ff-980d9c99f3bf.jpg"
-        //     }
-        //   ]
-        // }
-      ]
+      data: []
     };
   },
   mounted() {
@@ -455,6 +398,7 @@ export default {
       var that = this;
       this.$axios.get(that.api + "/categories").then(function(res) {
         that.data = res.data.data;
+        console.log(that.data)
       });
     },
 

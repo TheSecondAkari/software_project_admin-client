@@ -11,7 +11,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import {
-  Layout, Header, Sider, Content, Button, Table, Icon, Row, Col, Menu, MenuItem, Tabs, TabPane, Page, Input, RadioGroup, Radio, Select, Option, Cascader, Upload, Divider, Form, FormItem, Message, Notice, Modal, Drawer
+  Layout, Header, Sider, Content, Button, Table, Icon, Row, Col, Menu, MenuItem, Tabs, TabPane, Page, Input, RadioGroup, Radio, Select, Option, OptionGroup, Cascader, Upload, Divider, Form, FormItem, Message, Notice, Modal, Drawer
 } from 'view-design';
 Vue.component("Header", Header);
 Vue.component("Content", Content);
@@ -37,6 +37,7 @@ Vue.component('RadioGroup', RadioGroup);
 Vue.component('Radio', Radio);
 Vue.component('Select', Select);
 Vue.component('Option', Option);
+Vue.component('OptionGroup', OptionGroup);
 Vue.component('Cascader', Cascader);
 Vue.component('Upload', Upload);
 Vue.component('Divider', Divider);

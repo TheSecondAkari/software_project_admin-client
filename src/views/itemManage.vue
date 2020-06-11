@@ -726,6 +726,7 @@ export default {
         .then(function(e) {
           console.log(e);
           that.re_search()
+          that.$Message.info("添加成功")
         })
         .catch(function(err) {
           console.log(err);

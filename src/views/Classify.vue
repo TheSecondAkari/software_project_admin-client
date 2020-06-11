@@ -674,6 +674,14 @@ export default {
 
     createFirst() {
       var that = this;
+      if (that.createName == "") {
+        that.$Message.error({
+          content: "一级分类名不能为空！",
+          duration: 1,
+          closable: true
+        });
+        return
+      }
       var item = [{ name: that.createName, picture: null }];
       this.$axios({
         method: "POST",

@@ -61,7 +61,7 @@ button {
   position: absolute;
   padding: 20px;
   right:0px;
-  top:65px;
+  top:64px;
   bottom: 0px;
   width:300px;
   background:	#F0F8FF;
@@ -84,14 +84,14 @@ button {
 <template>
   <div class="layout">
     <Layout>
-      <Header :style="{height: '65px'}">
+      <Header :style="{height: '64px'}">
         <Menu mode="horizontal" theme="dark" active-name="1">
         </Menu>
       </Header>
       <Layout>
         <Sider
           hide-trigger
-          :style="{position:'absolute',overflow:'auto' ,top:'65px',bottom:'0px', background: '#fff'}"
+          :style="{position:'absolute',overflow:'auto' ,top:'64px',bottom:'0px', background: '#fff'}"
         >
           <Menu active-name="2" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
@@ -106,9 +106,9 @@ button {
           </Menu>
         </Sider>
         <Layout
-          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'65px',right:'0px',overflow:'auto',}"
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto',}"
         >
-          <Content :style="{padding: '24px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , position: 'relative', marginTop: '20px' ,overflow:'auto'}">
+          <Content :style="{padding: '24px',  minWidth: '1100px', background: '#fff' , position: 'relative', marginTop: '20px' ,overflow:'auto'}">
             <Tabs active-key="key1" @on-click="choosePage" ref="tabs">
               <Tab-pane label="查看商品" key="key1"></Tab-pane>
               <Tab-pane label="新增商品" key="key2"></Tab-pane>
@@ -135,7 +135,7 @@ button {
               id="itemTable"
               style="position:absolute;top:120px;left:20px;right:20px;bottom:0px;overflow:auto;"
             >
-              <ItemBlock @showModal="parentFn" @showModalDel="del_item" @showModalRe="restock" :itemList="itemList_father"></ItemBlock>
+              <ItemBlock @showModal="parentFn" @showModalDel="del_item" @showModalRe="restock" :itemList="itemList_father" :token="token"></ItemBlock>
               <div style="height:60px;line-height:60px;display:flex;justify-content: center;">
                 <Page
                   :total="totalNumber"
@@ -158,7 +158,7 @@ button {
                 <Input v-model="add_num" style="width:200px" />
               </div>
             </Modal>
-            <Modal v-model="del" title="下架商品" @on-ok="del_ok()" @on-cancel="del_cancel()">
+            <!-- <Modal v-model="del" title="下架商品" @on-ok="del_ok()" @on-cancel="del_cancel()">
               <div style="margin-top:10px;">
                 <p>确定要下架 <a>{{del_name}}</a> 吗</p>
               </div>
@@ -167,7 +167,7 @@ button {
               <div style="margin-top:10px;">
                 <p>确定要重新上架 <a>{{re_name}}</a> 吗</p>
               </div>
-            </Modal>
+            </Modal> -->
           </Content>
         </Layout>
       </Layout>
@@ -203,7 +203,7 @@ export default {
   },
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       sort:[{
         value:0,
         label:"时间排序"
@@ -304,7 +304,7 @@ export default {
       if(this.overdue!="未下架")
         overdue=1;
       this.$axios
-        .get(that.api + "admin/goods", {
+        .get(that.api + "/admin/goods", {
           params: {
             category_id: that.model1[that.model1.length-1],
             sort:that.sort_type[0],
@@ -387,28 +387,44 @@ export default {
     },
     search() {
       let that = this;
-      let sortVal=1;
+      let sortVal=0;
       if (this.sortVal!="正序")
-        sortVal=0;
+        sortVal=1;
+      let overdue=0;
+      if(this.overdue!="未下架")
+        overdue=1;
       this.$axios
         .get(that.api + "/admin/goods/search", {
           params: {
             key: that.input_item_name,
             category_id: that.model1[that.model1.length-1],
             sort:that.sort_type[0],
-            desc:sortVal
+            desc:sortVal,
+            overdue:overdue,
+            page:that.now_page
           },
           headers: {
             Authorization: that.token
           }
         })
         .then(function(res) {
+          console.log(res)
+          if(res.data.data.count<=20)
+            document.getElementById("nextbutton").disabled=true
+          if(res.data.data.count%20==0)
+            that.total_page=res.data.data.count/20
+          else
+            that.total_page=Math.floor(res.data.data.count/20)+1
           that.totalNumber = res.data.data.rows;
           var arr = [];
           var temp = {};
           //let item=res.data.data.items[0];
           for (var item of res.data.data.items) {
             temp = {};
+            if(that.overdue=="未下架")
+              temp.over=0
+            else
+              temp.over=1
             temp.item_name = item.name;
             temp.item_obj = item.category.name;
             temp.item_id = item.id;
@@ -421,13 +437,14 @@ export default {
               temp.item_colums = [];
               let tempOut = {};
               let count = 0;
+              temp.item_colums.push({ title: "id", key: "id" });
               for (let item of item.specifications) {
                 tempOut = {};
                 tempOut.title = item.name;
                 tempOut.key = item.name;
                 temp.item_colums.push(tempOut);
               }
-              temp.item_colums.push({ title: "id", key: "id" });
+              
               temp.item_colums.push({ title: "库存", key: "库存" });
               let tempIn = {};
               for (let item of item.sku) {
@@ -436,7 +453,7 @@ export default {
                 tempIn.id = item.id;
                 tempIn.库存 = item.stock_num;
                 for (let item2 of item.options) {
-                  tempIn[temp.item_colums[count].title] = item2.name;
+                  tempIn[temp.item_colums[count+1].title] = item2.name;
                   count++;
                 }
                 temp.item_details.push(tempIn);
@@ -448,6 +465,99 @@ export default {
           var size = that.pageSize;
           that.currentPage = 1;
           that.itemList_father = arr.slice(0, size);
+          var a = {
+            title: "Action",
+            slot: "action",
+            width: 150,
+            align: "center"
+          };
+          for (let item in that.all_itemList) {
+            if (that.all_itemList[item].item_colums)
+              that.all_itemList[item].item_colums.push(a);
+          }
+        });
+    },
+    re_search() {
+      let that = this;
+      let sortVal=0;
+      if (this.sortVal!="正序")
+        sortVal=1;
+      let overdue=0;
+      if(this.overdue!="未下架")
+        overdue=1;
+      this.$axios
+        .get(that.api + "/admin/goods/search", {
+          params: {
+            key: that.input_item_name,
+            category_id: that.model1[that.model1.length-1],
+            sort:that.sort_type[0],
+            desc:sortVal,
+            overdue:overdue,
+            page:that.now_page
+          },
+          headers: {
+            Authorization: that.token
+          }
+        })
+        .then(function(res) {
+          console.log(res)
+          if(res.data.data.count<=20)
+            document.getElementById("nextbutton").disabled=true
+          if(res.data.data.count%20==0)
+            that.total_page=res.data.data.count/20
+          else
+            that.total_page=Math.floor(res.data.data.count/20)+1
+          that.totalNumber = res.data.data.rows;
+          var arr = [];
+          var temp = {};
+          //let item=res.data.data.items[0];
+          for (var item of res.data.data.items) {
+            temp = {};
+            if(that.overdue=="未下架")
+              temp.over=0
+            else
+              temp.over=1
+            temp.item_name = item.name;
+            temp.item_obj = item.category.name;
+            temp.item_id = item.id;
+            temp.item_price = item.price;
+            temp.item_viewed_times = item.view;
+            temp.item_total_left = item.stock_num;
+            temp.item_img = item.pic[0];
+            if (item.specifications.length > 0) {
+              temp.item_details = [];
+              temp.item_colums = [];
+              let tempOut = {};
+              let count = 0;
+              temp.item_colums.push({ title: "id", key: "id" });
+              for (let item of item.specifications) {
+                tempOut = {};
+                tempOut.title = item.name;
+                tempOut.key = item.name;
+                temp.item_colums.push(tempOut);
+              }
+              
+              temp.item_colums.push({ title: "库存", key: "库存" });
+              let tempIn = {};
+              for (let item of item.sku) {
+                tempIn = {};
+                count = 0;
+                tempIn.id = item.id;
+                tempIn.库存 = item.stock_num;
+                for (let item2 of item.options) {
+                  tempIn[temp.item_colums[count+1].title] = item2.name;
+                  count++;
+                }
+                temp.item_details.push(tempIn);
+              }
+            }
+            arr.push(temp);
+          }
+          that.all_itemList = arr;
+          var size = that.pageSize;
+          console.log(that.currentPage)
+          that.itemList_father = arr.slice((that.currentPage-1)*size, that.currentPage*size);
+          console.log(that.itemList_father)
           var a = {
             title: "Action",
             slot: "action",
@@ -537,7 +647,7 @@ export default {
         )
         .then(function(e) {
           console.log(e);
-          location.reload();
+          that.search()
         })
         .catch(function(err) {
           console.log(err);
@@ -559,7 +669,7 @@ export default {
         )
         .then(function(e) {
           console.log(e);
-          location.reload();
+          that.search()
         })
         .catch(function(err) {
           console.log(err);
@@ -615,7 +725,8 @@ export default {
         )
         .then(function(e) {
           console.log(e);
-          location.reload();
+          that.re_search()
+          that.$Message.info("添加成功")
         })
         .catch(function(err) {
           console.log(err);

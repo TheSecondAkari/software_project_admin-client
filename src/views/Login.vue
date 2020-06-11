@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       show: false,
-
+      api: process.env.NODE_ENV === "production" ? "/ruangong" : "/api",
       formInline: {
         user: "",
         password: ""
@@ -76,7 +76,7 @@ export default {
       var name = this.formInline.user;
       var password = this.formInline.password;
       this.$axios
-        .post("/api/admin/auth", {
+        .post(that.api + "/admin/auth", {
           name: name,
           password: password
         })

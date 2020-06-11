@@ -76,7 +76,7 @@ button {
           <b>商品类别：</b>
           {{item.item_obj}}
         </div>
-        <div class="item_info">
+        <div class="item_info" style="height:20px;width:300px;overflow:hidden;">
           <b>商品名称：</b>
           {{item.item_name}}
         </div>
@@ -94,7 +94,19 @@ button {
         </div>
       </div>
       <div style="clear:both"></div>
-      <Button id="change" style="position:absolute;top:30px;right:10%;">修改</Button>
+      <Button v-if="item.over==0" id="change" style="position:absolute;top:30px;right:10%;">修改</Button>
+      <!-- <Button
+        v-if="item.over==0"
+        type="warning"
+        style="position:absolute;top:80px;right:10%;"
+        @click="kill_item(item.item_id,item.item_name)"
+      >下架</button>
+      <Button
+        v-if="item.over==1"
+        type="warning"
+        style="position:absolute;top:80px;right:10%;"
+        @click="restock(item.item_id,item.item_name)"
+      >上架</button> -->
       <Button
         v-if="item.over==0"
         type="warning"
@@ -107,10 +119,11 @@ button {
         style="position:absolute;top:80px;right:10%;"
         @click="restock(item.item_id,item.item_name)"
       >上架</button>
+
       <Button
         type="primary"
         style="position:absolute;top:130px;right:10%;"
-        v-if="item.item_colums"
+        v-if="item.item_colums && item.over==0"
         @click="change_detail($event)"
       >{{showORhide}}</Button>
       <div style="display:none;">
@@ -125,33 +138,49 @@ button {
           </template>
         </Table>
       </div>
+            <Modal v-model="del" title="下架商品" @on-ok="del_ok()" @on-cancel="del_cancel()" :mask="nomask">
+              <div style="margin-top:10px;">
+                <p>确定要下架 <a>{{del_name}}</a> 吗</p>
+              </div>
+            </Modal>
+            <Modal v-model="re" title="重新上架商品" @on-ok="re_ok()" @on-cancel="re_cancel()" :mask="nomask">
+              <div style="margin-top:10px;">
+                <p>确定要重新上架 <a>{{re_name}}</a> 吗</p>
+              </div>
+            </Modal>
     </div>
   </div>
 </template>
 <script>
 export default {
   name: "ItemBlock",
-  props: ["itemList"],
+  props: ["itemList","token"],
   mounted() {},
   data() {
     return {
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       input_item_name: "",
       show: 0,
       showORhide: "显示",
+      del_name:'',//准备下架的商品名
+      del_id:0,//准备下架的商品id
+      re_name:'',//准备重新上架商品名
+      re_id:0,//准备重新上架商品id
+      del:false, //下架商品的框是否显示
+      re:false,//重新上架商品的框是否显示
+      del_id:0,
+      del_name:"",
+      re_id:0,
+      re_name:"",
+      nomask:false
     };
   },
   methods: {
     change_detail(e) {
-      console.log(e.currentTarget.nextElementSibling.style.display);
       if (e.currentTarget.nextElementSibling.style.display == "none") {
-        console.log("改成隐藏");
         e.currentTarget.innerHTML = "隐藏";
         e.currentTarget.nextElementSibling.style.display = "block";
-        console.log(
-          "现在是" + e.currentTarget.nextElementSibling.style.display
-        );
       } else {
-        console.log("改成显示");
         e.currentTarget.innerHTML = "显示";
         e.currentTarget.nextElementSibling.style.display = "none";
       }
@@ -166,19 +195,75 @@ export default {
       console.log(index);
     },
     kill_item(id,name){
-      let obj = {
-        id: id,
-        name: name
-      };
-      this.$emit("showModalDel",obj)
+      this.del_id=id;
+      this.del_name=name;
+      this.del=true
     },
     restock(id,name){
-      let obj = {
-        id: id,
-        name: name
-      };
-      this.$emit("showModalRe",obj)
-    }
+      this.re_id=id;
+      this.re_name=name;
+      this.re=true
+    },
+    del_ok(){
+      let that = this;
+      this.$axios
+        .delete(
+          that.api + "/admin/goods/"+that.del_id,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: that.token
+            }
+          }
+        )
+        .then(function(e) {
+          console.log(e);
+          let temp=that.itemList
+          for(let i=0;i<temp.length;i++){
+            if(temp[i].item_id==that.del_id){
+              temp.splice(i,1)
+              break;
+            }
+          }
+          that.itemList=temp;
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    },
+    del_cancel(){
+
+    },
+    re_ok(){
+      let that = this;
+      this.$axios
+        .post(
+          that.api + "/admin/goods/" + that.re_id + "/putaway",{},
+          {
+            headers: {
+              Authorization: that.token
+            }
+          }
+        )
+        .then(function(e) {
+          console.log(e);
+          let temp=that.itemList
+          for(let i=0;i<temp.length;i++){
+            if(temp[i].item_id==that.re_id){
+              temp.splice(i,1)
+              break;
+            }
+          }
+          that.itemList=temp;
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    },
+    re_cancel(){
+
+    },
+
   },
 };
 </script>

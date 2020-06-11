@@ -6,7 +6,6 @@
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-  overflow-y: scroll;
   height: 100%;
 }
 .layout-logo {
@@ -100,12 +99,15 @@ textarea {
 <template>
   <div class="layout">
     <Layout>
-      <Header :style="{height: '65px'}">
+      <Header :style="{height: '64px'}">
         <Menu mode="horizontal" theme="dark" active-name="1">
         </Menu>
       </Header>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
+        <Sider
+          hide-trigger
+          :style="{position:'absolute',overflow:'auto' ,top:'64px',bottom:'0px', background: '#fff'}"
+        >
           <Menu active-name="2" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
@@ -118,13 +120,15 @@ textarea {
             </MenuItem>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px',overflow:'auto'}">
+        <Layout
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto',}"
+        >
           <!-- <Breadcrumb :style="{margin: '24px 0'}">
             <BreadcrumbItem>Home</BreadcrumbItem>
             <BreadcrumbItem>Components</BreadcrumbItem>
             <BreadcrumbItem>Layout</BreadcrumbItem>
           </Breadcrumb> -->
-          <Content :style="{padding: '20px',  minWidth: '1118px', minHeight: '700px', background: '#fff' , marginTop: '20px'}">
+          <Content :style="{padding: '20px',  minWidth: '1100px',  background: '#fff' , marginTop: '20px'}">
             <div class="main_block">
               <div class="special">
                 <div style="padding-bottom:20px;">
@@ -170,10 +174,10 @@ textarea {
                       :max-size="2048"
                       :on-format-error="handleFormatError"
                       :on-exceeded-size="handleMaxSize"
-                      :before-upload="handleBeforeUpload"
+                      :before-upload="handleBeforeUpload2"
                       multiple
                       type="drag"
-                      action="/api/pictures"
+                      :action="api + '/pictures'"
                       :headers="headers"
                       style="display:none;"
                     >
@@ -235,7 +239,7 @@ textarea {
                       :before-upload="handleBeforeUpload"
                       multiple
                       type="drag"
-                      action="/api/pictures"
+                      :action="api + '/pictures'"
                       :headers="headers"
                       style="display: inline-block;width:100px;"
                     >
@@ -253,7 +257,7 @@ textarea {
 
                 <Modal v-model="modal1" title="修改规格" @on-ok="okIn" @on-cancel="cancelIn">
                   <div style="margin-top:10px;">
-                    <a>商品总数：</a>
+                    <a>商品id：</a>
                     <p style="display:inline-block;">{{now_id}}</p>
                   </div>
                   <div style="margin-top:10px;">
@@ -292,7 +296,7 @@ export default {
   },
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       token: "",
       name: "",
       des: "",  //富文本
@@ -309,6 +313,7 @@ export default {
       target: "",
       disabledGroup: true,
       imgList: [],
+      richImgList: [],
       typeList: [
         {
           value: "elect",
@@ -376,7 +381,7 @@ export default {
       let id = this.$route.params.id;
       this.id = id;
       this.$axios
-        .get(that.api + "admin/goods/" + id, {
+        .get(that.api + "/admin/goods/" + id, {
           headers: {
             Authorization: that.token
           }
@@ -513,7 +518,8 @@ export default {
           a.disabled=false;
           console.log(e);
           that.$Message.info("修改成功");
-          location.reload();
+          // location.reload();
+          that.onload()
         })
         .catch(function(err) {
           console.log(err);
@@ -549,17 +555,14 @@ export default {
         .then(function(e) {
           console.log(e);
           that.$Message.info("修改成功");
-          location.reload();
+          // location.reload();
+          that.onload()
         })
         .catch(function(err) {
           console.log(err);
         });
     },
     cancelIn() {
-      this.$Message.info("取消更改");
-    },
-    cancelOut() {
-      this.$Message.info("Clicked cancel");
     },
     change(rows) {
       this.now_in = rows.进货价;
@@ -607,13 +610,19 @@ export default {
         desc: "File  " + file.name + " is too large, no more than 2M."
       });
     },
+    handleBeforeUpload2() {
+      //上传之前的函数
+      const check = this.richImgList.length < 5;
+      if (!check) {
+        this.$Message.info("图片最多上传五张")
+      }
+      return check;
+    },
     handleBeforeUpload() {
       //上传之前的函数
-      const check = this.uploadList.length < 5;
+      const check = this.imgList.length < 5;
       if (!check) {
-        this.$Notice.warning({
-          title: "Up to five pictures can be uploaded."
-        });
+        this.$Message.info("图片最多上传五张")
       }
       return check;
     },
@@ -635,7 +644,7 @@ export default {
           that.$router.push({ path: "/itemManage" });
           break;
         case 3:
-          //  that.$router.push({ path:'/item_manage'});
+           that.$router.push({ path:'/orders'});
           break;
         default:
           break;

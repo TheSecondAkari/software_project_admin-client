@@ -37,7 +37,10 @@
     <Layout>
       <Header></Header>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
+        <Sider
+          hide-trigger
+          :style="{position:'absolute',overflow:'auto' ,top:'64px',bottom:'0px', background: '#fff'}"
+        >
           <Menu active-name="1" theme="light" width="auto" @on-select="redirect">
             <MenuItem name="1">
               <Icon type="ios-keypad" style="margin-right: 10px;"></Icon>分类管理
@@ -50,9 +53,11 @@
             </MenuItem>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
+        <Layout 
+          :style="{padding: '0 24px 0 ',position:'absolute',left:'200px',bottom:'10px',top:'64px',right:'0px',overflow:'auto'}"
+          >
           <!-- 一级分类 -->
-          <Content style="padding: 24px; height: 45em; background-color: #fff; margin-top: 24px;">
+          <Content style="padding: 24px; height: 45em; background-color: #fff; margin-top: 20px;">
             <Tabs>
               <Tab-pane label="查看分类" key="key1" style=" overflow-y: auto; height: 37.5em">
                 <Table :columns="columns" :data="data" @on-row-dblclick="show">
@@ -122,7 +127,7 @@
                             :on-format-error="handleFormatError"
                             :on-exceeded-size="handleMaxSize"
                             type="drag"
-                            action="/api/pictures"
+                            :action="api + '/pictures'"
                             class="addSecond"
                           >
                             <img
@@ -213,7 +218,7 @@
                 :on-format-error="handleFormatError"
                 :on-exceeded-size="handleMaxSize"
                 type="drag"
-                action="/api/pictures"
+                :action="api + '/pictures'"
                 style="display: inline-block;"
               >
                 <img :src="imgURL" style="height:100px;width:100px;" />
@@ -289,7 +294,7 @@
 export default {
   data() {
     return {
-      api: "/api",
+      api: process.env.NODE_ENV === 'production' ? "/ruangong":"/api",
       token: "",
       second: false,
       edit_first: false, // 一级分类编辑页面显示

@@ -156,7 +156,7 @@ textarea {
                       <RadioGroup v-model="chosenType[key]">
                         <Radio v-for="(item2,key2) in item.type" :key="key2" :label="item2"></Radio>
                         <a style="margin-left:20px;" @click="addTypeItem(key)">增加</a>
-                        <a style="margin-left:20px;" @click="deleteItem(key)">删除</a>
+                        <!-- <a style="margin-left:20px;" @click="deleteItem(key)">删除</a> -->
                         <Modal v-model="modal1" title="新增规格" @on-ok="okIn" @on-cancel="cancelIn">
                           <input v-model="addItemValueIn" />
                         </Modal>

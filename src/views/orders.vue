@@ -205,12 +205,12 @@
         </div>
       </Modal>
     </div>
-    <!-- 输入订单号 -->
+    <!-- 输入物流号 -->
     <div>
-      <Modal v-model="number_show" title="请输入订单号" @on-ok="Send()" @on-cancel="cancelSend()">
+      <Modal v-model="number_show" title="请输入物流号" @on-ok="Send()" @on-cancel="cancelSend()">
         <div style="width: 90%; margin: 10px 0 25px 0;">
           <i-Form :label-width="90">
-            <FormItem label="订单号：">
+            <FormItem label="物流号：">
               <Input v-model="number" type="number" placeholder="请输入8位数字号码" style="width: 300px" />
             </FormItem>
           </i-Form>

@@ -168,10 +168,6 @@ export default {
       re_id:0,//准备重新上架商品id
       del:false, //下架商品的框是否显示
       re:false,//重新上架商品的框是否显示
-      del_id:0,
-      del_name:"",
-      re_id:0,
-      re_name:"",
       nomask:false
     };
   },

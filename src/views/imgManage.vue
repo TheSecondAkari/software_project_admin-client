@@ -198,7 +198,6 @@ button {
                   show-total
                 />
               </div>
-              <div>{{img_number}}</div>
             </div>
           </Content>
         </Layout>
@@ -413,6 +412,7 @@ export default {
     },
     remove(index) {
       this.selectedList.splice(index, 1);
+      this.img_number=this.selectedList.length
     },
     moveUp(index) {
       var that = this;
